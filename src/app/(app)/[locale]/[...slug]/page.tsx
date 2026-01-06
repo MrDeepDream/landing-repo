@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
-import { getPageBySlug, type SupportedLocale } from '@/lib/payload-data'
-import type { Page } from '@/payload-types'
+import Image from 'next/image'
+import { getPageBySlug, getSiteData, type SupportedLocale } from '@/lib/payload-data'
+import type { Media, Page, PageBlock } from '@/payload-types'
 import { FloatingNav } from '@/components/FloatingNav'
 import { Building2 } from 'lucide-react'
 import { SectionHeaderBlock } from '@/components/SectionHeaderBlock'
@@ -8,11 +9,27 @@ import { MarkdownRichTextBlock } from '@/components/MarkdownRichTextBlock'
 import { LivePreviewPage } from '@/components/LivePreviewPage'
 import { NewsBlockServer } from '@/components/NewsBlockServer'
 import type { IconName } from '@/lib/icons'
-import type { GradientPreset} from '@/lib/gradients'
-import { generateSEOMetadata } from '@/lib/seo'
+import type { GradientPreset } from '@/lib/gradients'
+import { generateSEOMetadata, type SEOData } from '@/lib/seo'
+import { sanitizeHtml } from '@/lib/sanitize'
 
-// Force dynamic rendering - this page uses searchParams for preview mode
-export const dynamic = 'force-dynamic'
+/**
+ * Rich text node interface for Lexical/Slate content
+ */
+interface RichTextNode {
+  type?: string
+  text?: string
+  bold?: boolean
+  italic?: boolean
+  underline?: boolean
+  url?: string
+  newTab?: boolean
+  children?: RichTextNode[]
+}
+
+// Enable ISR with 60-second revalidation for public pages
+// Preview mode is handled via searchParams which triggers dynamic rendering automatically
+export const revalidate = 60
 
 interface PageProps {
   params: Promise<{
@@ -57,7 +74,11 @@ export default async function DynamicPage(props: PageProps) {
           backButtonText="Back to Home"
           siteName={(page.title as unknown as string) || ''}
           siteIcon={<Building2 className="h-4 w-4 text-indigo-600" />}
-          badgeText={page.pageType ? page.pageType.charAt(0).toUpperCase() + page.pageType.slice(1) : undefined}
+          badgeText={
+            page.pageType
+              ? page.pageType.charAt(0).toUpperCase() + page.pageType.slice(1)
+              : undefined
+          }
         />
         <LivePreviewPage initialData={page} />
       </div>
@@ -71,7 +92,9 @@ export default async function DynamicPage(props: PageProps) {
         backButtonText="Back to Home"
         siteName={(page.title as unknown as string) || ''}
         siteIcon={<Building2 className="h-4 w-4 text-indigo-600" />}
-        badgeText={page.pageType ? page.pageType.charAt(0).toUpperCase() + page.pageType.slice(1) : undefined}
+        badgeText={
+          page.pageType ? page.pageType.charAt(0).toUpperCase() + page.pageType.slice(1) : undefined
+        }
       />
       <PageRenderer page={page} locale={localeString} draft={isPreview} />
     </div>
@@ -82,7 +105,15 @@ export default async function DynamicPage(props: PageProps) {
  * Page Renderer Component
  * Renders different layouts based on page type
  */
-async function PageRenderer({ page, locale, draft }: { page: Page; locale: string; draft: boolean }) {
+async function PageRenderer({
+  page,
+  locale,
+  draft,
+}: {
+  page: Page
+  locale: string
+  draft: boolean
+}) {
   const { content, blocks, pageType } = page
 
   // Special handling for 'news' page type
@@ -93,7 +124,7 @@ async function PageRenderer({ page, locale, draft }: { page: Page; locale: strin
         <div className="min-h-screen">
           <div className="space-y-8">
             {await Promise.all(
-              blocks.map(async (block: any, index: number) => (
+              blocks.map(async (block, index) => (
                 <BlockRenderer key={index} block={block} locale={locale} draft={draft} />
               ))
             )}
@@ -123,12 +154,11 @@ async function PageRenderer({ page, locale, draft }: { page: Page; locale: strin
 
   return (
     <div className="container mx-auto px-4 py-12">
-
       {/* Main Content */}
       <main>
         {/* Render rich text content if available (for text pages) */}
         {content && (
-          <div className="prose prose-lg max-w-none mb-8">
+          <div className="prose prose-lg mb-8 max-w-none">
             <RichTextRenderer content={content} />
           </div>
         )}
@@ -137,7 +167,7 @@ async function PageRenderer({ page, locale, draft }: { page: Page; locale: strin
         {blocks && blocks.length > 0 && (
           <div className="space-y-8">
             {await Promise.all(
-              blocks.map(async (block: any, index: number) => (
+              blocks.map(async (block, index) => (
                 <BlockRenderer key={index} block={block} locale={locale} draft={draft} />
               ))
             )}
@@ -146,7 +176,7 @@ async function PageRenderer({ page, locale, draft }: { page: Page; locale: strin
 
         {/* Empty state */}
         {!content && (!blocks || blocks.length === 0) && (
-          <div className="text-center py-12 text-muted-foreground">
+          <div className="py-12 text-center text-muted-foreground">
             <p>This page has no content yet.</p>
           </div>
         )}
@@ -159,18 +189,18 @@ async function PageRenderer({ page, locale, draft }: { page: Page; locale: strin
  * Rich Text Renderer
  * Renders Slate rich text content
  */
-function RichTextRenderer({ content }: { content: any }) {
+function RichTextRenderer({ content }: { content: Record<string, unknown> | RichTextNode[] }) {
   if (!content) return null
 
-  // Basic rich text rendering - you can enhance this based on your needs
+  // Basic rich text rendering with HTML sanitization for XSS prevention
   return (
     <div className="rich-text">
       {Array.isArray(content) ? (
-        content.map((node: any, index: number) => (
-          <div key={index} dangerouslySetInnerHTML={{ __html: renderNode(node) }} />
+        content.map((node, index) => (
+          <div key={index} dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderNode(node)) }} />
         ))
       ) : (
-        <div dangerouslySetInnerHTML={{ __html: JSON.stringify(content) }} />
+        <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(JSON.stringify(content)) }} />
       )}
     </div>
   )
@@ -179,7 +209,7 @@ function RichTextRenderer({ content }: { content: any }) {
 /**
  * Render a single rich text node
  */
-function renderNode(node: any): string {
+function renderNode(node: RichTextNode): string {
   if (!node) return ''
 
   if (node.text !== undefined) {
@@ -224,20 +254,32 @@ function renderNode(node: any): string {
  * Block Renderer
  * Renders different block types
  */
-async function BlockRenderer({ block, locale, draft }: { block: any; locale: string; draft: boolean }) {
+async function BlockRenderer({
+  block,
+  locale,
+  draft,
+}: {
+  block: PageBlock
+  locale: string
+  draft: boolean
+}) {
   switch (block.blockType) {
     case 'sectionHeader':
       return (
         <SectionHeaderBlock
           type={block.type || 'small'}
           title={block.title}
-          subtitle={block.subtitle}
-          description={block.description}
-          badge={block.badge?.text ? {
-            text: block.badge.text,
-            icon: block.badge.icon as IconName,
-            gradient: block.badge.gradient as GradientPreset,
-          } : undefined}
+          subtitle={block.subtitle ?? undefined}
+          description={block.description ?? undefined}
+          badge={
+            block.badge?.text
+              ? {
+                  text: block.badge.text,
+                  icon: block.badge.icon as IconName,
+                  gradient: block.badge.gradient as GradientPreset,
+                }
+              : undefined
+          }
           headingLevel={block.headingLevel || 'h2'}
           enableAnimation={block.enableAnimation !== false}
         />
@@ -246,7 +288,7 @@ async function BlockRenderer({ block, locale, draft }: { block: any; locale: str
     case 'richText':
       return (
         <div className="prose prose-lg max-w-none">
-          <RichTextRenderer content={block.content} />
+          <RichTextRenderer content={block.content as unknown as RichTextNode[]} />
         </div>
       )
 
@@ -254,22 +296,27 @@ async function BlockRenderer({ block, locale, draft }: { block: any; locale: str
       return (
         <MarkdownRichTextBlock
           markdown={block.markdown || ''}
-          accentColor={block.accentColor}
+          accentColor={block.accentColor ?? undefined}
         />
       )
 
-    case 'imageBlock':
+    case 'imageBlock': {
+      const image = block.image
+      const imageData = typeof image === 'object' ? (image as Media) : null
       return (
         <div className="my-8">
-          {block.image && typeof block.image === 'object' && 'url' in block.image && (
+          {imageData?.url && (
             <figure>
-              <img
-                src={block.image.url}
-                alt={block.image.alt || block.caption || 'Image'}
+              <Image
+                src={imageData.url}
+                alt={imageData.alt || block.caption || 'Image'}
+                width={800}
+                height={600}
                 className="w-full rounded-lg"
+                unoptimized
               />
               {block.caption && (
-                <figcaption className="text-sm text-muted-foreground mt-2 text-center">
+                <figcaption className="mt-2 text-center text-sm text-muted-foreground">
                   {block.caption}
                 </figcaption>
               )}
@@ -277,18 +324,19 @@ async function BlockRenderer({ block, locale, draft }: { block: any; locale: str
           )}
         </div>
       )
+    }
 
     case 'callToAction':
       return (
-        <div className="bg-primary text-primary-foreground rounded-lg p-8 text-center">
-          {block.heading && <h2 className="text-3xl font-bold mb-4">{block.heading}</h2>}
-          {block.description && <p className="text-lg mb-6">{block.description}</p>}
+        <div className="rounded-lg bg-primary p-8 text-center text-primary-foreground">
+          {block.heading && <h2 className="mb-4 text-3xl font-bold">{block.heading}</h2>}
+          {block.description && <p className="mb-6 text-lg">{block.description}</p>}
           {block.link && (
             <a
               href={block.link.url}
               target={block.link.openInNewTab ? '_blank' : undefined}
               rel={block.link.openInNewTab ? 'noopener noreferrer' : undefined}
-              className="inline-block bg-background text-foreground px-6 py-3 rounded-md font-semibold hover:opacity-90 transition-opacity"
+              className="inline-block rounded-md bg-background px-6 py-3 font-semibold text-foreground transition-opacity hover:opacity-90"
             >
               {block.link.label}
             </a>
@@ -299,7 +347,17 @@ async function BlockRenderer({ block, locale, draft }: { block: any; locale: str
     case 'newsBlock':
       return (
         <NewsBlockServer
-          block={block}
+          block={{
+            displayMode: block.displayMode,
+            contentSource: block.contentSource,
+            selectedTag: block.selectedTag ?? undefined,
+            selectedNews: block.selectedNews ?? undefined,
+            limit: block.limit ?? undefined,
+            enableSearch: block.enableSearch ?? undefined,
+            enableFilters: block.enableFilters ?? undefined,
+            enablePagination: block.enablePagination ?? undefined,
+            itemsPerPage: block.itemsPerPage ?? undefined,
+          }}
           locale={locale as SupportedLocale}
           draft={draft}
         />
@@ -307,9 +365,9 @@ async function BlockRenderer({ block, locale, draft }: { block: any; locale: str
 
     default:
       return (
-        <div className="border border-dashed border-muted p-4 rounded">
+        <div className="rounded border border-dashed border-muted p-4">
           <p className="text-sm text-muted-foreground">
-            Unknown block type: {block.blockType}
+            Unknown block type: {(block as PageBlock).blockType}
           </p>
         </div>
       )
@@ -339,7 +397,13 @@ export async function generateMetadata(props: PageProps) {
   const localeString = String(locale || 'uk')
   const pageSlug = slug.join('/')
 
-  const page = await getPageBySlug(pageSlug, localeString as SupportedLocale, false)
+  // Fetch page and site settings in parallel
+  const [page, siteData] = await Promise.all([
+    getPageBySlug(pageSlug, localeString as SupportedLocale, false),
+    getSiteData(localeString as SupportedLocale, false),
+  ])
+
+  const siteName = siteData.siteSettings?.siteTitle || 'Your Site Name'
 
   if (!page) {
     return {
@@ -352,8 +416,8 @@ export async function generateMetadata(props: PageProps) {
   }
 
   return generateSEOMetadata({
-    page: page as any,
+    page: page as SEOData,
     locale: localeString,
-    siteName: 'Your Site Name', // TODO: Get from site settings
+    siteName,
   })
 }

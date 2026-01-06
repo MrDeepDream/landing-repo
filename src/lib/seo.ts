@@ -36,8 +36,9 @@ export interface SEOData {
   title?: string | Record<string, unknown> | null
 
   // SEO group from Payload (supports both 'seo' and 'meta' field names)
-  seo?: SEOFields
-  meta?: SEOFields
+  // Allow null from Payload CMS
+  seo?: SEOFields | null
+  meta?: SEOFields | null
 }
 
 interface GenerateSEOMetadataOptions {
@@ -59,7 +60,7 @@ export function generateSEOMetadata({
   siteName = 'Your Site Name',
   defaultImage,
 }: GenerateSEOMetadataOptions): Metadata {
-  const seo = page.seo || page.meta || {}
+  const seo = page.seo ?? page.meta ?? {}
 
   // Helper to extract string from potentially localized field
   const getLocalizedString = (
@@ -185,7 +186,7 @@ export function generateStructuredData({
   siteUrl?: string
   siteName?: string
 }) {
-  const seo = page.seo || page.meta || {}
+  const seo = page.seo ?? page.meta ?? {}
   const title = seo.metaTitle || seo.title || page.title || siteName
   const description = seo.metaDescription || seo.description
   const imageUrl =

@@ -1,7 +1,17 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import type {
+  Page as PayloadPage,
+  News as PayloadNews,
+  NewsTag as PayloadNewsTag,
+} from '@/payload-types'
 
 export type SupportedLocale = 'uk' | 'en' | 'es'
+
+// Re-export types for external usage
+export type Page = PayloadPage
+export type News = PayloadNews
+export type NewsTag = PayloadNewsTag
 
 // Reserved for future use
 // interface GetSiteDataOptions {
@@ -29,8 +39,8 @@ interface NavigationDoc {
   }>
 }
 
-// Types matching the 3-level CMS structure
-interface NavigationItem {
+// Types matching the 3-level CMS structure (exported for Header component)
+export interface NavigationItem {
   id: string
   label: string
   href?: string
@@ -102,7 +112,10 @@ interface FooterData {
 /**
  * Fetch the home page
  */
-export async function getHomePage(locale: SupportedLocale = 'uk', draft: boolean = false) {
+export async function getHomePage(
+  locale: SupportedLocale = 'uk',
+  draft: boolean = false
+): Promise<PayloadPage | null> {
   const payload = await getPayload({ config })
 
   const result = await payload.find({
@@ -124,7 +137,7 @@ export async function getHomePage(locale: SupportedLocale = 'uk', draft: boolean
     draft,
   })
 
-  return result.docs[0] || null
+  return (result.docs[0] as PayloadPage) || null
 }
 
 /**
@@ -134,7 +147,7 @@ export async function getPageBySlug(
   slug: string,
   locale: SupportedLocale = 'uk',
   draft: boolean = false
-) {
+): Promise<PayloadPage | null> {
   const payload = await getPayload({ config })
 
   const result = await payload.find({
@@ -156,7 +169,7 @@ export async function getPageBySlug(
     draft,
   })
 
-  return result.docs[0] || null
+  return (result.docs[0] as PayloadPage) || null
 }
 
 /**
@@ -166,7 +179,7 @@ export async function getNewsBySlug(
   slug: string,
   locale: SupportedLocale = 'uk',
   draft: boolean = false
-) {
+): Promise<PayloadNews | null> {
   const payload = await getPayload({ config })
 
   const result = await payload.find({
@@ -189,7 +202,7 @@ export async function getNewsBySlug(
     depth: 2, // Include related data (tags, author, images)
   })
 
-  return result.docs[0] || null
+  return (result.docs[0] as PayloadNews) || null
 }
 
 /**
@@ -200,7 +213,18 @@ export async function getAllNews(
   draft: boolean = false,
   limit: number = 10,
   page: number = 1
-) {
+): Promise<{
+  docs: PayloadNews[]
+  totalDocs: number
+  limit: number
+  totalPages: number
+  page: number | undefined
+  pagingCounter: number
+  hasPrevPage: boolean
+  hasNextPage: boolean
+  prevPage: number | null | undefined
+  nextPage: number | null | undefined
+}> {
   const payload = await getPayload({ config })
 
   const result = await payload.find({
@@ -221,7 +245,7 @@ export async function getAllNews(
   })
 
   return {
-    docs: result.docs,
+    docs: result.docs as PayloadNews[],
     totalDocs: result.totalDocs,
     limit: result.limit,
     totalPages: result.totalPages,
@@ -246,7 +270,7 @@ export async function getNewsForBlock(
   },
   locale: SupportedLocale = 'uk',
   draft: boolean = false
-) {
+): Promise<PayloadNews[]> {
   const payload = await getPayload({ config })
 
   // Manual selection
@@ -279,9 +303,9 @@ export async function getNewsForBlock(
     // Maintain manual order
     const orderedDocs = newsIds
       .map((id) => result.docs.find((doc) => doc.id === id))
-      .filter(Boolean)
+      .filter((doc): doc is PayloadNews => doc !== undefined)
 
-    return orderedDocs
+    return orderedDocs as PayloadNews[]
   }
 
   // By tag
@@ -312,7 +336,7 @@ export async function getNewsForBlock(
       draft,
     })
 
-    return result.docs
+    return result.docs as PayloadNews[]
   }
 
   // All news (default)
@@ -332,13 +356,16 @@ export async function getNewsForBlock(
     draft,
   })
 
-  return result.docs
+  return result.docs as PayloadNews[]
 }
 
 /**
  * Get all news tags
  */
-export async function getAllNewsTags(locale: SupportedLocale = 'uk', draft: boolean = false) {
+export async function getAllNewsTags(
+  locale: SupportedLocale = 'uk',
+  draft: boolean = false
+): Promise<PayloadNewsTag[]> {
   const payload = await getPayload({ config })
 
   const result = await payload.find({
@@ -349,7 +376,7 @@ export async function getAllNewsTags(locale: SupportedLocale = 'uk', draft: bool
     draft,
   })
 
-  return result.docs
+  return result.docs as PayloadNewsTag[]
 }
 
 export async function getSiteData(locale: SupportedLocale = 'uk', draft: boolean = false) {

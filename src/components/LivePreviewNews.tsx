@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
-import type { News } from '@/payload-types'
+import type { News, NewsContentBlock, NewsTag, User as PayloadUser } from '@/payload-types'
 import { Calendar, User, Tag } from 'lucide-react'
 import { SectionHeaderBlock } from '@/components/SectionHeaderBlock'
 import { MarkdownRichTextBlock } from '@/components/MarkdownRichTextBlock'
@@ -20,7 +21,7 @@ export function LivePreviewNews({ initialData }: LivePreviewNewsProps) {
   const isPreview = searchParams.get('preview') === 'true'
 
   const addDebugInfo = useCallback((info: string) => {
-    setDebugInfo(prev => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${info}`])
+    setDebugInfo((prev) => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${info}`])
   }, [])
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export function LivePreviewNews({ initialData }: LivePreviewNewsProps) {
     addDebugInfo('News preview mode initialized')
 
     // Listen for messages from Payload admin
-    const handleMessage = (event: MessageEvent) => {
+    const handleMessage = (event: MessageEvent<unknown>) => {
       // Accept messages from same origin or parent origin
       const validOrigins = [window.location.origin]
       if (!validOrigins.includes(event.origin)) {
@@ -37,34 +38,34 @@ export function LivePreviewNews({ initialData }: LivePreviewNewsProps) {
       }
 
       try {
-        const eventData = event.data
+        const eventData = event.data as Record<string, unknown> | null
 
         // Ignore certain system messages
         if (!eventData || typeof eventData !== 'object') return
         if (eventData.type === 'webpackOk') return
         if (eventData.type === 'webpack') return
 
-        // Log all Payload-related messages for debugging
-        if (eventData.type?.includes('payload') || eventData.data || eventData.doc) {
-          console.log('🔔 Payload message (News):', eventData)
-          addDebugInfo(`Message: ${eventData?.type || JSON.stringify(eventData).slice(0, 30)}`)
+        // Track Payload-related messages for debugging panel
+        const eventType = eventData.type as string | undefined
+        if (eventType?.includes('payload') || eventData.data || eventData.doc) {
+          addDebugInfo(`Message: ${eventType || JSON.stringify(eventData).slice(0, 30)}`)
         }
 
         // Handle different Payload message patterns
-        let updatedData = null
+        let updatedData: Record<string, unknown> | null = null
 
         // Check various message patterns
         if (eventData.type === 'payload' && eventData.data) {
-          updatedData = eventData.data
+          updatedData = eventData.data as Record<string, unknown>
           addDebugInfo('✓ Payload data pattern')
         } else if (eventData.type === 'payload-live-preview' && eventData.data) {
-          updatedData = eventData.data
+          updatedData = eventData.data as Record<string, unknown>
           addDebugInfo('✓ Live preview pattern')
         } else if (eventData.doc) {
-          updatedData = eventData.doc
+          updatedData = eventData.doc as Record<string, unknown>
           addDebugInfo('✓ Doc pattern')
         } else if (eventData.data && typeof eventData.data === 'object') {
-          updatedData = eventData.data
+          updatedData = eventData.data as Record<string, unknown>
           addDebugInfo('✓ Data object pattern')
         } else if (eventData.title || eventData.blocks) {
           // Direct document data
@@ -73,14 +74,9 @@ export function LivePreviewNews({ initialData }: LivePreviewNewsProps) {
         }
 
         if (updatedData && (updatedData.title || updatedData.id || updatedData.blocks)) {
-          const title = updatedData.title || 'Untitled'
+          const title = (updatedData.title as string) || 'Untitled'
           addDebugInfo(`✅ Update: ${title.slice(0, 20)}`)
-          console.log('✅ Live preview update applied (News):', {
-            title,
-            blocks: updatedData.blocks?.length,
-            id: updatedData.id
-          })
-          setArticleData(updatedData as News)
+          setArticleData(updatedData as unknown as News)
         }
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'Unknown error'
@@ -102,7 +98,6 @@ export function LivePreviewNews({ initialData }: LivePreviewNewsProps) {
         window.parent.postMessage({ ready: true }, '*')
 
         addDebugInfo('✓ Ready signals sent')
-        console.log('📡 Sent ready signals to parent (News)')
       }
     }
 
@@ -124,15 +119,20 @@ export function LivePreviewNews({ initialData }: LivePreviewNewsProps) {
     <>
       {/* Debug panel - only visible in preview mode */}
       {isPreview && process.env.NODE_ENV === 'development' && (
-        <div className="fixed bottom-4 right-4 bg-black/80 text-white text-xs p-3 rounded-lg max-w-xs z-50">
-          <div className="font-bold mb-2">Live Preview Debug (News)</div>
-          <div className="text-yellow-400 mb-1">Last update: {articleData.updatedAt || 'N/A'}</div>
+        <div className="fixed bottom-4 right-4 z-50 max-w-xs rounded-lg bg-black/80 p-3 text-xs text-white">
+          <div className="mb-2 font-bold">Live Preview Debug (News)</div>
+          <div className="mb-1 text-yellow-400">Last update: {articleData.updatedAt || 'N/A'}</div>
           {debugInfo.map((info, i) => (
-            <div key={i} className="opacity-70">{info}</div>
+            <div key={i} className="opacity-70">
+              {info}
+            </div>
           ))}
         </div>
       )}
-      <NewsArticleContent key={`${articleData.id}-${articleData.updatedAt}`} article={articleData} />
+      <NewsArticleContent
+        key={`${articleData.id}-${articleData.updatedAt}`}
+        article={articleData}
+      />
     </>
   )
 }
@@ -146,18 +146,18 @@ function NewsArticleContent({ article }: { article: News }) {
     <div className="container mx-auto px-4 py-12">
       {/* Preview Banner */}
       {isPreview && (
-        <div className="mb-8 p-3 bg-blue-50 border-l-4 border-blue-500 text-blue-700 text-sm">
+        <div className="mb-8 border-l-4 border-blue-500 bg-blue-50 p-3 text-sm text-blue-700">
           <strong>🔵 Live Preview Mode</strong> - Changes will appear here automatically
         </div>
       )}
 
       {/* Article Header */}
-      <header className="mb-12 max-w-4xl mx-auto">
+      <header className="mx-auto mb-12 max-w-4xl">
         {/* Tags */}
         {tags && Array.isArray(tags) && tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {tags.map((tag: any) => {
-              const tagData = typeof tag === 'object' ? tag : null
+          <div className="mb-4 flex flex-wrap gap-2">
+            {tags.map((tag) => {
+              const tagData = typeof tag === 'object' ? (tag as NewsTag) : null
               if (!tagData) return null
 
               const color = tagData.color || 'indigo'
@@ -175,7 +175,7 @@ function NewsArticleContent({ article }: { article: News }) {
               return (
                 <span
                   key={tagData.id}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium border ${colorClasses[color as keyof typeof colorClasses]}`}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium ${colorClasses[color as keyof typeof colorClasses] || colorClasses.indigo}`}
                 >
                   <Tag className="h-3 w-3" />
                   {tagData.name}
@@ -186,19 +186,17 @@ function NewsArticleContent({ article }: { article: News }) {
         )}
 
         {/* Title */}
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-          {typeof title === 'string' ? title : (title as any)?.en || (title as any)?.ru || 'Untitled'}
+        <h1 className="mb-4 text-4xl font-bold text-gray-900 dark:text-gray-100 md:text-5xl">
+          {title || 'Untitled'}
         </h1>
 
         {/* Excerpt */}
         {excerpt && (
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-            {typeof excerpt === 'string' ? excerpt : (excerpt as any)?.en || (excerpt as any)?.ru || ''}
-          </p>
+          <p className="mb-6 text-xl leading-relaxed text-gray-600 dark:text-gray-400">{excerpt}</p>
         )}
 
         {/* Metadata */}
-        <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 dark:text-gray-400 border-t border-b border-gray-200 dark:border-gray-700 py-4">
+        <div className="flex flex-wrap items-center gap-6 border-b border-t border-gray-200 py-4 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-400">
           {/* Published Date */}
           {publishedDate && (
             <div className="flex items-center gap-2">
@@ -218,7 +216,9 @@ function NewsArticleContent({ article }: { article: News }) {
             <div className="flex items-center gap-2">
               <User className="h-4 w-4" />
               <span>
-                {author.name || (author as any).email?.split('@')[0] || 'Anonymous'}
+                {(author as PayloadUser).name ||
+                  (author as PayloadUser).email?.split('@')[0] ||
+                  'Anonymous'}
               </span>
             </div>
           )}
@@ -227,10 +227,10 @@ function NewsArticleContent({ article }: { article: News }) {
 
       {/* Featured Image */}
       {featuredImage && typeof featuredImage === 'object' && 'url' in featuredImage && (
-        <div className="mb-12 max-w-5xl mx-auto">
-          <figure className="rounded-xl overflow-hidden shadow-lg">
+        <div className="mx-auto mb-12 max-w-5xl">
+          <figure className="overflow-hidden rounded-xl shadow-lg">
             {featuredImage.caption && (
-              <figcaption className="bg-gray-50 dark:bg-gray-800 px-6 py-3 text-sm text-gray-600 dark:text-gray-400 text-center">
+              <figcaption className="bg-gray-50 px-6 py-3 text-center text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-400">
                 {featuredImage.caption}
               </figcaption>
             )}
@@ -239,10 +239,10 @@ function NewsArticleContent({ article }: { article: News }) {
       )}
 
       {/* Article Content Blocks */}
-      <main className="max-w-4xl mx-auto">
+      <main className="mx-auto max-w-4xl">
         {blocks && blocks.length > 0 && (
           <div className="space-y-8">
-            {blocks.map((block: any, index: number) => (
+            {blocks.map((block, index) => (
               <BlockRenderer key={block.id || index} block={block} />
             ))}
           </div>
@@ -250,7 +250,7 @@ function NewsArticleContent({ article }: { article: News }) {
 
         {/* Empty state */}
         {(!blocks || blocks.length === 0) && (
-          <div className="text-center py-12 text-muted-foreground">
+          <div className="py-12 text-center text-muted-foreground">
             <p>This article has no content blocks yet.</p>
           </div>
         )}
@@ -263,21 +263,25 @@ function NewsArticleContent({ article }: { article: News }) {
  * Block Renderer
  * Renders different block types for news articles
  */
-function BlockRenderer({ block }: { block: any }) {
+function BlockRenderer({ block }: { block: NewsContentBlock }) {
   switch (block.blockType) {
     case 'sectionHeader':
       return (
         <SectionHeaderBlock
           type={block.type || 'small'}
           title={block.title}
-          subtitle={block.subtitle}
-          description={block.description}
-          badge={block.badge?.text ? {
-            text: block.badge.text,
-            icon: block.badge.icon as IconName,
-            gradient: block.badge.gradient as GradientPreset,
-          } : undefined}
-          headingLevel={block.headingLevel || 'h2'}
+          subtitle={block.subtitle ?? undefined}
+          description={block.description ?? undefined}
+          badge={
+            block.badge?.text
+              ? {
+                  text: block.badge.text,
+                  icon: block.badge.icon as IconName,
+                  gradient: block.badge.gradient as GradientPreset,
+                }
+              : undefined
+          }
+          headingLevel={block.headingLevel ?? 'h2'}
           enableAnimation={block.enableAnimation !== false}
         />
       )
@@ -293,41 +297,47 @@ function BlockRenderer({ block }: { block: any }) {
       return (
         <MarkdownRichTextBlock
           markdown={block.markdown || ''}
-          accentColor={block.accentColor}
+          accentColor={block.accentColor ?? undefined}
         />
       )
 
     case 'imageBlock':
       return (
         <div className="my-8">
-          {block.image && typeof block.image === 'object' && 'url' in block.image && (
-            <figure>
-              <img
-                src={block.image.url}
-                alt={block.image.alt || block.caption || 'Image'}
-                className="w-full rounded-lg"
-              />
-              {block.caption && (
-                <figcaption className="text-sm text-muted-foreground mt-2 text-center">
-                  {block.caption}
-                </figcaption>
-              )}
-            </figure>
-          )}
+          {block.image &&
+            typeof block.image === 'object' &&
+            'url' in block.image &&
+            block.image.url && (
+              <figure>
+                <Image
+                  src={block.image.url}
+                  alt={block.image.alt || block.caption || 'Image'}
+                  width={800}
+                  height={600}
+                  className="w-full rounded-lg"
+                  unoptimized
+                />
+                {block.caption && (
+                  <figcaption className="mt-2 text-center text-sm text-muted-foreground">
+                    {block.caption}
+                  </figcaption>
+                )}
+              </figure>
+            )}
         </div>
       )
 
     case 'callToAction':
       return (
-        <div className="bg-primary text-primary-foreground rounded-lg p-8 text-center">
-          {block.heading && <h2 className="text-3xl font-bold mb-4">{block.heading}</h2>}
-          {block.description && <p className="text-lg mb-6">{block.description}</p>}
+        <div className="rounded-lg bg-primary p-8 text-center text-primary-foreground">
+          {block.heading && <h2 className="mb-4 text-3xl font-bold">{block.heading}</h2>}
+          {block.description && <p className="mb-6 text-lg">{block.description}</p>}
           {block.link && (
             <a
               href={block.link.url}
               target={block.link.openInNewTab ? '_blank' : undefined}
               rel={block.link.openInNewTab ? 'noopener noreferrer' : undefined}
-              className="inline-block bg-background text-foreground px-6 py-3 rounded-md font-semibold hover:opacity-90 transition-opacity"
+              className="inline-block rounded-md bg-background px-6 py-3 font-semibold text-foreground transition-opacity hover:opacity-90"
             >
               {block.link.label}
             </a>
@@ -335,28 +345,41 @@ function BlockRenderer({ block }: { block: any }) {
         </div>
       )
 
-    default:
+    default: {
+      const _exhaustiveCheck: never = block
       return (
-        <div className="border border-dashed border-muted p-4 rounded">
+        <div className="rounded border border-dashed border-muted p-4">
           <p className="text-sm text-muted-foreground">
-            Unknown block type: {block.blockType}
+            Unknown block type: {(_exhaustiveCheck as NewsContentBlock).blockType}
           </p>
         </div>
       )
+    }
   }
+}
+
+interface RichTextNode {
+  text?: string
+  bold?: boolean
+  italic?: boolean
+  underline?: boolean
+  type?: string
+  url?: string
+  newTab?: boolean
+  children?: RichTextNode[]
 }
 
 /**
  * Rich Text Renderer
  * Renders Slate rich text content
  */
-function RichTextRenderer({ content }: { content: any }) {
+function RichTextRenderer({ content }: { content: Record<string, unknown> | null }) {
   if (!content) return null
 
   return (
     <div className="rich-text">
       {Array.isArray(content) ? (
-        content.map((node: any, index: number) => (
+        content.map((node: RichTextNode, index: number) => (
           <div key={index} dangerouslySetInnerHTML={{ __html: renderNode(node) }} />
         ))
       ) : (
@@ -369,7 +392,7 @@ function RichTextRenderer({ content }: { content: any }) {
 /**
  * Render a single rich text node
  */
-function renderNode(node: any): string {
+function renderNode(node: RichTextNode): string {
   if (!node) return ''
 
   if (node.text !== undefined) {

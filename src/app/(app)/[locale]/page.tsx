@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { CarouselBlock } from '@/components/CarouselBlock'
 import { SplitContentBlock } from '@/components/SplitContentBlock'
 import { EventCardsBlock } from '@/components/EventCardsBlock'
@@ -9,10 +10,12 @@ import { CollapsibleTextBlock } from '@/components/CollapsibleTextBlock'
 import { SectionHeaderBlock } from '@/components/SectionHeaderBlock'
 import { LivePreviewPage } from '@/components/LivePreviewPage'
 import { NewsBlockServer } from '@/components/NewsBlockServer'
-import { getHomePage, type SupportedLocale } from '@/lib/payload-data'
+import { getHomePage, getSiteData, type SupportedLocale } from '@/lib/payload-data'
+import { sanitizeHtml } from '@/lib/sanitize'
 import type { IconName } from '@/lib/icons'
 import type { GradientPreset } from '@/lib/gradients'
 import { generateSEOMetadata } from '@/lib/seo'
+import type { Media, PageBlock } from '@/payload-types'
 
 interface PageProps {
   params: Promise<{ locale: string }>
@@ -30,13 +33,18 @@ export async function generateMetadata(props: PageProps) {
   // Ensure locale is always a string
   const localeString = String(locale || 'uk')
 
-  // Try to fetch home page from CMS
-  const homePage = await getHomePage(localeString as SupportedLocale, false)
+  // Fetch home page and site settings in parallel
+  const [homePage, siteData] = await Promise.all([
+    getHomePage(localeString as SupportedLocale, false),
+    getSiteData(localeString as SupportedLocale, false),
+  ])
+
+  const siteName = siteData.siteSettings?.siteTitle || 'Your Site Name'
 
   // If no home page in CMS, use default metadata
   if (!homePage) {
     return {
-      title: 'Home - Your Site Name',
+      title: `Home - ${siteName}`,
       description: 'Welcome to our website',
     }
   }
@@ -44,7 +52,7 @@ export async function generateMetadata(props: PageProps) {
   return generateSEOMetadata({
     page: homePage,
     locale: localeString,
-    siteName: 'Your Site Name', // TODO: Get from site settings
+    siteName,
   })
 }
 
@@ -84,107 +92,142 @@ export default async function HomePage(props: PageProps) {
       )
     }
 
+    // Render blocks
+    const renderBlock = (block: PageBlock, index: number): React.ReactNode => {
+      switch (block.blockType) {
+        case 'sectionHeader':
+          return (
+            <SectionHeaderBlock
+              key={index}
+              type={block.type || 'small'}
+              title={block.title}
+              subtitle={block.subtitle ?? undefined}
+              description={block.description ?? undefined}
+              badge={
+                block.badge?.text
+                  ? {
+                      text: block.badge.text,
+                      icon: block.badge.icon as IconName,
+                      gradient: block.badge.gradient as GradientPreset,
+                    }
+                  : undefined
+              }
+              headingLevel={block.headingLevel || 'h2'}
+              enableAnimation={block.enableAnimation !== false}
+            />
+          )
+        case 'richText':
+          return (
+            <div key={index} className="prose prose-lg max-w-none">
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: sanitizeHtml(
+                    typeof block.content === 'string'
+                      ? block.content
+                      : JSON.stringify(block.content)
+                  ),
+                }}
+              />
+            </div>
+          )
+        case 'imageBlock': {
+          const image = block.image
+          const imageData = typeof image === 'object' ? (image as Media) : null
+          return (
+            <div key={index} className="my-8">
+              {imageData?.url && (
+                <figure>
+                  <Image
+                    src={imageData.url}
+                    alt={imageData.alt || block.caption || 'Image'}
+                    width={800}
+                    height={600}
+                    className="w-full rounded-lg"
+                    unoptimized
+                  />
+                  {block.caption && (
+                    <figcaption className="mt-2 text-center text-sm text-muted-foreground">
+                      {block.caption}
+                    </figcaption>
+                  )}
+                </figure>
+              )}
+            </div>
+          )
+        }
+        case 'callToAction':
+          return (
+            <div
+              key={index}
+              className="rounded-lg bg-primary p-8 text-center text-primary-foreground"
+            >
+              {block.heading && <h2 className="mb-4 text-3xl font-bold">{block.heading}</h2>}
+              {block.description && <p className="mb-6 text-lg">{block.description}</p>}
+              {block.link && (
+                <a
+                  href={block.link.url}
+                  target={block.link.openInNewTab ? '_blank' : undefined}
+                  rel={block.link.openInNewTab ? 'noopener noreferrer' : undefined}
+                  className="inline-block rounded-md bg-background px-6 py-3 font-semibold text-foreground transition-opacity hover:opacity-90"
+                >
+                  {block.link.label}
+                </a>
+              )}
+            </div>
+          )
+        case 'markdownText':
+          return (
+            <MarkdownRichTextBlock
+              key={index}
+              markdown={block.markdown || ''}
+              accentColor={block.accentColor ?? undefined}
+            />
+          )
+        case 'newsBlock':
+          return (
+            <NewsBlockServer
+              key={index}
+              block={{
+                displayMode: block.displayMode,
+                contentSource: block.contentSource,
+                selectedTag: block.selectedTag ?? undefined,
+                selectedNews: block.selectedNews ?? undefined,
+                limit: block.limit ?? undefined,
+                enableSearch: block.enableSearch ?? undefined,
+                enableFilters: block.enableFilters ?? undefined,
+                enablePagination: block.enablePagination ?? undefined,
+                itemsPerPage: block.itemsPerPage ?? undefined,
+              }}
+              locale={localeString as SupportedLocale}
+              draft={isPreview}
+            />
+          )
+        default:
+          return null
+      }
+    }
+
+    // Pre-render blocks to avoid type inference issues
+    const renderedBlocks: React.ReactNode[] =
+      homePage.blocks?.map((block, index) => renderBlock(block, index)) ?? []
+
     // Regular rendering for non-preview mode
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-12">
           <main>
             {/* Render blocks if available */}
-            {homePage.blocks && homePage.blocks.length > 0 && (
-              <div className="space-y-8">
-                {await Promise.all(
-                  homePage.blocks.map(async (block: any, index: number) => {
-                    switch (block.blockType) {
-                      case 'sectionHeader':
-                        return (
-                          <SectionHeaderBlock
-                            key={index}
-                            type={block.type || 'small'}
-                            title={block.title}
-                            subtitle={block.subtitle}
-                            description={block.description}
-                            badge={block.badge?.text ? {
-                              text: block.badge.text,
-                              icon: block.badge.icon as IconName,
-                              gradient: block.badge.gradient as GradientPreset,
-                            } : undefined}
-                            headingLevel={block.headingLevel || 'h2'}
-                            enableAnimation={block.enableAnimation !== false}
-                          />
-                        )
-                      case 'richText':
-                        return (
-                          <div key={index} className="prose prose-lg max-w-none">
-                            {/* Rich text rendering - basic implementation */}
-                            <div dangerouslySetInnerHTML={{ __html: JSON.stringify(block.content) }} />
-                          </div>
-                        )
-                      case 'imageBlock':
-                        return (
-                          <div key={index} className="my-8">
-                            {block.image && typeof block.image === 'object' && 'url' in block.image && (
-                              <figure>
-                                <img
-                                  src={block.image.url}
-                                  alt={block.image.alt || block.caption || 'Image'}
-                                  className="w-full rounded-lg"
-                                />
-                                {block.caption && (
-                                  <figcaption className="text-sm text-muted-foreground mt-2 text-center">
-                                    {block.caption}
-                                  </figcaption>
-                                )}
-                              </figure>
-                            )}
-                          </div>
-                        )
-                      case 'callToAction':
-                        return (
-                          <div key={index} className="bg-primary text-primary-foreground rounded-lg p-8 text-center">
-                            {block.heading && <h2 className="text-3xl font-bold mb-4">{block.heading}</h2>}
-                            {block.description && <p className="text-lg mb-6">{block.description}</p>}
-                            {block.link && (
-                              <a
-                                href={block.link.url}
-                                target={block.link.openInNewTab ? '_blank' : undefined}
-                                rel={block.link.openInNewTab ? 'noopener noreferrer' : undefined}
-                                className="inline-block bg-background text-foreground px-6 py-3 rounded-md font-semibold hover:opacity-90 transition-opacity"
-                              >
-                                {block.link.label}
-                              </a>
-                            )}
-                          </div>
-                        )
-                      case 'markdownText':
-                        return (
-                          <MarkdownRichTextBlock
-                            key={index}
-                            markdown={block.markdown || ''}
-                            accentColor={block.accentColor}
-                          />
-                        )
-                      case 'newsBlock':
-                        return (
-                          <NewsBlockServer
-                            key={index}
-                            block={block}
-                            locale={localeString as SupportedLocale}
-                            draft={isPreview}
-                          />
-                        )
-                      default:
-                        return null
-                    }
-                  })
-                )}
-              </div>
-            )}
+            {renderedBlocks.length > 0 && <div className="space-y-8">{renderedBlocks}</div>}
 
             {/* Render rich text content if available */}
             {homePage.content && (
               <div className="prose prose-lg max-w-none">
-                {/* Basic rich text rendering */}
-                <div dangerouslySetInnerHTML={{ __html: JSON.stringify(homePage.content) }} />
+                {/* Basic rich text rendering with sanitization */}
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizeHtml(JSON.stringify(homePage.content)),
+                  }}
+                />
               </div>
             )}
           </main>

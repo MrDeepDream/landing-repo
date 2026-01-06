@@ -1,5 +1,17 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, SelectField, TextField, ValidateOptions } from 'payload'
+import type { Page } from '@/payload-types'
 import { generateSlug } from '@/lib/transliterate'
+
+// Payload locale can be string or object with code/locale property
+type PayloadLocale = string | { code?: string; locale?: string } | undefined
+
+function extractLocaleString(locale: PayloadLocale): string {
+  if (typeof locale === 'string') return locale
+  if (locale && typeof locale === 'object') {
+    return locale.code || locale.locale || 'uk'
+  }
+  return 'uk'
+}
 
 /**
  * Pages Collection
@@ -17,16 +29,7 @@ export const Pages: CollectionConfig = {
         const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 
         // Ensure locale is a string - Payload might pass it as an object
-        let docLocale: string
-        if (typeof locale === 'string') {
-          docLocale = locale
-        } else if (locale && typeof locale === 'object') {
-          // Extract string from object if needed
-          docLocale = (locale as any).code || (locale as any).locale || 'uk'
-          console.warn('⚠️ livePreview.url received locale as object:', locale, 'extracted:', docLocale)
-        } else {
-          docLocale = 'uk'
-        }
+        const docLocale = extractLocaleString(locale as PayloadLocale)
 
         // Handle home page specially
         if (data.pageType === 'home') {
@@ -40,16 +43,7 @@ export const Pages: CollectionConfig = {
       const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 
       // Ensure locale is a string - Payload might pass it as an object
-      let docLocale: string
-      if (typeof locale === 'string') {
-        docLocale = locale
-      } else if (locale && typeof locale === 'object') {
-        // Extract string from object if needed
-        docLocale = (locale as any).code || (locale as any).locale || 'uk'
-        console.warn('⚠️ preview received locale as object:', locale, 'extracted:', docLocale)
-      } else {
-        docLocale = 'uk'
-      }
+      const docLocale = extractLocaleString(locale as PayloadLocale)
 
       // Handle home page specially
       if (doc.pageType === 'home') {
@@ -100,7 +94,8 @@ export const Pages: CollectionConfig = {
       required: true,
       defaultValue: 'text',
       admin: {
-        description: 'Type of page - determines layout and available features. Only one Home page allowed.',
+        description:
+          'Type of page - determines layout and available features. Only one Home page allowed.',
       },
       options: [
         {
@@ -128,8 +123,11 @@ export const Pages: CollectionConfig = {
           value: 'text',
         },
       ],
-      validate: async (value: any, options: any) => {
-        const { req, operation, id } = options as any
+      validate: async (
+        value: string | null | undefined,
+        options: ValidateOptions<unknown, unknown, SelectField, string>
+      ) => {
+        const { req, operation, id } = options
         // Only allow one home page
         if (value === 'home') {
           const payload = req.payload
@@ -142,11 +140,13 @@ export const Pages: CollectionConfig = {
                   equals: 'home',
                 },
                 // Exclude current document if updating
-                ...(id ? {
-                  id: {
-                    not_equals: id,
-                  },
-                } : {}),
+                ...(id
+                  ? {
+                      id: {
+                        not_equals: id,
+                      },
+                    }
+                  : {}),
               },
               limit: 1,
             })
@@ -154,7 +154,7 @@ export const Pages: CollectionConfig = {
             if (existingHome.docs.length > 0) {
               return 'Only one home page is allowed. Please change the existing home page first.'
             }
-          } catch (error) {
+          } catch {
             // If validation fails during create, allow it
             // The error might occur during initial setup
             if (operation === 'create') {
@@ -194,11 +194,15 @@ export const Pages: CollectionConfig = {
       required: false,
       unique: true,
       admin: {
-        description: 'URL-friendly identifier (e.g., "about-us", "leadership"). Auto-generated from title with Cyrillic transliteration. Not required for home page.',
+        description:
+          'URL-friendly identifier (e.g., "about-us", "leadership"). Auto-generated from title with Cyrillic transliteration. Not required for home page.',
         placeholder: 'url-friendly-slug',
         condition: (data) => data.pageType !== 'home',
       },
-      validate: (value: any, { data }: any) => {
+      validate: (
+        value: string | null | undefined,
+        { data }: ValidateOptions<Page, unknown, TextField, string>
+      ) => {
         // Slug is required for all page types except home
         if (data?.pageType !== 'home' && !value) {
           return 'Slug is required for this page type'
@@ -287,325 +291,327 @@ export const Pages: CollectionConfig = {
                     plural: 'Section Headers',
                   },
                   fields: [
-            {
-              name: 'type',
-              type: 'select',
-              required: true,
-              defaultValue: 'small',
-              admin: {
-                description: 'Header style: Small (section headers) or Big (hero-style headers)',
-              },
-              options: [
-                {
-                  label: 'Small - Section Header',
-                  value: 'small',
-                },
-                {
-                  label: 'Big - Hero Header',
-                  value: 'big',
-                },
-              ],
-            },
-            {
-              name: 'title',
-              type: 'text',
-              required: true,
-              admin: {
-                description: 'Main heading text (required)',
-              },
-            },
-            {
-              name: 'subtitle',
-              type: 'text',
-              admin: {
-                description: 'Secondary text below the title (optional)',
-              },
-            },
-            {
-              name: 'description',
-              type: 'textarea',
-              admin: {
-                description: 'Additional description text (optional)',
-              },
-            },
-            {
-              name: 'headingLevel',
-              type: 'select',
-              defaultValue: 'h2',
-              admin: {
-                description: 'HTML heading level for SEO',
-              },
-              options: [
-                { label: 'H1', value: 'h1' },
-                { label: 'H2', value: 'h2' },
-                { label: 'H3', value: 'h3' },
-                { label: 'H4', value: 'h4' },
-                { label: 'H5', value: 'h5' },
-                { label: 'H6', value: 'h6' },
-              ],
-            },
-            {
-              name: 'badge',
-              type: 'group',
-              admin: {
-                description: 'Optional badge displayed above the title',
-              },
-              fields: [
-                {
-                  name: 'text',
-                  type: 'text',
-                  admin: {
-                    description: 'Badge text (e.g., "Featured Content")',
-                  },
-                },
-                {
-                  name: 'icon',
-                  type: 'text',
-                  admin: {
-                    description: 'Icon displayed in the badge',
-                    components: {
-                      Field: '@/fields/IconSelectField#IconSelectField',
+                    {
+                      name: 'type',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'small',
+                      admin: {
+                        description:
+                          'Header style: Small (section headers) or Big (hero-style headers)',
+                      },
+                      options: [
+                        {
+                          label: 'Small - Section Header',
+                          value: 'small',
+                        },
+                        {
+                          label: 'Big - Hero Header',
+                          value: 'big',
+                        },
+                      ],
                     },
-                  },
-                },
-                {
-                  name: 'gradient',
-                  type: 'text',
-                  admin: {
-                    description: 'Gradient color scheme for the badge',
-                    components: {
-                      Field: '@/fields/GradientSelectField#GradientSelectField',
+                    {
+                      name: 'title',
+                      type: 'text',
+                      required: true,
+                      admin: {
+                        description: 'Main heading text (required)',
+                      },
                     },
+                    {
+                      name: 'subtitle',
+                      type: 'text',
+                      admin: {
+                        description: 'Secondary text below the title (optional)',
+                      },
+                    },
+                    {
+                      name: 'description',
+                      type: 'textarea',
+                      admin: {
+                        description: 'Additional description text (optional)',
+                      },
+                    },
+                    {
+                      name: 'headingLevel',
+                      type: 'select',
+                      defaultValue: 'h2',
+                      admin: {
+                        description: 'HTML heading level for SEO',
+                      },
+                      options: [
+                        { label: 'H1', value: 'h1' },
+                        { label: 'H2', value: 'h2' },
+                        { label: 'H3', value: 'h3' },
+                        { label: 'H4', value: 'h4' },
+                        { label: 'H5', value: 'h5' },
+                        { label: 'H6', value: 'h6' },
+                      ],
+                    },
+                    {
+                      name: 'badge',
+                      type: 'group',
+                      admin: {
+                        description: 'Optional badge displayed above the title',
+                      },
+                      fields: [
+                        {
+                          name: 'text',
+                          type: 'text',
+                          admin: {
+                            description: 'Badge text (e.g., "Featured Content")',
+                          },
+                        },
+                        {
+                          name: 'icon',
+                          type: 'text',
+                          admin: {
+                            description: 'Icon displayed in the badge',
+                            components: {
+                              Field: '@/fields/IconSelectField#IconSelectField',
+                            },
+                          },
+                        },
+                        {
+                          name: 'gradient',
+                          type: 'text',
+                          admin: {
+                            description: 'Gradient color scheme for the badge',
+                            components: {
+                              Field: '@/fields/GradientSelectField#GradientSelectField',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Enable fade-in animation on page load',
+                      },
+                    },
+                  ],
+                },
+                {
+                  slug: 'richText',
+                  labels: {
+                    singular: 'Rich Text Block',
+                    plural: 'Rich Text Blocks',
                   },
-                },
-              ],
-            },
-            {
-              name: 'enableAnimation',
-              type: 'checkbox',
-              defaultValue: true,
-              admin: {
-                description: 'Enable fade-in animation on page load',
-              },
-            },
-          ],
-        },
-        {
-          slug: 'richText',
-          labels: {
-            singular: 'Rich Text Block',
-            plural: 'Rich Text Blocks',
-          },
-          fields: [
-            {
-              name: 'content',
-              type: 'richText',
-              required: true,
-            },
-          ],
-        },
-        {
-          slug: 'markdownText',
-          labels: {
-            singular: 'Markdown Rich Text Block',
-            plural: 'Markdown Rich Text Blocks',
-          },
-          fields: [
-            {
-              name: 'markdown',
-              type: 'textarea',
-              required: true,
-              admin: {
-                description: 'Use the visual markdown editor below. Live preview is shown on the right side.',
-                components: {
-                  Field: '@/fields/MarkdownEditorField#MarkdownEditorField',
-                },
-              },
-            },
-            {
-              name: 'accentColor',
-              type: 'select',
-              defaultValue: 'amber',
-              admin: {
-                description: 'Color scheme for blockquotes and accents',
-              },
-              options: [
-                { label: 'Amber', value: 'amber' },
-                { label: 'Indigo', value: 'indigo' },
-                { label: 'Purple', value: 'purple' },
-                { label: 'Green', value: 'green' },
-                { label: 'Blue', value: 'blue' },
-              ],
-            },
-          ],
-        },
-        {
-          slug: 'imageBlock',
-          labels: {
-            singular: 'Image Block',
-            plural: 'Image Blocks',
-          },
-          fields: [
-            {
-              name: 'image',
-              type: 'upload',
-              relationTo: 'media',
-              required: true,
-            },
-            {
-              name: 'caption',
-              type: 'text',
-            },
-          ],
-        },
-        {
-          slug: 'callToAction',
-          labels: {
-            singular: 'Call to Action',
-            plural: 'Call to Actions',
-          },
-          fields: [
-            {
-              name: 'heading',
-              type: 'text',
-              required: true,
-            },
-            {
-              name: 'description',
-              type: 'textarea',
-            },
-            {
-              name: 'link',
-              type: 'group',
-              fields: [
-                {
-                  name: 'label',
-                  type: 'text',
-                  required: true,
+                  fields: [
+                    {
+                      name: 'content',
+                      type: 'richText',
+                      required: true,
+                    },
+                  ],
                 },
                 {
-                  name: 'url',
-                  type: 'text',
-                  required: true,
-                },
-                {
-                  name: 'openInNewTab',
-                  type: 'checkbox',
-                  defaultValue: false,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          slug: 'newsBlock',
-          labels: {
-            singular: 'News Block',
-            plural: 'News Blocks',
-          },
-          fields: [
-            {
-              name: 'displayMode',
-              type: 'select',
-              required: true,
-              defaultValue: 'list',
-              admin: {
-                description: 'How to display news items',
-              },
-              options: [
-                { label: 'List Mode (with search & filters)', value: 'list' },
-                { label: 'Carousel Mode', value: 'carousel' },
-                { label: 'Grid Mode (split layout)', value: 'grid' },
-              ],
-            },
-            {
-              name: 'contentSource',
-              type: 'select',
-              required: true,
-              defaultValue: 'all',
-              admin: {
-                description: 'Which news items to display',
-              },
-              options: [
-                { label: 'All News (latest first)', value: 'all' },
-                { label: 'Filter by Tag', value: 'byTag' },
-                { label: 'Manual Selection', value: 'manual' },
-              ],
-            },
-            {
-              name: 'selectedTag',
-              type: 'relationship',
-              relationTo: 'news-tags',
-              admin: {
-                description: 'Show only news with this tag',
-                condition: (_data, siblingData) => siblingData?.contentSource === 'byTag',
-              },
-            },
-            {
-              name: 'selectedNews',
-              type: 'relationship',
-              relationTo: 'news',
-              hasMany: true,
-              admin: {
-                description: 'Manually select specific news articles',
-                condition: (_data, siblingData) => siblingData?.contentSource === 'manual',
-              },
-            },
-            {
-              name: 'limit',
-              type: 'number',
-              defaultValue: 10,
-              admin: {
-                description: 'Maximum number of items to show (for all/byTag modes)',
-                condition: (_data, siblingData) => siblingData?.contentSource !== 'manual',
-              },
-            },
-            // List Mode Options
-            {
-              type: 'row',
-              admin: {
-                condition: (_data, siblingData) => siblingData?.displayMode === 'list',
-              },
-              fields: [
-                {
-                  name: 'enableSearch',
-                  type: 'checkbox',
-                  defaultValue: true,
-                  admin: {
-                    description: 'Show search bar',
+                  slug: 'markdownText',
+                  labels: {
+                    singular: 'Markdown Rich Text Block',
+                    plural: 'Markdown Rich Text Blocks',
                   },
+                  fields: [
+                    {
+                      name: 'markdown',
+                      type: 'textarea',
+                      required: true,
+                      admin: {
+                        description:
+                          'Use the visual markdown editor below. Live preview is shown on the right side.',
+                        components: {
+                          Field: '@/fields/MarkdownEditorField#MarkdownEditorField',
+                        },
+                      },
+                    },
+                    {
+                      name: 'accentColor',
+                      type: 'select',
+                      defaultValue: 'amber',
+                      admin: {
+                        description: 'Color scheme for blockquotes and accents',
+                      },
+                      options: [
+                        { label: 'Amber', value: 'amber' },
+                        { label: 'Indigo', value: 'indigo' },
+                        { label: 'Purple', value: 'purple' },
+                        { label: 'Green', value: 'green' },
+                        { label: 'Blue', value: 'blue' },
+                      ],
+                    },
+                  ],
                 },
                 {
-                  name: 'enableFilters',
-                  type: 'checkbox',
-                  defaultValue: true,
-                  admin: {
-                    description: 'Show tag filters',
+                  slug: 'imageBlock',
+                  labels: {
+                    singular: 'Image Block',
+                    plural: 'Image Blocks',
                   },
+                  fields: [
+                    {
+                      name: 'image',
+                      type: 'upload',
+                      relationTo: 'media',
+                      required: true,
+                    },
+                    {
+                      name: 'caption',
+                      type: 'text',
+                    },
+                  ],
                 },
                 {
-                  name: 'enablePagination',
-                  type: 'checkbox',
-                  defaultValue: true,
-                  admin: {
-                    description: 'Enable pagination',
+                  slug: 'callToAction',
+                  labels: {
+                    singular: 'Call to Action',
+                    plural: 'Call to Actions',
                   },
+                  fields: [
+                    {
+                      name: 'heading',
+                      type: 'text',
+                      required: true,
+                    },
+                    {
+                      name: 'description',
+                      type: 'textarea',
+                    },
+                    {
+                      name: 'link',
+                      type: 'group',
+                      fields: [
+                        {
+                          name: 'label',
+                          type: 'text',
+                          required: true,
+                        },
+                        {
+                          name: 'url',
+                          type: 'text',
+                          required: true,
+                        },
+                        {
+                          name: 'openInNewTab',
+                          type: 'checkbox',
+                          defaultValue: false,
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  slug: 'newsBlock',
+                  labels: {
+                    singular: 'News Block',
+                    plural: 'News Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'displayMode',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'list',
+                      admin: {
+                        description: 'How to display news items',
+                      },
+                      options: [
+                        { label: 'List Mode (with search & filters)', value: 'list' },
+                        { label: 'Carousel Mode', value: 'carousel' },
+                        { label: 'Grid Mode (split layout)', value: 'grid' },
+                      ],
+                    },
+                    {
+                      name: 'contentSource',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'all',
+                      admin: {
+                        description: 'Which news items to display',
+                      },
+                      options: [
+                        { label: 'All News (latest first)', value: 'all' },
+                        { label: 'Filter by Tag', value: 'byTag' },
+                        { label: 'Manual Selection', value: 'manual' },
+                      ],
+                    },
+                    {
+                      name: 'selectedTag',
+                      type: 'relationship',
+                      relationTo: 'news-tags',
+                      admin: {
+                        description: 'Show only news with this tag',
+                        condition: (_data, siblingData) => siblingData?.contentSource === 'byTag',
+                      },
+                    },
+                    {
+                      name: 'selectedNews',
+                      type: 'relationship',
+                      relationTo: 'news',
+                      hasMany: true,
+                      admin: {
+                        description: 'Manually select specific news articles',
+                        condition: (_data, siblingData) => siblingData?.contentSource === 'manual',
+                      },
+                    },
+                    {
+                      name: 'limit',
+                      type: 'number',
+                      defaultValue: 10,
+                      admin: {
+                        description: 'Maximum number of items to show (for all/byTag modes)',
+                        condition: (_data, siblingData) => siblingData?.contentSource !== 'manual',
+                      },
+                    },
+                    // List Mode Options
+                    {
+                      type: 'row',
+                      admin: {
+                        condition: (_data, siblingData) => siblingData?.displayMode === 'list',
+                      },
+                      fields: [
+                        {
+                          name: 'enableSearch',
+                          type: 'checkbox',
+                          defaultValue: true,
+                          admin: {
+                            description: 'Show search bar',
+                          },
+                        },
+                        {
+                          name: 'enableFilters',
+                          type: 'checkbox',
+                          defaultValue: true,
+                          admin: {
+                            description: 'Show tag filters',
+                          },
+                        },
+                        {
+                          name: 'enablePagination',
+                          type: 'checkbox',
+                          defaultValue: true,
+                          admin: {
+                            description: 'Enable pagination',
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'itemsPerPage',
+                      type: 'number',
+                      defaultValue: 9,
+                      admin: {
+                        description: 'Items per page (List mode only)',
+                        condition: (_data, siblingData) =>
+                          siblingData?.displayMode === 'list' && siblingData?.enablePagination,
+                      },
+                    },
+                  ],
                 },
               ],
-            },
-            {
-              name: 'itemsPerPage',
-              type: 'number',
-              defaultValue: 9,
-              admin: {
-                description: 'Items per page (List mode only)',
-                condition: (_data, siblingData) =>
-                  siblingData?.displayMode === 'list' && siblingData?.enablePagination,
-              },
-            },
-          ],
-        },
-      ],
             },
           ],
         },
@@ -638,7 +644,8 @@ export const Pages: CollectionConfig = {
                       localized: true,
                       admin: {
                         placeholder: 'Override page title for search engines',
-                        description: 'Optimal length: 50-60 characters. Leave empty to use page title.',
+                        description:
+                          'Optimal length: 50-60 characters. Leave empty to use page title.',
                       },
                       maxLength: 70,
                     },
@@ -659,7 +666,8 @@ export const Pages: CollectionConfig = {
                   localized: true,
                   admin: {
                     placeholder: 'Brief description for search results...',
-                    description: 'Optimal length: 150-160 characters. This appears in search engine results.',
+                    description:
+                      'Optimal length: 150-160 characters. This appears in search engine results.',
                   },
                   maxLength: 200,
                 },
@@ -686,7 +694,8 @@ export const Pages: CollectionConfig = {
                       type: 'text',
                       admin: {
                         placeholder: 'https://example.com/canonical-page',
-                        description: 'Specify a canonical URL to prevent duplicate content issues. Leave empty for default.',
+                        description:
+                          'Specify a canonical URL to prevent duplicate content issues. Leave empty for default.',
                       },
                     },
                     {
@@ -718,7 +727,8 @@ export const Pages: CollectionConfig = {
                   type: 'collapsible',
                   label: 'Open Graph / Facebook',
                   admin: {
-                    description: 'How this page appears when shared on Facebook, LinkedIn, and other platforms',
+                    description:
+                      'How this page appears when shared on Facebook, LinkedIn, and other platforms',
                     initCollapsed: true,
                   },
                   fields: [
@@ -810,7 +820,8 @@ export const Pages: CollectionConfig = {
                       type: 'upload',
                       relationTo: 'media',
                       admin: {
-                        description: 'Recommended: 1200x675px (summary_large_image) or 400x400px (summary). Falls back to OG Image or Meta Image.',
+                        description:
+                          'Recommended: 1200x675px (summary_large_image) or 400x400px (summary). Falls back to OG Image or Meta Image.',
                       },
                     },
                   ],
@@ -822,7 +833,8 @@ export const Pages: CollectionConfig = {
                   type: 'upload',
                   relationTo: 'media',
                   admin: {
-                    description: 'Default image for search results and social shares. Recommended: 1200x630px. Used when specific OG/Twitter images are not set.',
+                    description:
+                      'Default image for search results and social shares. Recommended: 1200x630px. Used when specific OG/Twitter images are not set.',
                   },
                 },
               ],

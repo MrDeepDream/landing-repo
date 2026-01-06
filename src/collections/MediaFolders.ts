@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import type { MediaFolder } from '@/payload-types'
 
 /**
  * Media Folders Collection
@@ -77,15 +78,15 @@ export const MediaFolders: CollectionConfig = {
                   const payload = req.payload
                   const parentId = typeof data.parent === 'string' ? data.parent : data.parent.id
 
-                  const parentFolder = await payload.findByID({
+                  const parentFolder = (await payload.findByID({
                     collection: 'media-folders',
                     id: parentId,
-                  }) as any
+                  })) as MediaFolder
 
                   if (parentFolder?.slug) {
                     return `${parentFolder.slug}/${slugName}`
                   }
-                } catch (_error) {
+                } catch {
                   // If parent not found, just use name
                   return slugName
                 }

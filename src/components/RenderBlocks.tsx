@@ -24,7 +24,7 @@ interface SectionHeaderBlockData {
 
 interface RichTextBlockData {
   blockType: 'richText'
-  content: any
+  content: Record<string, unknown> | null
   id?: string
 }
 
@@ -37,7 +37,7 @@ interface MarkdownRichTextBlockData {
 
 interface ImageBlockData {
   blockType: 'imageBlock'
-  image: any
+  image: string | { url?: string | null; alt: string }
   caption?: string
   id?: string
 }
@@ -108,13 +108,11 @@ export function RenderBlocks({ blocks, className = '' }: RenderBlocksProps) {
             return (
               <div key={key} className="my-8">
                 {/* Image block implementation */}
-                <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                <div className="relative aspect-video overflow-hidden rounded-lg bg-gray-100">
                   {/* Add image rendering here */}
                 </div>
                 {block.caption && (
-                  <p className="text-sm text-gray-600 mt-2 text-center">
-                    {block.caption}
-                  </p>
+                  <p className="mt-2 text-center text-sm text-gray-600">{block.caption}</p>
                 )}
               </div>
             )
@@ -123,18 +121,16 @@ export function RenderBlocks({ blocks, className = '' }: RenderBlocksProps) {
             return (
               <div
                 key={key}
-                className="my-12 p-8 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl text-center"
+                className="my-12 rounded-2xl bg-gradient-to-r from-indigo-50 to-purple-50 p-8 text-center"
               >
-                <h3 className="text-3xl font-bold mb-4">{block.heading}</h3>
-                {block.description && (
-                  <p className="text-gray-600 mb-6">{block.description}</p>
-                )}
+                <h3 className="mb-4 text-3xl font-bold">{block.heading}</h3>
+                {block.description && <p className="mb-6 text-gray-600">{block.description}</p>}
                 {block.link && (
                   <a
                     href={block.link.url}
                     target={block.link.openInNewTab ? '_blank' : '_self'}
                     rel={block.link.openInNewTab ? 'noopener noreferrer' : undefined}
-                    className="inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                    className="inline-block rounded-lg bg-indigo-600 px-6 py-3 text-white transition-colors hover:bg-indigo-700"
                   >
                     {block.link.label}
                   </a>
@@ -143,7 +139,7 @@ export function RenderBlocks({ blocks, className = '' }: RenderBlocksProps) {
             )
 
           default:
-            console.warn(`Unknown block type: ${(block as any).blockType}`)
+            console.warn(`Unknown block type: ${(block as BlockData).blockType}`)
             return null
         }
       })}

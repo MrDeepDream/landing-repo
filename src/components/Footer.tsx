@@ -2,12 +2,34 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Facebook, Twitter, Instagram, Linkedin, Youtube, Github, Sparkles, MapPin, Phone, Mail, Printer, Clock, ExternalLink } from 'lucide-react';
-import { Button } from './ui/button';
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Youtube,
+  Github,
+  Sparkles,
+  MapPin,
+  Phone,
+  Mail,
+  Printer,
+  Clock,
+  ExternalLink,
+} from 'lucide-react'
+import { Button } from './ui/button'
 
 // Types for CMS data
 interface SocialLink {
-  platform: 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok' | 'github' | 'discord'
+  platform:
+    | 'facebook'
+    | 'twitter'
+    | 'instagram'
+    | 'linkedin'
+    | 'youtube'
+    | 'tiktok'
+    | 'github'
+    | 'discord'
   url: string
   openInNewTab?: boolean
 }
@@ -24,7 +46,7 @@ interface SiteSettings {
 
 // Helper function to get icon component based on platform
 const getSocialIcon = (platform: string) => {
-  const icons: Record<string, any> = {
+  const icons: Record<string, typeof Facebook | null> = {
     facebook: Facebook,
     twitter: Twitter,
     instagram: Instagram,
@@ -39,7 +61,7 @@ const getSocialIcon = (platform: string) => {
 
 // Helper function to get contact icon based on type
 const getContactIcon = (iconType: string) => {
-  const icons: Record<string, any> = {
+  const icons: Record<string, typeof MapPin> = {
     location: MapPin,
     phone: Phone,
     email: Mail,
@@ -84,7 +106,9 @@ export function Footer({ siteSettings, footerData }: FooterProps = {}) {
   const siteTagline = siteSettings?.tagline || 'Innovation Studio'
   const siteLogo = siteSettings?.siteLogo
   const socialLinks = siteSettings?.socialLinks || []
-  const description = footerData?.description || 'Leading the future of technology with innovative solutions and exceptional service. Transforming businesses through cutting-edge digital experiences.'
+  const description =
+    footerData?.description ||
+    'Leading the future of technology with innovative solutions and exceptional service. Transforming businesses through cutting-edge digital experiences.'
   const copyrightText = footerData?.copyrightText || `© ${new Date().getFullYear()} ${siteTitle}`
   const contactColumns = footerData?.contactColumns || []
   const footerLinks = footerData?.links || []
@@ -97,7 +121,7 @@ export function Footer({ siteSettings, footerData }: FooterProps = {}) {
         { icon: 'location', label: '123 Tech Street, Silicon Valley, CA 94025', href: '#' },
         { icon: 'phone', label: '+1 (555) 123-4567', href: 'tel:+15551234567' },
         { icon: 'email', label: 'hello@techcorp.com', href: 'mailto:hello@techcorp.com' },
-      ]
+      ],
     },
     {
       title: 'Support',
@@ -105,7 +129,7 @@ export function Footer({ siteSettings, footerData }: FooterProps = {}) {
         { icon: 'email', label: 'support@techcorp.com', href: 'mailto:support@techcorp.com' },
         { icon: 'phone', label: '+1 (555) 987-6543', href: 'tel:+15559876543' },
         { icon: 'time', label: 'Mon-Fri: 9AM-5PM PST' },
-      ]
+      ],
     },
     {
       title: 'Sales',
@@ -113,23 +137,23 @@ export function Footer({ siteSettings, footerData }: FooterProps = {}) {
         { icon: 'email', label: 'sales@techcorp.com', href: 'mailto:sales@techcorp.com' },
         { icon: 'phone', label: '+1 (555) 456-7890', href: 'tel:+15554567890' },
         { icon: 'time', label: 'Available 24/7' },
-      ]
-    }
+      ],
+    },
   ]
 
   const displayContactColumns = contactColumns.length > 0 ? contactColumns : defaultContactColumns
 
   return (
-    <footer className="bg-gradient-to-br from-gray-900 via-indigo-950 to-purple-950 text-white relative overflow-hidden">
+    <footer className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-indigo-950 to-purple-950 text-white">
       {/* Decorative elements */}
-      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:32px_32px]" />
-      <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-br from-indigo-500/10 to-transparent rounded-full blur-3xl" />
+      <div className="bg-grid-white/[0.02] absolute inset-0 bg-[size:32px_32px]" />
+      <div className="absolute right-0 top-0 h-1/2 w-1/2 rounded-full bg-gradient-to-br from-indigo-500/10 to-transparent blur-3xl" />
 
-      <div className="container mx-auto px-4 py-16 relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+      <div className="container relative mx-auto px-4 py-16">
+        <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
           {/* Logo and Company Info */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-3 mb-4">
+          <div className="space-y-4 lg:col-span-2">
+            <div className="mb-4 flex items-center gap-3">
               <div className="relative">
                 {siteLogo?.url ? (
                   <Image
@@ -140,19 +164,19 @@ export function Footer({ siteSettings, footerData }: FooterProps = {}) {
                     className="invert"
                   />
                 ) : (
-                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/30">
                     <Sparkles className="h-5 w-5 text-white" />
                   </div>
                 )}
               </div>
               <div>
-                <span className="text-xl tracking-tight bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">{siteTitle}</span>
+                <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-xl tracking-tight text-transparent">
+                  {siteTitle}
+                </span>
                 <p className="text-xs text-gray-400">{siteTagline}</p>
               </div>
             </div>
-            <p className="text-gray-400 text-sm max-w-sm">
-              {description}
-            </p>
+            <p className="max-w-sm text-sm text-gray-400">{description}</p>
             <div className="flex items-center gap-2">
               {socialLinks.map((link, index) => {
                 const IconComponent = getSocialIcon(link.platform)
@@ -163,7 +187,7 @@ export function Footer({ siteSettings, footerData }: FooterProps = {}) {
                     key={index}
                     variant="ghost"
                     size="icon"
-                    className="h-9 w-9 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg"
+                    className="h-9 w-9 rounded-lg text-gray-400 hover:bg-white/10 hover:text-white"
                     asChild
                   >
                     <a
@@ -182,14 +206,14 @@ export function Footer({ siteSettings, footerData }: FooterProps = {}) {
           {/* Contact Columns from CMS */}
           {displayContactColumns.map((column, index) => (
             <div key={index} className="space-y-4">
-              <h4 className="text-white font-semibold">{column.title}</h4>
+              <h4 className="font-semibold text-white">{column.title}</h4>
               {column.items && column.items.length > 0 && (
                 <ul className="space-y-3 text-sm">
                   {column.items.map((item, itemIndex) => {
                     const IconComponent = getContactIcon(item.icon)
                     const content = (
-                      <div className="flex items-start gap-3 text-gray-400 hover:text-indigo-400 transition-colors">
-                        <IconComponent className="h-4 w-4 mt-0.5 shrink-0" />
+                      <div className="flex items-start gap-3 text-gray-400 transition-colors hover:text-indigo-400">
+                        <IconComponent className="mt-0.5 h-4 w-4 shrink-0" />
                         <span>{item.label}</span>
                       </div>
                     )
@@ -199,7 +223,9 @@ export function Footer({ siteSettings, footerData }: FooterProps = {}) {
                         {item.href ? (
                           <Link
                             href={item.href}
-                            {...(item.openInNewTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                            {...(item.openInNewTab
+                              ? { target: '_blank', rel: 'noopener noreferrer' }
+                              : {})}
                           >
                             {content}
                           </Link>
@@ -216,7 +242,7 @@ export function Footer({ siteSettings, footerData }: FooterProps = {}) {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-sm text-gray-400 md:flex-row">
           <p>{copyrightText}</p>
           {footerLinks.length > 0 && (
             <div className="flex gap-6">
@@ -224,7 +250,7 @@ export function Footer({ siteSettings, footerData }: FooterProps = {}) {
                 <Link
                   key={index}
                   href={link.href}
-                  className="hover:text-indigo-400 transition-colors"
+                  className="transition-colors hover:text-indigo-400"
                   {...(link.openInNewTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                 >
                   {link.label}
@@ -235,5 +261,5 @@ export function Footer({ siteSettings, footerData }: FooterProps = {}) {
         </div>
       </div>
     </footer>
-  );
+  )
 }

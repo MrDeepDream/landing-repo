@@ -1,8 +1,10 @@
 'use client'
 
-import React, { useMemo, useEffect } from 'react'
+import React, { useMemo } from 'react'
 import { useField } from '@payloadcms/ui'
 import { CheckCircle, AlertCircle, XCircle, TrendingUp, Sparkles } from 'lucide-react'
+
+import type { Media } from '@/payload-types'
 
 interface SEOCheck {
   label: string
@@ -20,43 +22,17 @@ export const SEOValidationField: React.FC = () => {
   const { value: metaDescription } = useField<string>({ path: 'seo.metaDescription' })
   const { value: focusKeyword } = useField<string>({ path: 'seo.focusKeyword' })
   const { value: keywords } = useField<string>({ path: 'seo.keywords' })
-  const { value: metaImage } = useField<any>({ path: 'seo.metaImage' })
+  const { value: metaImage } = useField<string | Media | null>({ path: 'seo.metaImage' })
   const { value: ogTitle } = useField<string>({ path: 'seo.ogTitle' })
   const { value: ogDescription } = useField<string>({ path: 'seo.ogDescription' })
-  const { value: ogImage } = useField<any>({ path: 'seo.ogImage' })
+  const { value: ogImage } = useField<string | Media | null>({ path: 'seo.ogImage' })
   const { value: twitterTitle } = useField<string>({ path: 'seo.twitterTitle' })
   const { value: twitterDescription } = useField<string>({ path: 'seo.twitterDescription' })
-  const { value: twitterImage } = useField<any>({ path: 'seo.twitterImage' })
+  const { value: twitterImage } = useField<string | Media | null>({ path: 'seo.twitterImage' })
   const { value: canonicalUrl } = useField<string>({ path: 'seo.canonicalUrl' })
-
-  // Debug: Log when values change
-  useEffect(() => {
-    console.log('🔄 SEO Field Changed - metaTitle:', metaTitle)
-  }, [metaTitle])
-
-  useEffect(() => {
-    console.log('🔄 SEO Field Changed - metaDescription:', metaDescription)
-  }, [metaDescription])
 
   const checks = useMemo((): SEOCheck[] => {
     const results: SEOCheck[] = []
-
-    // Debug logging
-    console.log('SEO Validation - Field Values:', {
-      title,
-      metaTitle,
-      metaDescription,
-      focusKeyword,
-      keywords,
-      metaImage,
-      ogTitle,
-      ogDescription,
-      ogImage,
-      twitterTitle,
-      twitterDescription,
-      twitterImage,
-      canonicalUrl
-    })
 
     // Use metaTitle if provided, otherwise fall back to page title
     const effectiveTitle = metaTitle || title || ''
@@ -68,35 +44,35 @@ export const SEOValidationField: React.FC = () => {
         label: 'Meta Title',
         status: 'fail',
         message: 'No title set. Add a compelling page title.',
-        points: 0
+        points: 0,
       })
     } else if (titleLength < 30) {
       results.push({
         label: 'Meta Title',
         status: 'warning',
         message: `Title is too short (${titleLength} chars). Aim for 50-60 characters.`,
-        points: 5
+        points: 5,
       })
     } else if (titleLength > 70) {
       results.push({
         label: 'Meta Title',
         status: 'warning',
         message: `Title is too long (${titleLength} chars). It may be truncated in search results.`,
-        points: 8
+        points: 8,
       })
     } else if (titleLength >= 50 && titleLength <= 60) {
       results.push({
         label: 'Meta Title',
         status: 'pass',
         message: `Perfect title length (${titleLength} chars).`,
-        points: 15
+        points: 15,
       })
     } else {
       results.push({
         label: 'Meta Title',
         status: 'pass',
         message: `Good title length (${titleLength} chars).`,
-        points: 12
+        points: 12,
       })
     }
 
@@ -107,35 +83,35 @@ export const SEOValidationField: React.FC = () => {
         label: 'Meta Description',
         status: 'fail',
         message: 'No meta description. This is crucial for click-through rates.',
-        points: 0
+        points: 0,
       })
     } else if (descLength < 120) {
       results.push({
         label: 'Meta Description',
         status: 'warning',
         message: `Description is short (${descLength} chars). Aim for 150-160 characters.`,
-        points: 8
+        points: 8,
       })
     } else if (descLength > 200) {
       results.push({
         label: 'Meta Description',
         status: 'warning',
         message: `Description is too long (${descLength} chars). It may be cut off.`,
-        points: 10
+        points: 10,
       })
     } else if (descLength >= 150 && descLength <= 160) {
       results.push({
         label: 'Meta Description',
         status: 'pass',
         message: `Perfect description length (${descLength} chars).`,
-        points: 20
+        points: 20,
       })
     } else {
       results.push({
         label: 'Meta Description',
         status: 'pass',
         message: `Good description length (${descLength} chars).`,
-        points: 15
+        points: 15,
       })
     }
 
@@ -145,7 +121,7 @@ export const SEOValidationField: React.FC = () => {
         label: 'Focus Keyword',
         status: 'warning',
         message: 'No focus keyword set. Add your main target keyword.',
-        points: 0
+        points: 0,
       })
     } else {
       const keywordInTitle = effectiveTitle.toLowerCase().includes(focusKeyword.toLowerCase())
@@ -156,21 +132,21 @@ export const SEOValidationField: React.FC = () => {
           label: 'Focus Keyword',
           status: 'pass',
           message: `"${focusKeyword}" found in both title and description. Excellent!`,
-          points: 15
+          points: 15,
         })
       } else if (keywordInTitle || keywordInDesc) {
         results.push({
           label: 'Focus Keyword',
           status: 'warning',
           message: `"${focusKeyword}" found in ${keywordInTitle ? 'title' : 'description'}. Consider adding to ${keywordInTitle ? 'description' : 'title'} too.`,
-          points: 10
+          points: 10,
         })
       } else {
         results.push({
           label: 'Focus Keyword',
           status: 'warning',
           message: `"${focusKeyword}" not found in title or description. Consider adding it.`,
-          points: 5
+          points: 5,
         })
       }
     }
@@ -181,30 +157,30 @@ export const SEOValidationField: React.FC = () => {
         label: 'Keywords',
         status: 'warning',
         message: 'No keywords added. Add relevant keywords for better indexing.',
-        points: 0
+        points: 0,
       })
     } else {
-      const keywordCount = keywords.split(',').filter(k => k.trim().length > 0).length
+      const keywordCount = keywords.split(',').filter((k) => k.trim().length > 0).length
       if (keywordCount < 3) {
         results.push({
           label: 'Keywords',
           status: 'warning',
           message: `Only ${keywordCount} keyword(s). Add 5-10 relevant keywords.`,
-          points: 5
+          points: 5,
         })
       } else if (keywordCount > 15) {
         results.push({
           label: 'Keywords',
           status: 'warning',
           message: `${keywordCount} keywords is too many. Focus on 5-10 most relevant.`,
-          points: 5
+          points: 5,
         })
       } else {
         results.push({
           label: 'Keywords',
           status: 'pass',
           message: `${keywordCount} keywords added. Good coverage!`,
-          points: 10
+          points: 10,
         })
       }
     }
@@ -215,21 +191,21 @@ export const SEOValidationField: React.FC = () => {
         label: 'Social Media Image',
         status: 'fail',
         message: 'No images set. Add at least a meta image for social shares.',
-        points: 0
+        points: 0,
       })
     } else if (metaImage || (ogImage && twitterImage)) {
       results.push({
         label: 'Social Media Image',
         status: 'pass',
         message: 'Social media images configured.',
-        points: 10
+        points: 10,
       })
     } else {
       results.push({
         label: 'Social Media Image',
         status: 'warning',
         message: 'Partially configured. Add images for better social sharing.',
-        points: 5
+        points: 5,
       })
     }
 
@@ -243,7 +219,7 @@ export const SEOValidationField: React.FC = () => {
         label: 'Open Graph (Facebook)',
         status: 'pass',
         message: 'Fully optimized for Facebook/LinkedIn sharing.',
-        points: 10
+        points: 10,
       })
     } else {
       const missing = []
@@ -255,7 +231,7 @@ export const SEOValidationField: React.FC = () => {
         label: 'Open Graph (Facebook)',
         status: 'warning',
         message: `Missing: ${missing.join(', ')}. Improve Facebook shares.`,
-        points: 5
+        points: 5,
       })
     }
 
@@ -269,7 +245,7 @@ export const SEOValidationField: React.FC = () => {
         label: 'Twitter Card',
         status: 'pass',
         message: 'Fully optimized for Twitter/X sharing.',
-        points: 10
+        points: 10,
       })
     } else {
       const missing = []
@@ -281,7 +257,7 @@ export const SEOValidationField: React.FC = () => {
         label: 'Twitter Card',
         status: 'warning',
         message: `Missing: ${missing.join(', ')}. Improve Twitter shares.`,
-        points: 5
+        points: 5,
       })
     }
 
@@ -291,12 +267,26 @@ export const SEOValidationField: React.FC = () => {
         label: 'Canonical URL',
         status: 'pass',
         message: 'Canonical URL set. Helps prevent duplicate content issues.',
-        points: 10
+        points: 10,
       })
     }
 
     return results
-  }, [title, metaTitle, metaDescription, focusKeyword, keywords, metaImage, ogTitle, ogDescription, ogImage, twitterTitle, twitterDescription, twitterImage, canonicalUrl])
+  }, [
+    title,
+    metaTitle,
+    metaDescription,
+    focusKeyword,
+    keywords,
+    metaImage,
+    ogTitle,
+    ogDescription,
+    ogImage,
+    twitterTitle,
+    twitterDescription,
+    twitterImage,
+    canonicalUrl,
+  ])
 
   const totalPoints = checks.reduce((sum, check) => sum + check.points, 0)
   const maxPoints = 100
@@ -330,9 +320,9 @@ export const SEOValidationField: React.FC = () => {
     statusIcon = <XCircle className="h-6 w-6" />
   }
 
-  const passCount = checks.filter(c => c.status === 'pass').length
-  const warningCount = checks.filter(c => c.status === 'warning').length
-  const failCount = checks.filter(c => c.status === 'fail').length
+  const passCount = checks.filter((c) => c.status === 'pass').length
+  const warningCount = checks.filter((c) => c.status === 'warning').length
+  const failCount = checks.filter((c) => c.status === 'fail').length
 
   return (
     <div className="seo-validation-widget">
@@ -343,17 +333,19 @@ export const SEOValidationField: React.FC = () => {
         </div>
         <div className="score-header">
           <div className={`score-badge ${statusBg}`}>
-            <div className={statusColor}>
-              {statusIcon}
-            </div>
-            <span className="score-value">{score}<span className="score-percent">%</span></span>
+            <div className={statusColor}>{statusIcon}</div>
+            <span className="score-value">
+              {score}
+              <span className="score-percent">%</span>
+            </span>
           </div>
           <div className="score-info">
             <h3 className="score-title">SEO Health Score</h3>
             <p className="score-subtitle">
               {overallStatus === 'excellent' && '🎉 Excellent! Your page is well optimized.'}
               {overallStatus === 'good' && '👍 Good job! A few improvements will make it great.'}
-              {overallStatus === 'needs-improvement' && '⚠️ Needs work. Follow the suggestions below.'}
+              {overallStatus === 'needs-improvement' &&
+                '⚠️ Needs work. Follow the suggestions below.'}
               {overallStatus === 'poor' && '❌ Poor SEO. Please address the issues below.'}
             </p>
           </div>
@@ -408,7 +400,11 @@ export const SEOValidationField: React.FC = () => {
 
         .score-card {
           position: relative;
-          background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+          background: linear-gradient(
+            135deg,
+            rgba(99, 102, 241, 0.1) 0%,
+            rgba(139, 92, 246, 0.1) 100%
+          );
           border: 1px solid rgba(139, 92, 246, 0.3);
           border-radius: 12px;
           padding: 24px;
@@ -510,9 +506,15 @@ export const SEOValidationField: React.FC = () => {
           font-weight: 500;
         }
 
-        .stat-pass svg { color: #34d399; }
-        .stat-warning svg { color: #fbbf24; }
-        .stat-fail svg { color: #f87171; }
+        .stat-pass svg {
+          color: #34d399;
+        }
+        .stat-warning svg {
+          color: #fbbf24;
+        }
+        .stat-fail svg {
+          color: #f87171;
+        }
 
         .checks-list {
           background: rgba(31, 41, 55, 0.3);

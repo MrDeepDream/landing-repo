@@ -29,27 +29,8 @@ export default async function LocaleLayout(props: LocaleLayoutProps) {
   const params = await props.params
   const { locale } = params
 
-  // Debug what we're getting
-  console.log('🔍 Layout locale debug:', {
-    locale,
-    type: typeof locale,
-    isObject: typeof locale === 'object',
-    keys: typeof locale === 'object' ? Object.keys(locale as any) : null,
-    stringified: JSON.stringify(locale),
-  })
-
-  // Ensure locale is always a string - aggressive extraction
-  let localeString: string
-  if (typeof locale === 'string') {
-    localeString = locale
-  } else if (locale && typeof locale === 'object') {
-    // If it's an object, try to extract the actual locale value
-    const localeObj = locale as any
-    localeString = localeObj.locale || localeObj.code || localeObj.value || 'uk'
-    console.warn('⚠️ Locale was an object, extracted:', localeString)
-  } else {
-    localeString = 'uk'
-  }
+  // Ensure locale is always a string
+  const localeString: string = typeof locale === 'string' ? locale : 'uk'
 
   // Check if preview mode is enabled
   const resolvedSearchParams = searchParams ? await searchParams : {}
@@ -62,29 +43,28 @@ export default async function LocaleLayout(props: LocaleLayoutProps) {
     siteSettings = data.siteSettings
     navigationItems = data.navigationItems
     footer = data.footer
-  } catch (error) {
+  } catch {
     // CMS data not available yet - components will use hardcoded defaults
-    console.log('CMS data not available, using defaults')
   }
 
   return (
     <>
       {isPreview && (
-        <div className="bg-yellow-500 text-black px-4 py-2 text-center text-sm font-medium sticky top-0 z-[100]">
+        <div className="sticky top-0 z-[100] bg-yellow-500 px-4 py-2 text-center text-sm font-medium text-black">
           Preview Mode - Locale: {localeString} (type: {typeof locale})
         </div>
       )}
       <Header
         siteSettings={siteSettings}
+        // Type assertion needed: payload-data.NavigationItem has optional fields
+        // that get populated before passing to Header (which expects required fields)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         navigationItems={navigationItems as any}
         currentLocale={localeString}
         availableLocales={availableLocales}
       />
       <main className="flex-1">{children}</main>
-      <Footer
-        siteSettings={siteSettings}
-        footerData={footer}
-      />
+      <Footer siteSettings={siteSettings} footerData={footer} />
     </>
   )
 }

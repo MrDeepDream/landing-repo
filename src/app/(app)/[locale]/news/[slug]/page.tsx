@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
+import Image from 'next/image'
 import { getNewsBySlug, type SupportedLocale } from '@/lib/payload-data'
-import type { News } from '@/payload-types'
+import type { Media, News, NewsContentBlock, NewsTag, User as PayloadUser } from '@/payload-types'
 import { FloatingNav } from '@/components/FloatingNav'
 import { Calendar, User, Tag } from 'lucide-react'
 import { SectionHeaderBlock } from '@/components/SectionHeaderBlock'
@@ -8,7 +9,21 @@ import { MarkdownRichTextBlock } from '@/components/MarkdownRichTextBlock'
 import { LivePreviewNews } from '@/components/LivePreviewNews'
 import type { IconName } from '@/lib/icons'
 import type { GradientPreset } from '@/lib/gradients'
-import { generateSEOMetadata } from '@/lib/seo'
+import { generateSEOMetadata, type SEOData } from '@/lib/seo'
+
+/**
+ * Rich text node interface for Lexical/Slate content
+ */
+interface RichTextNode {
+  type?: string
+  text?: string
+  bold?: boolean
+  italic?: boolean
+  underline?: boolean
+  url?: string
+  newTab?: boolean
+  children?: RichTextNode[]
+}
 
 // Force dynamic rendering - this page uses searchParams for preview mode
 export const dynamic = 'force-dynamic'
@@ -85,12 +100,12 @@ function NewsArticleRenderer({ article }: { article: News }) {
   return (
     <div className="container mx-auto px-4 py-12">
       {/* Article Header */}
-      <header className="mb-12 max-w-4xl mx-auto">
+      <header className="mx-auto mb-12 max-w-4xl">
         {/* Tags */}
         {tags && Array.isArray(tags) && tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {tags.map((tag: any) => {
-              const tagData = typeof tag === 'object' ? tag : null
+          <div className="mb-4 flex flex-wrap gap-2">
+            {tags.map((tag) => {
+              const tagData = typeof tag === 'object' ? (tag as NewsTag) : null
               if (!tagData) return null
 
               const color = tagData.color || 'indigo'
@@ -108,7 +123,7 @@ function NewsArticleRenderer({ article }: { article: News }) {
               return (
                 <span
                   key={tagData.id}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium border ${colorClasses[color as keyof typeof colorClasses]}`}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium ${colorClasses[color as keyof typeof colorClasses]}`}
                 >
                   <Tag className="h-3 w-3" />
                   {tagData.name}
@@ -119,19 +134,17 @@ function NewsArticleRenderer({ article }: { article: News }) {
         )}
 
         {/* Title */}
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+        <h1 className="mb-4 text-4xl font-bold text-gray-900 dark:text-gray-100 md:text-5xl">
           {title}
         </h1>
 
         {/* Excerpt */}
         {excerpt && (
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-            {excerpt}
-          </p>
+          <p className="mb-6 text-xl leading-relaxed text-gray-600 dark:text-gray-400">{excerpt}</p>
         )}
 
         {/* Metadata */}
-        <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 dark:text-gray-400 border-t border-b border-gray-200 dark:border-gray-700 py-4">
+        <div className="flex flex-wrap items-center gap-6 border-b border-t border-gray-200 py-4 text-sm text-gray-600 dark:border-gray-700 dark:text-gray-400">
           {/* Published Date */}
           {publishedDate && (
             <div className="flex items-center gap-2">
@@ -151,7 +164,9 @@ function NewsArticleRenderer({ article }: { article: News }) {
             <div className="flex items-center gap-2">
               <User className="h-4 w-4" />
               <span>
-                {author.name || (author as any).email?.split('@')[0] || 'Anonymous'}
+                {(author as PayloadUser).name ||
+                  (author as PayloadUser).email?.split('@')[0] ||
+                  'Anonymous'}
               </span>
             </div>
           )}
@@ -160,10 +175,10 @@ function NewsArticleRenderer({ article }: { article: News }) {
 
       {/* Featured Image */}
       {featuredImage && typeof featuredImage === 'object' && 'url' in featuredImage && (
-        <div className="mb-12 max-w-5xl mx-auto">
-          <figure className="rounded-xl overflow-hidden shadow-lg">
+        <div className="mx-auto mb-12 max-w-5xl">
+          <figure className="overflow-hidden rounded-xl shadow-lg">
             {featuredImage.caption && (
-              <figcaption className="bg-gray-50 dark:bg-gray-800 px-6 py-3 text-sm text-gray-600 dark:text-gray-400 text-center">
+              <figcaption className="bg-gray-50 px-6 py-3 text-center text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-400">
                 {featuredImage.caption}
               </figcaption>
             )}
@@ -172,10 +187,10 @@ function NewsArticleRenderer({ article }: { article: News }) {
       )}
 
       {/* Article Content Blocks */}
-      <main className="max-w-4xl mx-auto">
+      <main className="mx-auto max-w-4xl">
         {blocks && blocks.length > 0 && (
           <div className="space-y-8">
-            {blocks.map((block: any, index: number) => (
+            {blocks.map((block, index) => (
               <BlockRenderer key={block.id || index} block={block} />
             ))}
           </div>
@@ -183,7 +198,7 @@ function NewsArticleRenderer({ article }: { article: News }) {
 
         {/* Empty state */}
         {(!blocks || blocks.length === 0) && (
-          <div className="text-center py-12 text-muted-foreground">
+          <div className="py-12 text-center text-muted-foreground">
             <p>This article has no content blocks yet.</p>
           </div>
         )}
@@ -196,20 +211,24 @@ function NewsArticleRenderer({ article }: { article: News }) {
  * Block Renderer
  * Renders different block types for news articles
  */
-function BlockRenderer({ block }: { block: any }) {
+function BlockRenderer({ block }: { block: NewsContentBlock }) {
   switch (block.blockType) {
     case 'sectionHeader':
       return (
         <SectionHeaderBlock
           type={block.type || 'small'}
           title={block.title}
-          subtitle={block.subtitle}
-          description={block.description}
-          badge={block.badge?.text ? {
-            text: block.badge.text,
-            icon: block.badge.icon as IconName,
-            gradient: block.badge.gradient as GradientPreset,
-          } : undefined}
+          subtitle={block.subtitle ?? undefined}
+          description={block.description ?? undefined}
+          badge={
+            block.badge?.text
+              ? {
+                  text: block.badge.text,
+                  icon: block.badge.icon as IconName,
+                  gradient: block.badge.gradient as GradientPreset,
+                }
+              : undefined
+          }
           headingLevel={block.headingLevel || 'h2'}
           enableAnimation={block.enableAnimation !== false}
         />
@@ -218,7 +237,7 @@ function BlockRenderer({ block }: { block: any }) {
     case 'richText':
       return (
         <div className="prose prose-lg max-w-none">
-          <RichTextRenderer content={block.content} />
+          <RichTextRenderer content={block.content as unknown as RichTextNode[]} />
         </div>
       )
 
@@ -226,22 +245,27 @@ function BlockRenderer({ block }: { block: any }) {
       return (
         <MarkdownRichTextBlock
           markdown={block.markdown || ''}
-          accentColor={block.accentColor}
+          accentColor={block.accentColor ?? undefined}
         />
       )
 
-    case 'imageBlock':
+    case 'imageBlock': {
+      const image = block.image
+      const imageData = typeof image === 'object' ? (image as Media) : null
       return (
         <div className="my-8">
-          {block.image && typeof block.image === 'object' && 'url' in block.image && (
+          {imageData?.url && (
             <figure>
-              <img
-                src={block.image.url}
-                alt={block.image.alt || block.caption || 'Image'}
+              <Image
+                src={imageData.url}
+                alt={imageData.alt || block.caption || 'Image'}
+                width={800}
+                height={600}
                 className="w-full rounded-lg"
+                unoptimized
               />
               {block.caption && (
-                <figcaption className="text-sm text-muted-foreground mt-2 text-center">
+                <figcaption className="mt-2 text-center text-sm text-muted-foreground">
                   {block.caption}
                 </figcaption>
               )}
@@ -249,18 +273,19 @@ function BlockRenderer({ block }: { block: any }) {
           )}
         </div>
       )
+    }
 
     case 'callToAction':
       return (
-        <div className="bg-primary text-primary-foreground rounded-lg p-8 text-center">
-          {block.heading && <h2 className="text-3xl font-bold mb-4">{block.heading}</h2>}
-          {block.description && <p className="text-lg mb-6">{block.description}</p>}
+        <div className="rounded-lg bg-primary p-8 text-center text-primary-foreground">
+          {block.heading && <h2 className="mb-4 text-3xl font-bold">{block.heading}</h2>}
+          {block.description && <p className="mb-6 text-lg">{block.description}</p>}
           {block.link && (
             <a
               href={block.link.url}
               target={block.link.openInNewTab ? '_blank' : undefined}
               rel={block.link.openInNewTab ? 'noopener noreferrer' : undefined}
-              className="inline-block bg-background text-foreground px-6 py-3 rounded-md font-semibold hover:opacity-90 transition-opacity"
+              className="inline-block rounded-md bg-background px-6 py-3 font-semibold text-foreground transition-opacity hover:opacity-90"
             >
               {block.link.label}
             </a>
@@ -270,9 +295,9 @@ function BlockRenderer({ block }: { block: any }) {
 
     default:
       return (
-        <div className="border border-dashed border-muted p-4 rounded">
+        <div className="rounded border border-dashed border-muted p-4">
           <p className="text-sm text-muted-foreground">
-            Unknown block type: {block.blockType}
+            Unknown block type: {(block as NewsContentBlock).blockType}
           </p>
         </div>
       )
@@ -283,13 +308,13 @@ function BlockRenderer({ block }: { block: any }) {
  * Rich Text Renderer
  * Renders Slate rich text content
  */
-function RichTextRenderer({ content }: { content: any }) {
+function RichTextRenderer({ content }: { content: RichTextNode[] | Record<string, unknown> }) {
   if (!content) return null
 
   return (
     <div className="rich-text">
       {Array.isArray(content) ? (
-        content.map((node: any, index: number) => (
+        content.map((node, index) => (
           <div key={index} dangerouslySetInnerHTML={{ __html: renderNode(node) }} />
         ))
       ) : (
@@ -302,7 +327,7 @@ function RichTextRenderer({ content }: { content: any }) {
 /**
  * Render a single rich text node
  */
-function renderNode(node: any): string {
+function renderNode(node: RichTextNode): string {
   if (!node) return ''
 
   if (node.text !== undefined) {
@@ -367,7 +392,7 @@ export async function generateMetadata(props: PageProps) {
     page: {
       title: article.title as unknown as string,
       seo: article.seo,
-    } as any,
+    } as SEOData,
     locale: localeString,
     siteName: 'Your Site Name', // TODO: Get from site settings
   })

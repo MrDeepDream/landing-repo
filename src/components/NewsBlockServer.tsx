@@ -5,8 +5,8 @@ interface NewsBlockServerProps {
   block: {
     displayMode: 'list' | 'carousel' | 'grid'
     contentSource: 'all' | 'byTag' | 'manual'
-    selectedTag?: any
-    selectedNews?: any[]
+    selectedTag?: string | { id: string }
+    selectedNews?: Array<string | { id: string }>
     limit?: number
     enableSearch?: boolean
     enableFilters?: boolean
@@ -21,7 +21,11 @@ interface NewsBlockServerProps {
  * Server Component for News Block
  * Fetches news data and renders the appropriate display mode
  */
-export async function NewsBlockServer({ block, locale = 'uk', draft = false }: NewsBlockServerProps) {
+export async function NewsBlockServer({
+  block,
+  locale = 'uk',
+  draft = false,
+}: NewsBlockServerProps) {
   // Fetch news items based on block configuration
   const newsItems = await getNewsForBlock(
     {
@@ -36,9 +40,7 @@ export async function NewsBlockServer({ block, locale = 'uk', draft = false }: N
 
   // Fetch all tags for filters (only for list mode with filters enabled)
   const allTags =
-    block.displayMode === 'list' && block.enableFilters
-      ? await getAllNewsTags(locale, draft)
-      : []
+    block.displayMode === 'list' && block.enableFilters ? await getAllNewsTags(locale, draft) : []
 
   // If no news items, return null or empty state
   if (!newsItems || newsItems.length === 0) {

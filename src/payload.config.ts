@@ -47,9 +47,13 @@ export default buildConfig({
   },
 
   // Database adapter (PostgreSQL for Vercel/Neon deployment)
+  // Connection pooling configured for Neon free tier limits
   db: postgresAdapter({
     pool: {
       connectionString: env.DATABASE_URI,
+      max: 10, // Neon free tier connection limit
+      idleTimeoutMillis: 30000, // Close idle connections after 30s
+      connectionTimeoutMillis: 10000, // Connection timeout 10s
     },
   }),
 

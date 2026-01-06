@@ -1,6 +1,17 @@
 import type { CollectionConfig } from 'payload'
 import { generateSlug } from '@/lib/transliterate'
 
+// Payload locale can be string or object with code/locale property
+type PayloadLocale = string | { code?: string; locale?: string } | undefined
+
+function extractLocaleString(locale: PayloadLocale): string {
+  if (typeof locale === 'string') return locale
+  if (locale && typeof locale === 'object') {
+    return locale.code || locale.locale || 'uk'
+  }
+  return 'uk'
+}
+
 /**
  * News Collection
  * News articles and updates that appear in carousels and news listings
@@ -15,15 +26,7 @@ export const News: CollectionConfig = {
       url: ({ data, locale }) => {
         const baseURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 
-        // Ensure locale is a string
-        let docLocale: string
-        if (typeof locale === 'string') {
-          docLocale = locale
-        } else if (locale && typeof locale === 'object') {
-          docLocale = (locale as any).code || (locale as any).locale || 'uk'
-        } else {
-          docLocale = 'uk'
-        }
+        const docLocale = extractLocaleString(locale as PayloadLocale)
 
         return `${baseURL}/${docLocale}/news/${data.slug}?preview=true`
       },
@@ -31,15 +34,7 @@ export const News: CollectionConfig = {
     preview: (doc, { locale }) => {
       const baseURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 
-      // Ensure locale is a string
-      let docLocale: string
-      if (typeof locale === 'string') {
-        docLocale = locale
-      } else if (locale && typeof locale === 'object') {
-        docLocale = (locale as any).code || (locale as any).locale || 'uk'
-      } else {
-        docLocale = 'uk'
-      }
+      const docLocale = extractLocaleString(locale as PayloadLocale)
 
       return `${baseURL}/${docLocale}/news/${doc.slug}`
     },
@@ -94,7 +89,8 @@ export const News: CollectionConfig = {
       required: true,
       unique: true,
       admin: {
-        description: 'URL-friendly identifier (auto-generated from title with Cyrillic transliteration)',
+        description:
+          'URL-friendly identifier (auto-generated from title with Cyrillic transliteration)',
         position: 'sidebar',
       },
       hooks: {
@@ -236,7 +232,8 @@ export const News: CollectionConfig = {
                       required: true,
                       defaultValue: 'small',
                       admin: {
-                        description: 'Header style: Small (section headers) or Big (hero-style headers)',
+                        description:
+                          'Header style: Small (section headers) or Big (hero-style headers)',
                       },
                       options: [
                         {
@@ -359,7 +356,8 @@ export const News: CollectionConfig = {
                       type: 'textarea',
                       required: true,
                       admin: {
-                        description: 'Use the visual markdown editor below. Live preview is shown on the right side.',
+                        description:
+                          'Use the visual markdown editor below. Live preview is shown on the right side.',
                         components: {
                           Field: '@/fields/MarkdownEditorField#MarkdownEditorField',
                         },
@@ -474,7 +472,8 @@ export const News: CollectionConfig = {
                       localized: true,
                       admin: {
                         placeholder: 'Override title for search engines',
-                        description: 'Optimal length: 50-60 characters. Leave empty to use article title.',
+                        description:
+                          'Optimal length: 50-60 characters. Leave empty to use article title.',
                       },
                       maxLength: 70,
                     },
@@ -495,7 +494,8 @@ export const News: CollectionConfig = {
                   localized: true,
                   admin: {
                     placeholder: 'Brief description for search results...',
-                    description: 'Optimal length: 150-160 characters. Falls back to excerpt if empty.',
+                    description:
+                      'Optimal length: 150-160 characters. Falls back to excerpt if empty.',
                   },
                   maxLength: 200,
                 },
@@ -522,7 +522,8 @@ export const News: CollectionConfig = {
                       type: 'text',
                       admin: {
                         placeholder: 'https://example.com/canonical-page',
-                        description: 'Specify a canonical URL to prevent duplicate content issues. Leave empty for default.',
+                        description:
+                          'Specify a canonical URL to prevent duplicate content issues. Leave empty for default.',
                       },
                     },
                     {
@@ -541,7 +542,8 @@ export const News: CollectionConfig = {
                           type: 'checkbox',
                           defaultValue: false,
                           admin: {
-                            description: 'Prevent search engines from following links in this article',
+                            description:
+                              'Prevent search engines from following links in this article',
                           },
                         },
                       ],
@@ -582,7 +584,8 @@ export const News: CollectionConfig = {
                       type: 'upload',
                       relationTo: 'media',
                       admin: {
-                        description: 'Recommended: 1200x630px. Falls back to Featured Image if empty.',
+                        description:
+                          'Recommended: 1200x630px. Falls back to Featured Image if empty.',
                       },
                     },
                     {

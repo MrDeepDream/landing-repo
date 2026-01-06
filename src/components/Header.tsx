@@ -32,13 +32,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetTitle,
-  SheetDescription,
-} from './ui/sheet'
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from './ui/sheet'
 import { useAccessibility } from './providers/AccessibilityProvider'
 import { SearchDialog } from './SearchDialog'
 
@@ -61,7 +55,15 @@ interface NavigationItem {
 }
 
 interface SocialLink {
-  platform: 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok' | 'github' | 'discord'
+  platform:
+    | 'facebook'
+    | 'twitter'
+    | 'instagram'
+    | 'linkedin'
+    | 'youtube'
+    | 'tiktok'
+    | 'github'
+    | 'discord'
   url: string
   openInNewTab?: boolean
 }
@@ -85,37 +87,37 @@ interface HeaderProps {
 
 // Default fallback data
 const defaultNavigationData = {
-  'About': {
-    'Company': ['Our Story', 'Mission & Vision', 'Team', 'Careers'],
-    'Leadership': ['Executive Team', 'Board of Directors', 'Advisors'],
-    'News': ['Press Releases', 'Media Coverage', 'Blog']
+  About: {
+    Company: ['Our Story', 'Mission & Vision', 'Team', 'Careers'],
+    Leadership: ['Executive Team', 'Board of Directors', 'Advisors'],
+    News: ['Press Releases', 'Media Coverage', 'Blog'],
   },
-  'Services': {
-    'Consulting': ['Strategy', 'Operations', 'Technology', 'Risk Management'],
-    'Solutions': ['Digital Transformation', 'Cloud Services', 'Analytics'],
-    'Support': ['Customer Support', 'Training', 'Documentation']
+  Services: {
+    Consulting: ['Strategy', 'Operations', 'Technology', 'Risk Management'],
+    Solutions: ['Digital Transformation', 'Cloud Services', 'Analytics'],
+    Support: ['Customer Support', 'Training', 'Documentation'],
   },
-  'Products': {
-    'Software': ['Enterprise Suite', 'Mobile Apps', 'Integrations'],
-    'Hardware': ['Devices', 'Accessories', 'IoT Solutions'],
-    'Licensing': ['Individual', 'Business', 'Enterprise']
+  Products: {
+    Software: ['Enterprise Suite', 'Mobile Apps', 'Integrations'],
+    Hardware: ['Devices', 'Accessories', 'IoT Solutions'],
+    Licensing: ['Individual', 'Business', 'Enterprise'],
   },
-  'Resources': {
-    'Learning': ['Tutorials', 'Webinars', 'Case Studies'],
-    'Community': ['Forums', 'Events', 'User Groups'],
-    'Downloads': ['Software', 'Documentation', 'Templates']
-  }
-};
+  Resources: {
+    Learning: ['Tutorials', 'Webinars', 'Case Studies'],
+    Community: ['Forums', 'Events', 'User Groups'],
+    Downloads: ['Software', 'Documentation', 'Templates'],
+  },
+}
 
 const defaultLocales = [
   { code: 'en', label: 'English' },
   { code: 'uk', label: 'Ukrainian' },
   { code: 'es', label: 'Spanish' },
-];
+]
 
 // Helper function to get icon component based on platform
 const getSocialIcon = (platform: string) => {
-  const icons: Record<string, any> = {
+  const icons: Record<string, typeof Facebook | null> = {
     facebook: Facebook,
     twitter: Twitter,
     instagram: Instagram,
@@ -132,11 +134,11 @@ export function Header({
   siteSettings,
   navigationItems,
   currentLocale = 'uk',
-  availableLocales = defaultLocales
+  availableLocales = defaultLocales,
 }: HeaderProps = {}) {
   const { fontSize, setFontSize, bwMode, setBwMode } = useAccessibility()
-  const [showAccessibility, setShowAccessibility] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [showAccessibility, setShowAccessibility] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
 
   // Ensure currentLocale is always a string - aggressive type checking
   let localeString: string
@@ -144,18 +146,14 @@ export function Header({
     localeString = currentLocale
   } else if (currentLocale && typeof currentLocale === 'object') {
     // If it's an object, try to extract a string value
-    localeString = String((currentLocale as any).code || (currentLocale as any).locale || 'uk')
+    const localeObj = currentLocale as { code?: string; locale?: string }
+    localeString = String(localeObj.code || localeObj.locale || 'uk')
   } else {
     localeString = String(currentLocale || 'uk')
   }
 
-  // Debug log in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Header locale debug:', { currentLocale, localeString, type: typeof currentLocale })
-  }
-
   // Use CMS data if available, otherwise fall back to hardcoded data
-  const navigationData = navigationItems || defaultNavigationData;
+  const navigationData = navigationItems || defaultNavigationData
 
   // Determine site branding
   const siteTitle = siteSettings?.siteTitle || 'TechCorp'
@@ -164,10 +162,10 @@ export function Header({
   const socialLinks = siteSettings?.socialLinks || []
 
   return (
-    <header className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+    <header className="sticky top-0 z-50 border-b bg-white/80 shadow-sm backdrop-blur-md">
       <div className="container mx-auto px-4">
         {/* Top Bar */}
-        <div className="flex items-center justify-between py-3 border-b border-gray-100">
+        <div className="flex items-center justify-between border-b border-gray-100 py-3">
           <div className="flex items-center gap-8">
             <Link href={`/${localeString}`} className="flex items-center gap-3">
               <div className="relative">
@@ -180,13 +178,15 @@ export function Header({
                     className=""
                   />
                 ) : (
-                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/30">
                     <Sparkles className="h-5 w-5 text-white" />
                   </div>
                 )}
               </div>
               <div>
-                <span className="text-xl tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{siteTitle}</span>
+                <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-xl tracking-tight text-transparent">
+                  {siteTitle}
+                </span>
                 <p className="text-xs text-gray-500">{siteTagline}</p>
               </div>
             </Link>
@@ -197,12 +197,12 @@ export function Header({
             <Button
               variant="ghost"
               size="sm"
-              className="gap-2 hidden md:flex"
+              className="hidden gap-2 md:flex"
               onClick={() => setSearchOpen(true)}
             >
               <Search className="h-4 w-4" />
               <span className="text-sm text-gray-600">Search</span>
-              <kbd className="hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 text-[10px] opacity-100">
+              <kbd className="hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 text-[10px] opacity-100 lg:inline-flex">
                 ⌘K
               </kbd>
             </Button>
@@ -210,7 +210,7 @@ export function Header({
             {/* Social Icons */}
             {socialLinks.length > 0 && (
               <>
-                <div className="hidden md:flex items-center gap-1">
+                <div className="hidden items-center gap-1 md:flex">
                   {socialLinks.map((link, index) => {
                     const IconComponent = getSocialIcon(link.platform)
                     if (!IconComponent) return null
@@ -234,7 +234,7 @@ export function Header({
                     )
                   })}
                 </div>
-                <div className="w-px h-6 bg-gray-200 hidden md:block" />
+                <div className="hidden h-6 w-px bg-gray-200 md:block" />
               </>
             )}
 
@@ -272,7 +272,7 @@ export function Header({
               </Button>
 
               {showAccessibility && (
-                <div className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl p-5 w-72 z-50">
+                <div className="absolute right-0 top-full z-50 mt-2 w-72 rounded-xl border border-gray-200 bg-white p-5 shadow-xl">
                   <div className="space-y-5">
                     <div>
                       <p className="mb-3 text-sm">Font Size</p>
@@ -329,58 +329,62 @@ export function Header({
               </SheetTrigger>
               <SheetContent>
                 <SheetTitle>Navigation Menu</SheetTitle>
-                <SheetDescription>
-                  Browse through our main navigation sections
-                </SheetDescription>
-                <div className="space-y-4 mt-4">
-                  {Array.isArray(navigationData) ? (
-                    // CMS format: 3-level navigation
-                    navigationData.map((item) => (
-                      <div key={item.id} className="space-y-2">
-                        <p className="text-sm font-medium">{item.label}</p>
-                        {item.children && item.children.length > 0 && (
-                          <div className="ml-4 space-y-1">
-                            {item.children.map((group) => (
-                              <div key={group.id}>
-                                <p className="text-sm text-gray-600">{group.label}</p>
-                                {group.items && group.items.length > 0 && (
-                                  <div className="ml-4 space-y-1">
-                                    {group.items.map((link) => (
-                                      <Link
-                                        key={link.id}
-                                        href={link.href}
-                                        className="block text-sm text-gray-500 py-1 hover:text-indigo-600"
-                                        {...(link.openInNewTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                                      >
-                                        {link.label}
-                                      </Link>
-                                    ))}
-                                  </div>
-                                )}
+                <SheetDescription>Browse through our main navigation sections</SheetDescription>
+                <div className="mt-4 space-y-4">
+                  {Array.isArray(navigationData)
+                    ? // CMS format: 3-level navigation
+                      navigationData.map((item) => (
+                        <div key={item.id} className="space-y-2">
+                          <p className="text-sm font-medium">{item.label}</p>
+                          {item.children && item.children.length > 0 && (
+                            <div className="ml-4 space-y-1">
+                              {item.children.map((group) => (
+                                <div key={group.id}>
+                                  <p className="text-sm text-gray-600">{group.label}</p>
+                                  {group.items && group.items.length > 0 && (
+                                    <div className="ml-4 space-y-1">
+                                      {group.items.map((link) => (
+                                        <Link
+                                          key={link.id}
+                                          href={link.href}
+                                          className="block py-1 text-sm text-gray-500 hover:text-indigo-600"
+                                          {...(link.openInNewTab
+                                            ? { target: '_blank', rel: 'noopener noreferrer' }
+                                            : {})}
+                                        >
+                                          {link.label}
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))
+                    : // Hardcoded format
+                      Object.entries(navigationData).map(([mainItem, subItems]) => (
+                        <div key={mainItem} className="space-y-2">
+                          <p className="text-sm font-medium">{mainItem}</p>
+                          {Object.entries(subItems as Record<string, string[]>).map(
+                            ([category, items]) => (
+                              <div key={category} className="ml-4 space-y-1">
+                                <p className="text-sm text-gray-600">{category}</p>
+                                {items.map((item) => (
+                                  <a
+                                    key={item}
+                                    href="#"
+                                    className="ml-4 block py-1 text-sm text-gray-500 hover:text-indigo-600"
+                                  >
+                                    {item}
+                                  </a>
+                                ))}
                               </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    // Hardcoded format
-                    Object.entries(navigationData).map(([mainItem, subItems]) => (
-                      <div key={mainItem} className="space-y-2">
-                        <p className="text-sm font-medium">{mainItem}</p>
-                        {Object.entries(subItems as any).map(([category, items]) => (
-                          <div key={category} className="ml-4 space-y-1">
-                            <p className="text-sm text-gray-600">{category}</p>
-                            {(items as string[]).map((item) => (
-                              <a key={item} href="#" className="block text-sm text-gray-500 ml-4 py-1 hover:text-indigo-600">
-                                {item}
-                              </a>
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-                    ))
-                  )}
+                            )
+                          )}
+                        </div>
+                      ))}
                 </div>
               </SheetContent>
             </Sheet>
@@ -388,87 +392,89 @@ export function Header({
         </div>
 
         {/* Navigation Menu */}
-        <div className="hidden md:flex items-center justify-between py-3">
+        <div className="hidden items-center justify-between py-3 md:flex">
           <NavigationMenu>
             <NavigationMenuList className="flex gap-1">
-              {Array.isArray(navigationData) ? (
-                // CMS format: 3-level navigation array
-                navigationData.map((item) => (
-                  <NavigationMenuItem key={item.id}>
-                    {item.children && item.children.length > 0 ? (
-                      <>
-                        <NavigationMenuTrigger className="text-sm hover:text-indigo-600 data-[state=open]:text-indigo-600">
-                          {item.label}
-                        </NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                          <div className="grid grid-cols-3 gap-8 p-6 w-[650px] z-50">
-                            {item.children.map((group) => (
-                              <div key={group.id} className="space-y-3">
-                                <p className="text-sm text-gray-900">{group.label}</p>
-                                {group.items && group.items.length > 0 && (
-                                  <ul className="space-y-2">
-                                    {group.items.map((link) => (
-                                      <li key={link.id}>
-                                        <NavigationMenuLink asChild>
-                                          <Link
-                                            href={link.href}
-                                            className="block text-sm text-gray-600 hover:text-indigo-600 py-1 transition-colors"
-                                            {...(link.openInNewTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                                          >
-                                            {link.label}
-                                          </Link>
-                                        </NavigationMenuLink>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        </NavigationMenuContent>
-                      </>
-                    ) : (
-                      <Link href={item.href || '#'} passHref legacyBehavior>
-                        <NavigationMenuLink className="text-sm hover:text-indigo-600 px-3 py-2">
-                          {item.label}
-                        </NavigationMenuLink>
-                      </Link>
-                    )}
-                  </NavigationMenuItem>
-                ))
-              ) : (
-                // Hardcoded format: nested object
-                Object.entries(navigationData).map(([mainItem, subItems]) => (
-                  <NavigationMenuItem key={mainItem}>
-                    <NavigationMenuTrigger className="text-sm hover:text-indigo-600 data-[state=open]:text-indigo-600">
-                      {mainItem}
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="grid grid-cols-3 gap-8 p-6 w-[650px]">
-                        {Object.entries(subItems as any).map(([category, items]) => (
-                          <div key={category} className="space-y-3">
-                            <p className="text-sm text-gray-900">{category}</p>
-                            <ul className="space-y-2">
-                              {(items as string[]).map((item) => (
-                                <li key={item}>
-                                  <NavigationMenuLink asChild>
-                                    <a
-                                      href="#"
-                                      className="block text-sm text-gray-600 hover:text-indigo-600 py-1 transition-colors"
-                                    >
-                                      {item}
-                                    </a>
-                                  </NavigationMenuLink>
-                                </li>
+              {Array.isArray(navigationData)
+                ? // CMS format: 3-level navigation array
+                  navigationData.map((item) => (
+                    <NavigationMenuItem key={item.id}>
+                      {item.children && item.children.length > 0 ? (
+                        <>
+                          <NavigationMenuTrigger className="text-sm hover:text-indigo-600 data-[state=open]:text-indigo-600">
+                            {item.label}
+                          </NavigationMenuTrigger>
+                          <NavigationMenuContent>
+                            <div className="z-50 grid w-[650px] grid-cols-3 gap-8 p-6">
+                              {item.children.map((group) => (
+                                <div key={group.id} className="space-y-3">
+                                  <p className="text-sm text-gray-900">{group.label}</p>
+                                  {group.items && group.items.length > 0 && (
+                                    <ul className="space-y-2">
+                                      {group.items.map((link) => (
+                                        <li key={link.id}>
+                                          <NavigationMenuLink asChild>
+                                            <Link
+                                              href={link.href}
+                                              className="block py-1 text-sm text-gray-600 transition-colors hover:text-indigo-600"
+                                              {...(link.openInNewTab
+                                                ? { target: '_blank', rel: 'noopener noreferrer' }
+                                                : {})}
+                                            >
+                                              {link.label}
+                                            </Link>
+                                          </NavigationMenuLink>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
+                                </div>
                               ))}
-                            </ul>
-                          </div>
-                        ))}
-                      </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                ))
-              )}
+                            </div>
+                          </NavigationMenuContent>
+                        </>
+                      ) : (
+                        <Link href={item.href || '#'} passHref legacyBehavior>
+                          <NavigationMenuLink className="px-3 py-2 text-sm hover:text-indigo-600">
+                            {item.label}
+                          </NavigationMenuLink>
+                        </Link>
+                      )}
+                    </NavigationMenuItem>
+                  ))
+                : // Hardcoded format: nested object
+                  Object.entries(navigationData).map(([mainItem, subItems]) => (
+                    <NavigationMenuItem key={mainItem}>
+                      <NavigationMenuTrigger className="text-sm hover:text-indigo-600 data-[state=open]:text-indigo-600">
+                        {mainItem}
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <div className="grid w-[650px] grid-cols-3 gap-8 p-6">
+                          {Object.entries(subItems as Record<string, string[]>).map(
+                            ([category, items]) => (
+                              <div key={category} className="space-y-3">
+                                <p className="text-sm text-gray-900">{category}</p>
+                                <ul className="space-y-2">
+                                  {items.map((item) => (
+                                    <li key={item}>
+                                      <NavigationMenuLink asChild>
+                                        <a
+                                          href="#"
+                                          className="block py-1 text-sm text-gray-600 transition-colors hover:text-indigo-600"
+                                        >
+                                          {item}
+                                        </a>
+                                      </NavigationMenuLink>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+                  ))}
             </NavigationMenuList>
           </NavigationMenu>
         </div>
@@ -477,5 +483,5 @@ export function Header({
       {/* Search Dialog */}
       <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
     </header>
-  );
+  )
 }

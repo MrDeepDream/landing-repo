@@ -1,21 +1,21 @@
 # Payload Platform
 
-Modern content management platform built with Next.js 15, React 19, and Payload CMS 3.62. Features bilingual content (Ukrainian/English/Spanish), block-based pages, and MongoDB database.
+Modern content management platform built with Next.js 15, React 19, and Payload CMS 3.62. Features trilingual content (Ukrainian/English/Spanish), block-based pages, and PostgreSQL database.
 
 ## Tech Stack
 
 - **Next.js 15** - App Router, Server Components
 - **Payload CMS 3.62** - Headless CMS with admin panel
-- **MongoDB** - Database with Mongoose ORM
+- **PostgreSQL** - Database (Neon serverless PostgreSQL recommended for deployment)
 - **TypeScript** - Strict mode enabled
 - **Tailwind CSS** + **shadcn/ui** - Styling and components
 
 ## Prerequisites
 
 - Node.js 20+ and npm 10+
-- Docker Desktop (for local development)
+- PostgreSQL database (local or Neon)
 
-## Quick Start (Docker)
+## Quick Start
 
 ```bash
 # 1. Install dependencies
@@ -23,18 +23,13 @@ npm install
 
 # 2. Create .env file
 cp .env.example .env
-# Edit .env and set PAYLOAD_SECRET (min 32 chars)
+# Edit .env and set DATABASE_URI and PAYLOAD_SECRET
 
-# 3. Start everything (MongoDB + seed + dev server)
-npm run dev:docker
+# 3. Start dev server
+npm run dev
 ```
 
-First run automatically:
-
-- Starts MongoDB in Docker
-- Creates admin user (admin@example.com / admin123)
-- Seeds bilingual demo content
-- Launches Next.js dev server
+First run automatically creates database tables.
 
 Access points:
 
@@ -45,17 +40,17 @@ Access points:
 
 ## Scripts
 
-| Command                  | Description                                 |
-| ------------------------ | ------------------------------------------- |
-| `npm run dev:docker`     | Start MongoDB + auto-seed + dev server      |
-| `npm run dev`            | Dev server only (requires external MongoDB) |
-| `npm run build`          | Production build                            |
-| `npm run docker:down`    | Stop MongoDB (keeps data)                   |
-| `npm run docker:clean`   | Stop MongoDB + delete all data              |
-| `npm run seed:fresh`     | Reset and re-seed database                  |
-| `npm run generate:types` | Regenerate TypeScript types                 |
-| `npm run lint`           | Run ESLint                                  |
-| `npm run type-check`     | TypeScript checking                         |
+| Command                  | Description                           |
+| ------------------------ | ------------------------------------- |
+| `npm run dev`            | Start dev server                      |
+| `npm run build`          | Production build                      |
+| `npm run start`          | Start production server               |
+| `npm run create-admin`   | Create admin user (admin@example.com) |
+| `npm run seed`           | Seed demo bilingual content           |
+| `npm run seed:fresh`     | Cleanup database + seed in one step   |
+| `npm run generate:types` | Regenerate TypeScript types           |
+| `npm run lint`           | Run ESLint                            |
+| `npm run type-check`     | TypeScript checking                   |
 
 ## Pre-commit Hooks
 
@@ -72,9 +67,15 @@ Commits are blocked if any check fails. Hooks are installed automatically via `n
 Required in `.env`:
 
 ```env
-DATABASE_URI=mongodb://localhost:27017/payload-platform
+DATABASE_URI=postgresql://user:password@host:5432/database?sslmode=require
 PAYLOAD_SECRET=your-secret-key-min-32-characters
 NEXT_PUBLIC_SERVER_URL=http://localhost:3000
+```
+
+For Neon PostgreSQL:
+
+```env
+DATABASE_URI=postgresql://user:password@ep-xxx.region.aws.neon.tech/neondb?sslmode=require
 ```
 
 Generate secret: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
@@ -89,7 +90,7 @@ src/
 ├── globals/            # Site-wide settings
 ├── components/         # React components (ui/, blocks, etc.)
 ├── fields/             # Custom Payload admin fields
-└── lib/                # Utilities (payload.ts, utils.ts, seo.ts)
+└── lib/                # Utilities (payload.ts, utils.ts, seo.ts, sanitize.ts)
 ```
 
 ## Collections
@@ -103,14 +104,27 @@ src/
 
 ## Deployment
 
+### Vercel + Neon (Recommended)
+
+1. Create a [Neon](https://neon.tech) PostgreSQL database (free tier available)
+2. Deploy to [Vercel](https://vercel.com)
+3. Set environment variables in Vercel dashboard
+
 **Build:** `npm run build`
 **Start:** `npm run start`
 
-Works with Vercel, Railway, Render, or any Node.js platform.
-
 Required env vars: `DATABASE_URI`, `PAYLOAD_SECRET`, `NEXT_PUBLIC_SERVER_URL`, `NODE_ENV=production`
+
+### Connection Pooling
+
+The project is configured with connection pooling optimized for Neon free tier:
+
+- Max 10 connections
+- 30s idle timeout
+- 10s connection timeout
 
 ## Documentation
 
 - [Payload CMS Docs](https://payloadcms.com/docs)
 - [Next.js Docs](https://nextjs.org/docs)
+- [Neon Docs](https://neon.tech/docs)

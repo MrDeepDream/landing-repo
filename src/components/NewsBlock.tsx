@@ -1,34 +1,31 @@
 'use client'
 
+import type { News, NewsTag } from '@/payload-types'
 import { NewsListMode } from './NewsListMode'
 import { NewsCarouselMode } from './NewsCarouselMode'
 import { NewsGridMode } from './NewsGridMode'
 
+interface NewsBlockConfig {
+  displayMode: 'list' | 'carousel' | 'grid'
+  contentSource: 'all' | 'byTag' | 'manual'
+  selectedTag?: string | { id: string }
+  selectedNews?: Array<string | { id: string }>
+  limit?: number
+  enableSearch?: boolean
+  enableFilters?: boolean
+  enablePagination?: boolean
+  itemsPerPage?: number
+}
+
 interface NewsBlockProps {
-  block: {
-    displayMode: 'list' | 'carousel' | 'grid'
-    contentSource: 'all' | 'byTag' | 'manual'
-    selectedTag?: any
-    selectedNews?: any[]
-    limit?: number
-    enableSearch?: boolean
-    enableFilters?: boolean
-    enablePagination?: boolean
-    itemsPerPage?: number
-  }
-  newsItems: any[]
-  allTags?: any[]
+  block: NewsBlockConfig
+  newsItems: News[]
+  allTags?: NewsTag[]
   locale?: string
 }
 
 export function NewsBlock({ block, newsItems, allTags, locale = 'uk' }: NewsBlockProps) {
-  const {
-    displayMode,
-    enableSearch,
-    enableFilters,
-    enablePagination,
-    itemsPerPage,
-  } = block
+  const { displayMode, enableSearch, enableFilters, enablePagination, itemsPerPage } = block
 
   // Render based on display mode
   switch (displayMode) {
@@ -46,20 +43,10 @@ export function NewsBlock({ block, newsItems, allTags, locale = 'uk' }: NewsBloc
       )
 
     case 'carousel':
-      return (
-        <NewsCarouselMode
-          newsItems={newsItems}
-          locale={locale}
-        />
-      )
+      return <NewsCarouselMode newsItems={newsItems} locale={locale} />
 
     case 'grid':
-      return (
-        <NewsGridMode
-          newsItems={newsItems}
-          locale={locale}
-        />
-      )
+      return <NewsGridMode newsItems={newsItems} locale={locale} />
 
     default:
       return null

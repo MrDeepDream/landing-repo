@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image'
+import type { News } from '@/payload-types'
 import { Card, CardContent } from './ui/card'
 import { Badge } from './ui/badge'
 import { Calendar, ArrowRight } from 'lucide-react'
@@ -14,7 +16,7 @@ import {
 } from './ui/carousel'
 
 interface NewsCarouselModeProps {
-  newsItems: any[]
+  newsItems: News[]
   locale?: string
 }
 
@@ -46,25 +48,26 @@ export function NewsCarouselMode({ newsItems, locale = 'uk' }: NewsCarouselModeP
         <CarouselContent>
           {newsItems.map((item) => (
             <CarouselItem key={item.id} className="md:basis-1/2 lg:basis-1/3">
-              <Card className="overflow-hidden group hover:shadow-2xl transition-all duration-300 border-gray-200">
+              <Card className="group overflow-hidden border-gray-200 transition-all duration-300 hover:shadow-2xl">
                 <CardContent className="p-0">
                   {/* Featured Image */}
                   {item.featuredImage && typeof item.featuredImage === 'object' && (
-                    <div className="aspect-video overflow-hidden bg-gray-100 relative">
-                      <img
-                        src={item.featuredImage.url}
-                        alt={item.featuredImage.alt || item.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    <div className="relative aspect-video overflow-hidden bg-gray-100">
+                      <Image
+                        src={item.featuredImage.url || ''}
+                        alt={item.featuredImage.alt || item.title || ''}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        unoptimized
                       />
                       {/* Tag Badge */}
                       {item.tags && Array.isArray(item.tags) && item.tags.length > 0 && (
-                        <div className="absolute top-4 left-4">
-                          {item.tags.slice(0, 1).map((tag: any) => {
-                            const tagData = typeof tag === 'object' ? tag : null
-                            if (!tagData) return null
+                        <div className="absolute left-4 top-4">
+                          {item.tags.slice(0, 1).map((tag) => {
+                            if (typeof tag !== 'object' || !tag) return null
                             return (
-                              <Badge key={tagData.id} className={getTagColor(tagData.color)}>
-                                {tagData.name}
+                              <Badge key={tag.id} className={getTagColor(tag.color ?? undefined)}>
+                                {tag.name}
                               </Badge>
                             )
                           })}
@@ -77,7 +80,7 @@ export function NewsCarouselMode({ newsItems, locale = 'uk' }: NewsCarouselModeP
                   <div className="p-6">
                     {/* Date */}
                     {item.publishedDate && (
-                      <div className="flex items-center gap-2 text-gray-500 mb-3">
+                      <div className="mb-3 flex items-center gap-2 text-gray-500">
                         <Calendar className="h-4 w-4" />
                         <span className="text-sm">
                           {new Date(item.publishedDate).toLocaleDateString('uk-UA', {
@@ -90,7 +93,7 @@ export function NewsCarouselMode({ newsItems, locale = 'uk' }: NewsCarouselModeP
                     )}
 
                     {/* Title */}
-                    <h3 className="mb-3 group-hover:text-indigo-600 transition-colors">
+                    <h3 className="mb-3 transition-colors group-hover:text-indigo-600">
                       {item.title}
                     </h3>
 
@@ -98,7 +101,7 @@ export function NewsCarouselMode({ newsItems, locale = 'uk' }: NewsCarouselModeP
                     <Link href={`/${locale}/news/${item.slug}`}>
                       <Button
                         variant="ghost"
-                        className="gap-2 -ml-4 text-indigo-600 group-hover:gap-3 transition-all"
+                        className="-ml-4 gap-2 text-indigo-600 transition-all group-hover:gap-3"
                       >
                         Read More
                         <ArrowRight className="h-4 w-4" />

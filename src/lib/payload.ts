@@ -1,4 +1,6 @@
 import { getPayload as getPayloadInstance } from 'payload'
+import type { CollectionSlug, JsonValue, Where } from 'payload'
+
 import configPromise from '@/payload.config'
 
 /**
@@ -25,10 +27,10 @@ export async function getPayload() {
  * @param options - Query options
  * @returns Collection data
  */
-export async function fetchCollection<T = any>(
-  collection: any,
+export async function fetchCollection<T>(
+  collection: CollectionSlug,
   options?: {
-    where?: Record<string, any>
+    where?: Where
     limit?: number
     page?: number
     sort?: string
@@ -42,7 +44,7 @@ export async function fetchCollection<T = any>(
     ...options,
   })
 
-  return data as any as { docs: T[]; totalDocs: number; limit: number; page: number }
+  return data as unknown as { docs: T[]; totalDocs: number; limit: number; page: number }
 }
 
 /**
@@ -52,8 +54,8 @@ export async function fetchCollection<T = any>(
  * @param depth - Relationship depth
  * @returns Document data
  */
-export async function fetchDocumentById<T = any>(
-  collection: any,
+export async function fetchDocumentById<T>(
+  collection: CollectionSlug,
   id: string,
   depth: number = 1
 ) {
@@ -76,10 +78,10 @@ export async function fetchDocumentById<T = any>(
  * @param depth - Relationship depth
  * @returns Document data or null
  */
-export async function fetchDocumentByField<T = any>(
-  collection: any,
+export async function fetchDocumentByField<T>(
+  collection: CollectionSlug,
   field: string,
-  value: any,
+  value: JsonValue,
   depth: number = 1
 ) {
   const payload = await getPayload()

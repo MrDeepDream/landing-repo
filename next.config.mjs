@@ -8,7 +8,6 @@ const nextConfig = {
   // Image optimization
   images: {
     formats: ['image/avif', 'image/webp'],
-    domains: ['localhost'],
     remotePatterns: [
       {
         protocol: 'http',
@@ -39,18 +38,15 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
 
-  // TypeScript
+  // TypeScript - strict mode, fail build on errors
   typescript: {
-    // Set to true to allow production builds even if there are type errors
-    // Not recommended, but useful for quick deployments
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 
-  // ESLint
+  // ESLint - run on src directory during builds
   eslint: {
-    // Only run ESLint on these directories during production builds
     dirs: ['src'],
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
 
   // Webpack configuration for Monaco Editor
