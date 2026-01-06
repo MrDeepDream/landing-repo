@@ -1,12 +1,12 @@
-import DOMPurify from 'isomorphic-dompurify'
+import sanitizeHtml from 'sanitize-html'
 
 /**
  * Sanitize HTML content to prevent XSS attacks
- * Uses DOMPurify with a restrictive allowlist
+ * Uses sanitize-html with a restrictive allowlist
  */
-export function sanitizeHtml(html: string): string {
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: [
+export function sanitizeHtmlContent(html: string): string {
+  return sanitizeHtml(html, {
+    allowedTags: [
       'h1',
       'h2',
       'h3',
@@ -40,21 +40,23 @@ export function sanitizeHtml(html: string): string {
       'th',
       'td',
     ],
-    ALLOWED_ATTR: [
-      'href',
-      'target',
-      'rel',
-      'src',
-      'alt',
-      'title',
-      'class',
-      'id',
-      'width',
-      'height',
-    ],
-    // Force noopener noreferrer on links
-    ADD_ATTR: ['target'],
-    FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form', 'input'],
-    FORBID_ATTR: ['onerror', 'onclick', 'onload', 'onmouseover', 'onfocus', 'onblur'],
+    allowedAttributes: {
+      a: ['href', 'target', 'rel'],
+      img: ['src', 'alt', 'title', 'width', 'height'],
+      '*': ['class', 'id'],
+    },
+    allowedSchemes: ['http', 'https', 'mailto'],
+    transformTags: {
+      a: (tagName, attribs) => ({
+        tagName,
+        attribs: {
+          ...attribs,
+          rel: 'noopener noreferrer',
+        },
+      }),
+    },
   })
 }
+
+// Re-export with original name for backward compatibility
+export { sanitizeHtmlContent as sanitizeHtml }
