@@ -82,38 +82,39 @@ export function FloatingNav({
     <motion.div
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className={`sticky top-4 z-40 mx-4 mt-4 md:mx-8 ${className}`}
+      className={`sticky top-4 z-40 mx-3 mt-4 sm:mx-4 md:mx-8 ${className}`}
     >
       <div className="container mx-auto">
-        <div className="rounded-3xl border border-white/50 bg-white/90 px-6 py-4 shadow-xl backdrop-blur-2xl">
-          <div className="flex items-center justify-between">
+        <div className="rounded-2xl border border-white/50 bg-white/90 px-3 py-3 shadow-xl backdrop-blur-2xl dark:border-border dark:bg-background/90 sm:rounded-3xl sm:px-6 sm:py-4">
+          <div className="flex items-center justify-between gap-2">
             {/* Left side - Back button */}
             {showBackButton && (
               <Button
                 onClick={handleBack}
                 variant="ghost"
-                className="gap-2 rounded-2xl hover:bg-indigo-50"
+                size="default"
+                className="min-h-[44px] min-w-[44px] gap-2 rounded-xl px-3 hover:bg-indigo-50 dark:hover:bg-accent sm:rounded-2xl sm:px-4"
               >
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft className="h-5 w-5 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">{backButtonText}</span>
               </Button>
             )}
 
             {/* Right side - Site info and badges */}
-            <div className="ml-auto flex items-center gap-3">
-              {/* Site name */}
+            <div className="ml-auto flex items-center gap-2 sm:gap-3">
+              {/* Site name - hidden on mobile */}
               {siteName && (
-                <div className="hidden items-center gap-2 rounded-full bg-gradient-to-r from-indigo-50 to-purple-50 px-4 py-2 md:flex">
+                <div className="hidden items-center gap-2 rounded-full bg-gradient-to-r from-indigo-50 to-purple-50 px-4 py-2 dark:from-indigo-950/50 dark:to-purple-950/50 md:flex">
                   {siteIcon && siteIcon}
-                  <span className="text-sm text-indigo-900">{siteName}</span>
+                  <span className="text-sm text-indigo-900 dark:text-indigo-100">{siteName}</span>
                 </div>
               )}
 
-              {/* Badge */}
+              {/* Badge - responsive sizing */}
               {badgeText && (
                 <Badge
                   variant={badgeVariant}
-                  className="border-0 bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg"
+                  className="border-0 bg-gradient-to-r from-indigo-600 to-purple-600 px-2 py-1 text-xs text-white shadow-lg sm:px-3 sm:text-sm"
                 >
                   {badgeText}
                 </Badge>
