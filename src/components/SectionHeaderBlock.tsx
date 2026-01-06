@@ -57,13 +57,15 @@ export function SectionHeaderBlock({
         </HeadingTag>
 
         {subtitle && (
-          <p className="mx-auto mb-4 max-w-3xl text-xl leading-relaxed text-gray-600 md:text-2xl">
+          <p className="mx-auto mb-4 max-w-3xl text-xl leading-relaxed text-muted-foreground md:text-2xl">
             {subtitle}
           </p>
         )}
 
         {description && (
-          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-gray-500">{description}</p>
+          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-muted-foreground">
+            {description}
+          </p>
         )}
       </motion.div>
     )
@@ -94,11 +96,13 @@ export function SectionHeaderBlock({
         </div>
       )}
 
-      <HeadingTag className="mb-4 text-4xl font-bold text-gray-900">{title}</HeadingTag>
+      <HeadingTag className="mb-4 text-4xl font-bold text-foreground">{title}</HeadingTag>
 
-      {subtitle && <p className="mx-auto mb-2 max-w-2xl text-xl text-gray-700">{subtitle}</p>}
+      {subtitle && (
+        <p className="mx-auto mb-2 max-w-2xl text-xl text-muted-foreground">{subtitle}</p>
+      )}
 
-      {description && <p className="mx-auto max-w-2xl text-gray-600">{description}</p>}
+      {description && <p className="mx-auto max-w-2xl text-muted-foreground">{description}</p>}
     </motion.div>
   )
 }

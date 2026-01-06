@@ -37,7 +37,7 @@ const sideCards = [
 
 export function SplitContentBlock() {
   return (
-    <section className="bg-gradient-to-br from-gray-50 to-indigo-50/30 py-20">
+    <section className="bg-gradient-to-br from-muted to-indigo-50/30 py-20">
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-purple-50 px-4 py-2">
@@ -45,16 +45,16 @@ export function SplitContentBlock() {
             <span className="text-sm text-purple-700">What's Coming</span>
           </div>
           <h2 className="mb-4 text-4xl">Upcoming Events</h2>
-          <p className="mx-auto max-w-2xl text-gray-600">
+          <p className="mx-auto max-w-2xl text-muted-foreground">
             Mark your calendar for these exciting opportunities to connect and learn
           </p>
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Left Side - Main Featured Card */}
-          <Card className="group overflow-hidden border-gray-200 transition-all duration-300 hover:shadow-2xl">
+          <Card className="group overflow-hidden border-border transition-all duration-300 hover:shadow-2xl">
             <CardContent className="p-0">
-              <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                 <ImageWithFallback
                   src={mainCard.image}
                   alt={mainCard.title}
@@ -70,7 +70,7 @@ export function SplitContentBlock() {
                 </div>
               </div>
               <div className="p-6">
-                <p className="mb-4 text-gray-600">{mainCard.description}</p>
+                <p className="mb-4 text-muted-foreground">{mainCard.description}</p>
                 <Button className="gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/30 hover:from-indigo-700 hover:to-purple-700">
                   Register Now
                   <ArrowRight className="h-4 w-4" />
@@ -84,10 +84,10 @@ export function SplitContentBlock() {
             {sideCards.map((card) => (
               <Card
                 key={card.id}
-                className="group cursor-pointer border-gray-200 transition-all duration-300 hover:border-indigo-300 hover:shadow-xl"
+                className="group cursor-pointer border-border transition-all duration-300 hover:border-indigo-300 hover:shadow-xl"
               >
                 <CardContent className="p-6">
-                  <div className="mb-3 flex items-center gap-2 text-gray-500">
+                  <div className="mb-3 flex items-center gap-2 text-muted-foreground">
                     <Calendar className="h-4 w-4 text-indigo-600" />
                     <span className="text-sm">{card.date}</span>
                   </div>

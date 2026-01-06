@@ -108,11 +108,11 @@ export function RenderBlocks({ blocks, className = '' }: RenderBlocksProps) {
             return (
               <div key={key} className="my-8">
                 {/* Image block implementation */}
-                <div className="relative aspect-video overflow-hidden rounded-lg bg-gray-100">
+                <div className="relative aspect-video overflow-hidden rounded-lg bg-muted">
                   {/* Add image rendering here */}
                 </div>
                 {block.caption && (
-                  <p className="mt-2 text-center text-sm text-gray-600">{block.caption}</p>
+                  <p className="mt-2 text-center text-sm text-muted-foreground">{block.caption}</p>
                 )}
               </div>
             )
@@ -124,7 +124,9 @@ export function RenderBlocks({ blocks, className = '' }: RenderBlocksProps) {
                 className="my-12 rounded-2xl bg-gradient-to-r from-indigo-50 to-purple-50 p-8 text-center"
               >
                 <h3 className="mb-4 text-3xl font-bold">{block.heading}</h3>
-                {block.description && <p className="mb-6 text-gray-600">{block.description}</p>}
+                {block.description && (
+                  <p className="mb-6 text-muted-foreground">{block.description}</p>
+                )}
                 {block.link && (
                   <a
                     href={block.link.url}

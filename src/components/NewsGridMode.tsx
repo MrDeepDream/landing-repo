@@ -18,26 +18,26 @@ export function NewsGridMode({ newsItems, locale = 'uk' }: NewsGridModeProps) {
 
   if (!mainItem) {
     return (
-      <section className="bg-gradient-to-br from-gray-50 to-indigo-50/30 py-20">
+      <section className="bg-gradient-to-br from-muted to-indigo-50/30 py-20">
         <div className="container mx-auto px-4">
-          <p className="text-center text-gray-600">No news articles available</p>
+          <p className="text-center text-muted-foreground">No news articles available</p>
         </div>
       </section>
     )
   }
 
   return (
-    <section className="bg-gradient-to-br from-gray-50 to-indigo-50/30 py-20">
+    <section className="bg-gradient-to-br from-muted to-indigo-50/30 py-20">
       <div className="container mx-auto px-4">
         {/* Grid Layout */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Left Side - Main Featured Card */}
           <Link href={`/${locale}/news/${mainItem.slug}`}>
-            <Card className="group h-full overflow-hidden border-gray-200 transition-all duration-300 hover:shadow-2xl">
+            <Card className="group h-full overflow-hidden border-border transition-all duration-300 hover:shadow-2xl">
               <CardContent className="p-0">
                 {/* Featured Image */}
                 {mainItem.featuredImage && typeof mainItem.featuredImage === 'object' && (
-                  <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                     <Image
                       src={mainItem.featuredImage.url || ''}
                       alt={mainItem.featuredImage.alt || mainItem.title || ''}
@@ -70,7 +70,7 @@ export function NewsGridMode({ newsItems, locale = 'uk' }: NewsGridModeProps) {
                 <div className="p-6">
                   {/* Excerpt */}
                   {mainItem.excerpt && (
-                    <p className="mb-4 line-clamp-3 text-gray-600">{mainItem.excerpt}</p>
+                    <p className="mb-4 line-clamp-3 text-muted-foreground">{mainItem.excerpt}</p>
                   )}
 
                   {/* Read More Button */}
@@ -87,11 +87,11 @@ export function NewsGridMode({ newsItems, locale = 'uk' }: NewsGridModeProps) {
           <div className="grid grid-cols-1 content-start gap-4 sm:grid-cols-2">
             {sideItems.slice(0, 4).map((item) => (
               <Link key={item.id} href={`/${locale}/news/${item.slug}`}>
-                <Card className="group h-full cursor-pointer border-gray-200 transition-all duration-300 hover:border-indigo-300 hover:shadow-xl">
+                <Card className="group h-full cursor-pointer border-border transition-all duration-300 hover:border-indigo-300 hover:shadow-xl">
                   <CardContent className="p-6">
                     {/* Date */}
                     {item.publishedDate && (
-                      <div className="mb-3 flex items-center gap-2 text-gray-500">
+                      <div className="mb-3 flex items-center gap-2 text-muted-foreground">
                         <Calendar className="h-4 w-4 text-indigo-600" />
                         <span className="text-sm">
                           {new Date(item.publishedDate).toLocaleDateString('uk-UA', {

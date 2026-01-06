@@ -56,7 +56,7 @@ export function ContactCardsBlock() {
             <span className="text-sm text-rose-700">Meet The Team</span>
           </div>
           <h2 className="mb-4 text-4xl">Our Leadership Team</h2>
-          <p className="mx-auto max-w-2xl text-gray-600">
+          <p className="mx-auto max-w-2xl text-muted-foreground">
             Experienced leaders driving innovation and excellence across the organization
           </p>
         </div>
@@ -65,7 +65,7 @@ export function ContactCardsBlock() {
           {contacts.map((contact) => (
             <Card
               key={contact.id}
-              className="group overflow-hidden border-gray-200 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+              className="group overflow-hidden border-border transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
             >
               <CardContent className="p-0">
                 <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-indigo-100 to-purple-100">
@@ -81,20 +81,20 @@ export function ContactCardsBlock() {
                   <div>
                     <h3 className="mb-1 text-lg">{contact.name}</h3>
                     <p className="mb-2 text-sm text-indigo-600">{contact.role}</p>
-                    <p className="text-xs text-gray-500">{contact.bio}</p>
+                    <p className="text-xs text-muted-foreground">{contact.bio}</p>
                   </div>
 
-                  <div className="space-y-2 border-t border-gray-100 pt-2 text-sm">
+                  <div className="space-y-2 border-t border-border pt-2 text-sm">
                     <a
                       href={`mailto:${contact.email}`}
-                      className="flex items-center gap-2 text-gray-600 transition-colors hover:text-indigo-600"
+                      className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-indigo-600"
                     >
                       <Mail className="h-4 w-4 flex-shrink-0" />
                       <span className="truncate text-xs">{contact.email}</span>
                     </a>
                     <a
                       href={`tel:${contact.phone}`}
-                      className="flex items-center gap-2 text-gray-600 transition-colors hover:text-indigo-600"
+                      className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-indigo-600"
                     >
                       <Phone className="h-4 w-4 flex-shrink-0" />
                       <span className="text-xs">{contact.phone}</span>

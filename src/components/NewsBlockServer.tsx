@@ -46,7 +46,7 @@ export async function NewsBlockServer({
   if (!newsItems || newsItems.length === 0) {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
-        <p className="text-gray-600">No news articles available</p>
+        <p className="text-muted-foreground">No news articles available</p>
       </div>
     )
   }

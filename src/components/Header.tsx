@@ -165,7 +165,7 @@ export function Header({
     <header className="sticky top-0 z-50 border-b bg-white/80 shadow-sm backdrop-blur-md">
       <div className="container mx-auto px-4">
         {/* Top Bar */}
-        <div className="flex items-center justify-between border-b border-gray-100 py-3">
+        <div className="flex items-center justify-between border-b border-border py-3">
           <div className="flex items-center gap-8">
             <Link href={`/${localeString}`} className="flex items-center gap-3">
               <div className="relative">
@@ -187,7 +187,7 @@ export function Header({
                 <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-xl tracking-tight text-transparent">
                   {siteTitle}
                 </span>
-                <p className="text-xs text-gray-500">{siteTagline}</p>
+                <p className="text-xs text-muted-foreground">{siteTagline}</p>
               </div>
             </Link>
           </div>
@@ -201,7 +201,7 @@ export function Header({
               onClick={() => setSearchOpen(true)}
             >
               <Search className="h-4 w-4" />
-              <span className="text-sm text-gray-600">Search</span>
+              <span className="text-sm text-muted-foreground">Search</span>
               <kbd className="hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 text-[10px] opacity-100 lg:inline-flex">
                 ⌘K
               </kbd>
@@ -220,7 +220,7 @@ export function Header({
                         key={index}
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-gray-600 hover:text-indigo-600"
+                        className="h-8 w-8 text-muted-foreground hover:text-indigo-600"
                         asChild
                       >
                         <a
@@ -234,14 +234,14 @@ export function Header({
                     )
                   })}
                 </div>
-                <div className="hidden h-6 w-px bg-gray-200 md:block" />
+                <div className="hidden h-6 w-px bg-border md:block" />
               </>
             )}
 
             {/* Locale Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-2 text-gray-600">
+                <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
                   <Globe className="h-4 w-4" />
                   <span className="hidden sm:inline">{localeString.toUpperCase()}</span>
                   <ChevronDown className="h-3 w-3" />
@@ -264,7 +264,7 @@ export function Header({
               <Button
                 variant="ghost"
                 size="sm"
-                className="gap-2 text-gray-600"
+                className="gap-2 text-muted-foreground"
                 onClick={() => setShowAccessibility(!showAccessibility)}
               >
                 <Eye className="h-4 w-4" />
@@ -272,7 +272,7 @@ export function Header({
               </Button>
 
               {showAccessibility && (
-                <div className="absolute right-0 top-full z-50 mt-2 w-72 rounded-xl border border-gray-200 bg-white p-5 shadow-xl">
+                <div className="absolute right-0 top-full z-50 mt-2 w-72 rounded-xl border border-border bg-white p-5 shadow-xl">
                   <div className="space-y-5">
                     <div>
                       <p className="mb-3 text-sm">Font Size</p>
@@ -340,14 +340,14 @@ export function Header({
                             <div className="ml-4 space-y-1">
                               {item.children.map((group) => (
                                 <div key={group.id}>
-                                  <p className="text-sm text-gray-600">{group.label}</p>
+                                  <p className="text-sm text-muted-foreground">{group.label}</p>
                                   {group.items && group.items.length > 0 && (
                                     <div className="ml-4 space-y-1">
                                       {group.items.map((link) => (
                                         <Link
                                           key={link.id}
                                           href={link.href}
-                                          className="block py-1 text-sm text-gray-500 hover:text-indigo-600"
+                                          className="block py-1 text-sm text-muted-foreground hover:text-indigo-600"
                                           {...(link.openInNewTab
                                             ? { target: '_blank', rel: 'noopener noreferrer' }
                                             : {})}
@@ -370,12 +370,12 @@ export function Header({
                           {Object.entries(subItems as Record<string, string[]>).map(
                             ([category, items]) => (
                               <div key={category} className="ml-4 space-y-1">
-                                <p className="text-sm text-gray-600">{category}</p>
+                                <p className="text-sm text-muted-foreground">{category}</p>
                                 {items.map((item) => (
                                   <a
                                     key={item}
                                     href="#"
-                                    className="ml-4 block py-1 text-sm text-gray-500 hover:text-indigo-600"
+                                    className="ml-4 block py-1 text-sm text-muted-foreground hover:text-indigo-600"
                                   >
                                     {item}
                                   </a>
@@ -408,7 +408,9 @@ export function Header({
                             <div className="z-50 grid w-[650px] grid-cols-3 gap-8 p-6">
                               {item.children.map((group) => (
                                 <div key={group.id} className="space-y-3">
-                                  <p className="text-sm text-gray-900">{group.label}</p>
+                                  <p className="text-sm font-medium text-foreground">
+                                    {group.label}
+                                  </p>
                                   {group.items && group.items.length > 0 && (
                                     <ul className="space-y-2">
                                       {group.items.map((link) => (
@@ -416,7 +418,7 @@ export function Header({
                                           <NavigationMenuLink asChild>
                                             <Link
                                               href={link.href}
-                                              className="block py-1 text-sm text-gray-600 transition-colors hover:text-indigo-600"
+                                              className="block py-1 text-sm text-muted-foreground transition-colors hover:text-indigo-600"
                                               {...(link.openInNewTab
                                                 ? { target: '_blank', rel: 'noopener noreferrer' }
                                                 : {})}
@@ -453,14 +455,14 @@ export function Header({
                           {Object.entries(subItems as Record<string, string[]>).map(
                             ([category, items]) => (
                               <div key={category} className="space-y-3">
-                                <p className="text-sm text-gray-900">{category}</p>
+                                <p className="text-sm font-medium text-foreground">{category}</p>
                                 <ul className="space-y-2">
                                   {items.map((item) => (
                                     <li key={item}>
                                       <NavigationMenuLink asChild>
                                         <a
                                           href="#"
-                                          className="block py-1 text-sm text-gray-600 transition-colors hover:text-indigo-600"
+                                          className="block py-1 text-sm text-muted-foreground transition-colors hover:text-indigo-600"
                                         >
                                           {item}
                                         </a>

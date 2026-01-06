@@ -48,11 +48,11 @@ export function NewsCarouselMode({ newsItems, locale = 'uk' }: NewsCarouselModeP
         <CarouselContent>
           {newsItems.map((item) => (
             <CarouselItem key={item.id} className="md:basis-1/2 lg:basis-1/3">
-              <Card className="group overflow-hidden border-gray-200 transition-all duration-300 hover:shadow-2xl">
+              <Card className="group overflow-hidden border-border transition-all duration-300 hover:shadow-2xl">
                 <CardContent className="p-0">
                   {/* Featured Image */}
                   {item.featuredImage && typeof item.featuredImage === 'object' && (
-                    <div className="relative aspect-video overflow-hidden bg-gray-100">
+                    <div className="relative aspect-video overflow-hidden bg-muted">
                       <Image
                         src={item.featuredImage.url || ''}
                         alt={item.featuredImage.alt || item.title || ''}
@@ -80,7 +80,7 @@ export function NewsCarouselMode({ newsItems, locale = 'uk' }: NewsCarouselModeP
                   <div className="p-6">
                     {/* Date */}
                     {item.publishedDate && (
-                      <div className="mb-3 flex items-center gap-2 text-gray-500">
+                      <div className="mb-3 flex items-center gap-2 text-muted-foreground">
                         <Calendar className="h-4 w-4" />
                         <span className="text-sm">
                           {new Date(item.publishedDate).toLocaleDateString('uk-UA', {

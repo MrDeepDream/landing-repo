@@ -173,10 +173,10 @@ export function Footer({ siteSettings, footerData }: FooterProps = {}) {
                 <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-xl tracking-tight text-transparent">
                   {siteTitle}
                 </span>
-                <p className="text-xs text-gray-400">{siteTagline}</p>
+                <p className="text-xs text-slate-400">{siteTagline}</p>
               </div>
             </div>
-            <p className="max-w-sm text-sm text-gray-400">{description}</p>
+            <p className="max-w-sm text-sm text-slate-400">{description}</p>
             <div className="flex items-center gap-2">
               {socialLinks.map((link, index) => {
                 const IconComponent = getSocialIcon(link.platform)
@@ -187,7 +187,7 @@ export function Footer({ siteSettings, footerData }: FooterProps = {}) {
                     key={index}
                     variant="ghost"
                     size="icon"
-                    className="h-9 w-9 rounded-lg text-gray-400 hover:bg-white/10 hover:text-white"
+                    className="h-9 w-9 rounded-lg text-slate-400 hover:bg-white/10 hover:text-white"
                     asChild
                   >
                     <a
@@ -212,7 +212,7 @@ export function Footer({ siteSettings, footerData }: FooterProps = {}) {
                   {column.items.map((item, itemIndex) => {
                     const IconComponent = getContactIcon(item.icon)
                     const content = (
-                      <div className="flex items-start gap-3 text-gray-400 transition-colors hover:text-indigo-400">
+                      <div className="flex items-start gap-3 text-slate-400 transition-colors hover:text-indigo-400">
                         <IconComponent className="mt-0.5 h-4 w-4 shrink-0" />
                         <span>{item.label}</span>
                       </div>
@@ -242,7 +242,7 @@ export function Footer({ siteSettings, footerData }: FooterProps = {}) {
         </div>
 
         {/* Bottom Bar */}
-        <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-sm text-gray-400 md:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-sm text-slate-400 md:flex-row">
           <p>{copyrightText}</p>
           {footerLinks.length > 0 && (
             <div className="flex gap-6">

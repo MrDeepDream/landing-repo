@@ -57,7 +57,7 @@ export function MarkdownRichTextBlock({
               components={{
                 // Paragraphs
                 p: ({ children, ...props }) => (
-                  <p className="mb-6 text-lg leading-relaxed text-gray-700" {...props}>
+                  <p className="mb-6 text-lg leading-relaxed text-foreground/80" {...props}>
                     {children}
                   </p>
                 ),
@@ -98,7 +98,7 @@ export function MarkdownRichTextBlock({
                     className={`my-12 bg-gradient-to-br p-8 ${colors.blockquote} rounded-2xl border`}
                   >
                     <Quote className={`h-8 w-8 ${colors.icon} mb-4`} />
-                    <blockquote className="mb-0 text-xl italic text-gray-800">
+                    <blockquote className="mb-0 text-xl italic text-foreground">
                       {children}
                     </blockquote>
                   </div>
@@ -106,7 +106,7 @@ export function MarkdownRichTextBlock({
                 // Lists
                 ul: ({ children, ...props }) => (
                   <ul
-                    className="mb-6 ml-4 list-inside list-disc space-y-2 text-gray-700"
+                    className="mb-6 ml-4 list-inside list-disc space-y-2 text-foreground/80"
                     {...props}
                   >
                     {children}
@@ -114,7 +114,7 @@ export function MarkdownRichTextBlock({
                 ),
                 ol: ({ children, ...props }) => (
                   <ol
-                    className="mb-6 ml-4 list-inside list-decimal space-y-2 text-gray-700"
+                    className="mb-6 ml-4 list-inside list-decimal space-y-2 text-foreground/80"
                     {...props}
                   >
                     {children}
@@ -129,15 +129,12 @@ export function MarkdownRichTextBlock({
                 code: ({ children, className, ...props }) => {
                   const isInline = !className
                   return isInline ? (
-                    <code
-                      className="rounded bg-gray-100 px-2 py-1 text-sm text-indigo-700"
-                      {...props}
-                    >
+                    <code className="rounded bg-muted px-2 py-1 text-sm text-indigo-700" {...props}>
                       {children}
                     </code>
                   ) : (
                     <code
-                      className="mb-6 block overflow-x-auto rounded-lg bg-gray-900 p-4 text-sm text-gray-100"
+                      className="mb-6 block overflow-x-auto rounded-lg bg-slate-900 p-4 text-sm text-slate-100"
                       {...props}
                     >
                       {children}
@@ -146,7 +143,7 @@ export function MarkdownRichTextBlock({
                 },
                 pre: ({ children, ...props }) => (
                   <pre
-                    className="mb-6 overflow-x-auto rounded-lg bg-gray-900 p-4 text-gray-100"
+                    className="mb-6 overflow-x-auto rounded-lg bg-slate-900 p-4 text-slate-100"
                     {...props}
                   >
                     {children}
@@ -160,7 +157,7 @@ export function MarkdownRichTextBlock({
                 ),
                 // Strong and Em
                 strong: ({ children, ...props }) => (
-                  <strong className="font-semibold text-gray-900" {...props}>
+                  <strong className="font-semibold text-foreground" {...props}>
                     {children}
                   </strong>
                 ),
@@ -170,12 +167,12 @@ export function MarkdownRichTextBlock({
                   </em>
                 ),
                 // Horizontal Rule
-                hr: ({ ...props }) => <hr className="my-8 border-gray-200" {...props} />,
+                hr: ({ ...props }) => <hr className="my-8 border-border" {...props} />,
                 // Tables
                 table: ({ children, ...props }) => (
                   <div className="my-8 overflow-x-auto">
                     <table
-                      className="min-w-full divide-y divide-gray-200 rounded-lg border border-gray-200"
+                      className="min-w-full divide-y divide-border rounded-lg border border-border"
                       {...props}
                     >
                       {children}
@@ -183,7 +180,7 @@ export function MarkdownRichTextBlock({
                   </div>
                 ),
                 thead: ({ children, ...props }) => (
-                  <thead className="bg-gray-50" {...props}>
+                  <thead className="bg-muted" {...props}>
                     {children}
                   </thead>
                 ),
@@ -195,14 +192,14 @@ export function MarkdownRichTextBlock({
                 tr: ({ children, ...props }) => <tr {...props}>{children}</tr>,
                 th: ({ children, ...props }) => (
                   <th
-                    className="px-6 py-3 text-left text-xs uppercase tracking-wider text-gray-700"
+                    className="px-6 py-3 text-left text-xs uppercase tracking-wider text-foreground/80"
                     {...props}
                   >
                     {children}
                   </th>
                 ),
                 td: ({ children, ...props }) => (
-                  <td className="px-6 py-4 text-sm text-gray-700" {...props}>
+                  <td className="px-6 py-4 text-sm text-foreground/80" {...props}>
                     {children}
                   </td>
                 ),

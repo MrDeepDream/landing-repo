@@ -57,7 +57,7 @@ export function CarouselBlock() {
           <span className="text-sm text-indigo-700">Featured Content</span>
         </div>
         <h2 className="mb-4 text-4xl">Latest Highlights</h2>
-        <p className="mx-auto max-w-2xl text-gray-600">
+        <p className="mx-auto max-w-2xl text-muted-foreground">
           Discover our most recent innovations, partnerships, and achievements
         </p>
       </div>
@@ -72,9 +72,9 @@ export function CarouselBlock() {
         <CarouselContent>
           {carouselItems.map((item) => (
             <CarouselItem key={item.id} className="md:basis-1/2 lg:basis-1/3">
-              <Card className="group overflow-hidden border-gray-200 transition-all duration-300 hover:shadow-2xl">
+              <Card className="group overflow-hidden border-border transition-all duration-300 hover:shadow-2xl">
                 <CardContent className="p-0">
-                  <div className="relative aspect-video overflow-hidden bg-gray-100">
+                  <div className="relative aspect-video overflow-hidden bg-muted">
                     <ImageWithFallback
                       src={item.image}
                       alt={item.title}
@@ -87,7 +87,7 @@ export function CarouselBlock() {
                     </div>
                   </div>
                   <div className="p-6">
-                    <div className="mb-3 flex items-center gap-2 text-gray-500">
+                    <div className="mb-3 flex items-center gap-2 text-muted-foreground">
                       <Calendar className="h-4 w-4" />
                       <span className="text-sm">{item.date}</span>
                     </div>

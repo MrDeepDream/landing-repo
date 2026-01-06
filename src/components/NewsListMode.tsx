@@ -97,13 +97,13 @@ export function NewsListMode({
             {/* Search */}
             {enableSearch && (
               <div className="relative mx-auto max-w-xl">
-                <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   type="text"
                   placeholder="Search news..."
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="border-gray-200 py-6 pl-10 focus:border-indigo-300 focus:ring-indigo-200"
+                  className="border-border py-6 pl-10 focus:border-indigo-300 focus:ring-indigo-200"
                 />
               </div>
             )}
@@ -115,7 +115,7 @@ export function NewsListMode({
                   variant={selectedTag === null ? 'default' : 'outline'}
                   onClick={() => handleTagChange(null)}
                   className={
-                    selectedTag === null ? 'bg-indigo-600 hover:bg-indigo-700' : 'border-gray-200'
+                    selectedTag === null ? 'bg-indigo-600 hover:bg-indigo-700' : 'border-border'
                   }
                   size="sm"
                 >
@@ -127,9 +127,7 @@ export function NewsListMode({
                     variant={selectedTag === tag.id ? 'default' : 'outline'}
                     onClick={() => handleTagChange(tag.id)}
                     className={
-                      selectedTag === tag.id
-                        ? 'bg-indigo-600 hover:bg-indigo-700'
-                        : 'border-gray-200'
+                      selectedTag === tag.id ? 'bg-indigo-600 hover:bg-indigo-700' : 'border-border'
                     }
                     size="sm"
                   >
@@ -143,7 +141,7 @@ export function NewsListMode({
 
         {/* Results Count */}
         {enablePagination && (
-          <div className="mb-8 text-center text-gray-600">
+          <div className="mb-8 text-center text-muted-foreground">
             Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems} articles
           </div>
         )}
@@ -154,12 +152,12 @@ export function NewsListMode({
             {currentItems.map((item) => (
               <Card
                 key={item.id}
-                className="group flex h-full flex-col overflow-hidden border-gray-200 transition-all duration-300 hover:shadow-2xl"
+                className="group flex h-full flex-col overflow-hidden border-border transition-all duration-300 hover:shadow-2xl"
               >
                 <CardContent className="flex h-full flex-col p-0">
                   {/* Featured Image */}
                   {item.featuredImage && typeof item.featuredImage === 'object' && (
-                    <div className="relative aspect-video overflow-hidden bg-gray-100">
+                    <div className="relative aspect-video overflow-hidden bg-muted">
                       <Image
                         src={item.featuredImage.url || ''}
                         alt={item.featuredImage.alt || item.title || ''}
@@ -191,7 +189,7 @@ export function NewsListMode({
                   <div className="flex flex-grow flex-col p-6">
                     {/* Date */}
                     {item.publishedDate && (
-                      <div className="mb-3 flex items-center gap-2 text-gray-500">
+                      <div className="mb-3 flex items-center gap-2 text-muted-foreground">
                         <Calendar className="h-4 w-4" />
                         <span className="text-sm">
                           {new Date(item.publishedDate).toLocaleDateString('uk-UA', {
@@ -210,7 +208,7 @@ export function NewsListMode({
 
                     {/* Excerpt */}
                     {item.excerpt && (
-                      <p className="mb-4 line-clamp-2 flex-grow text-sm text-gray-600">
+                      <p className="mb-4 line-clamp-2 flex-grow text-sm text-muted-foreground">
                         {item.excerpt}
                       </p>
                     )}
@@ -233,10 +231,10 @@ export function NewsListMode({
         ) : (
           /* No Results */
           <div className="py-20 text-center">
-            <div className="mb-4 text-gray-400">
+            <div className="mb-4 text-muted-foreground">
               <Search className="mx-auto mb-4 h-16 w-16" />
-              <h3 className="mb-2 text-xl text-gray-600">No articles found</h3>
-              <p className="text-gray-500">Try adjusting your search or filter criteria</p>
+              <h3 className="mb-2 text-xl text-muted-foreground">No articles found</h3>
+              <p className="text-muted-foreground">Try adjusting your search or filter criteria</p>
             </div>
             {(searchQuery || selectedTag) && (
               <Button
@@ -281,7 +279,7 @@ export function NewsListMode({
 
                 if (showEllipsis) {
                   return (
-                    <span key={page} className="px-2 text-gray-400">
+                    <span key={page} className="px-2 text-muted-foreground">
                       ...
                     </span>
                   )
@@ -296,7 +294,7 @@ export function NewsListMode({
                     size="sm"
                     onClick={() => goToPage(page)}
                     className={
-                      currentPage === page ? 'bg-indigo-600 hover:bg-indigo-700' : 'border-gray-200'
+                      currentPage === page ? 'bg-indigo-600 hover:bg-indigo-700' : 'border-border'
                     }
                   >
                     {page}

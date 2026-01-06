@@ -83,7 +83,7 @@ export function EventCardsBlock() {
             <span className="text-sm text-green-700">Sessions & Events</span>
           </div>
           <h2 className="mb-4 text-4xl">Join Our Events</h2>
-          <p className="mx-auto max-w-2xl text-gray-600">
+          <p className="mx-auto max-w-2xl text-muted-foreground">
             Expand your knowledge and network with industry experts through our curated events
           </p>
         </div>
@@ -92,16 +92,18 @@ export function EventCardsBlock() {
           {events.map((event) => (
             <Card
               key={event.id}
-              className="group flex flex-col border-gray-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+              className="group flex flex-col border-border transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
             >
               <CardContent className="flex flex-grow flex-col p-6">
                 <div className="mb-4 flex items-start justify-between">
-                  <Badge className={typeColors[event.type] || 'bg-gray-100 text-gray-700'}>
+                  <Badge className={typeColors[event.type] || 'bg-muted text-foreground'}>
                     {event.type}
                   </Badge>
                   <div className="text-right">
-                    <div className="text-sm text-gray-500">{event.date.split(',')[0]}</div>
-                    <div className="text-xs text-gray-400">{event.date.split(',')[1]}</div>
+                    <div className="text-sm text-muted-foreground">{event.date.split(',')[0]}</div>
+                    <div className="text-xs text-muted-foreground/70">
+                      {event.date.split(',')[1]}
+                    </div>
                   </div>
                 </div>
 
@@ -109,7 +111,7 @@ export function EventCardsBlock() {
                   {event.title}
                 </h3>
 
-                <div className="mb-4 flex-grow space-y-2 text-sm text-gray-600">
+                <div className="mb-4 flex-grow space-y-2 text-sm text-muted-foreground">
                   {event.time && (
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 flex-shrink-0 text-indigo-600" />
@@ -122,7 +124,9 @@ export function EventCardsBlock() {
                   </div>
                 </div>
 
-                <p className="mb-4 line-clamp-2 text-sm text-gray-600">{event.description}</p>
+                <p className="mb-4 line-clamp-2 text-sm text-muted-foreground">
+                  {event.description}
+                </p>
 
                 <Button
                   variant="outline"

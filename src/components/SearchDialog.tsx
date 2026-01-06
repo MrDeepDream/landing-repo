@@ -147,7 +147,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
 
         <Command className="rounded-lg border-0" shouldFilter={false}>
           <div className="flex items-center border-b px-4">
-            <Search className="mr-2 h-4 w-4 shrink-0 text-gray-500" />
+            <Search className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
             <CommandInput
               placeholder="Search for pages, articles, events, team members..."
               value={searchQuery}
@@ -172,7 +172,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                           onSelect={() => setSearchQuery(search)}
                           className="cursor-pointer"
                         >
-                          <Clock className="mr-2 h-4 w-4 text-gray-400" />
+                          <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
                           <span>{search}</span>
                         </CommandItem>
                       ))}
@@ -200,9 +200,11 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
             {searchQuery && !hasResults && (
               <CommandEmpty>
                 <div className="py-6 text-center">
-                  <Search className="mx-auto mb-2 h-8 w-8 text-gray-300" />
-                  <p className="text-sm text-gray-600">No results found for "{searchQuery}"</p>
-                  <p className="mt-1 text-xs text-gray-500">
+                  <Search className="mx-auto mb-2 h-8 w-8 text-muted-foreground/50" />
+                  <p className="text-sm text-muted-foreground">
+                    No results found for "{searchQuery}"
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
                     Try searching with different keywords
                   </p>
                 </div>
@@ -233,9 +235,11 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                                     {page.title}
                                   </span>
                                 </div>
-                                <p className="mt-0.5 text-xs text-gray-500">{page.description}</p>
+                                <p className="mt-0.5 text-xs text-muted-foreground">
+                                  {page.description}
+                                </p>
                               </div>
-                              <ArrowRight className="h-4 w-4 text-gray-400 transition-all group-hover:translate-x-1 group-hover:text-indigo-600" />
+                              <ArrowRight className="h-4 w-4 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-indigo-600" />
                             </div>
                           </CommandItem>
                         )
@@ -268,9 +272,9 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                                   {article.type}
                                 </Badge>
                               </div>
-                              <p className="mt-0.5 text-xs text-gray-500">{article.date}</p>
+                              <p className="mt-0.5 text-xs text-muted-foreground">{article.date}</p>
                             </div>
-                            <ArrowRight className="h-4 w-4 text-gray-400 transition-all group-hover:translate-x-1 group-hover:text-indigo-600" />
+                            <ArrowRight className="h-4 w-4 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-indigo-600" />
                           </div>
                         </CommandItem>
                       ))}
@@ -297,9 +301,9 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                               <span className="transition-colors group-hover:text-indigo-600">
                                 {event.title}
                               </span>
-                              <p className="mt-0.5 text-xs text-gray-500">{event.date}</p>
+                              <p className="mt-0.5 text-xs text-muted-foreground">{event.date}</p>
                             </div>
-                            <ArrowRight className="h-4 w-4 text-gray-400 transition-all group-hover:translate-x-1 group-hover:text-indigo-600" />
+                            <ArrowRight className="h-4 w-4 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-indigo-600" />
                           </div>
                         </CommandItem>
                       ))}
@@ -325,9 +329,9 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                             <span className="transition-colors group-hover:text-indigo-600">
                               {member.name}
                             </span>
-                            <p className="mt-0.5 text-xs text-gray-500">{member.role}</p>
+                            <p className="mt-0.5 text-xs text-muted-foreground">{member.role}</p>
                           </div>
-                          <ArrowRight className="h-4 w-4 text-gray-400 transition-all group-hover:translate-x-1 group-hover:text-indigo-600" />
+                          <ArrowRight className="h-4 w-4 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-indigo-600" />
                         </div>
                       </CommandItem>
                     ))}
@@ -338,8 +342,8 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
           </CommandList>
 
           {/* Footer */}
-          <div className="border-t bg-gray-50/50 p-3">
-            <div className="flex items-center justify-between text-xs text-gray-500">
+          <div className="border-t bg-muted/50 p-3">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
                   <kbd className="rounded border bg-white px-1.5 py-0.5">↑</kbd>

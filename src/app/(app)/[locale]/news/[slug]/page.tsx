@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { getNewsBySlug, type SupportedLocale } from '@/lib/payload-data'
 import type { Media, News, NewsContentBlock, NewsTag, User as PayloadUser } from '@/payload-types'
 import { FloatingNav } from '@/components/FloatingNav'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { Calendar, User, Tag } from 'lucide-react'
 import { SectionHeaderBlock } from '@/components/SectionHeaderBlock'
 import { MarkdownRichTextBlock } from '@/components/MarkdownRichTextBlock'
@@ -84,7 +85,7 @@ export default async function NewsArticlePage(props: PageProps) {
         siteIcon={<Calendar className="h-4 w-4 text-indigo-600" />}
         badgeText="News Article"
       />
-      <NewsArticleRenderer article={article} />
+      <NewsArticleRenderer article={article} locale={localeString} />
     </div>
   )
 }
@@ -93,13 +94,21 @@ export default async function NewsArticlePage(props: PageProps) {
  * News Article Renderer Component
  * Renders article with metadata, featured image, and content blocks
  */
-function NewsArticleRenderer({ article }: { article: News }) {
+function NewsArticleRenderer({ article, locale }: { article: News; locale: string }) {
   const { publishedDate, featuredImage, tags, author, blocks } = article
   const title = article.title as unknown as string
   const excerpt = article.excerpt as unknown as string
 
   return (
     <div className="container mx-auto px-4 py-12">
+      {/* Breadcrumbs */}
+      <div className="mx-auto max-w-4xl">
+        <Breadcrumbs
+          locale={locale}
+          items={[{ label: 'News', href: `/${locale}/news` }, { label: title }]}
+        />
+      </div>
+
       {/* Article Header */}
       <header className="mx-auto mb-12 max-w-4xl">
         {/* Tags */}

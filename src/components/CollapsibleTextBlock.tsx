@@ -128,7 +128,7 @@ We provide comprehensive support to ensure your success:
 
 export function CollapsibleTextBlock() {
   return (
-    <section className="bg-gradient-to-br from-gray-50 to-indigo-50/30 py-20">
+    <section className="bg-gradient-to-br from-muted to-indigo-50/30 py-20">
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-teal-50 px-4 py-2">
@@ -136,7 +136,7 @@ export function CollapsibleTextBlock() {
             <span className="text-sm text-teal-700">Help Center</span>
           </div>
           <h2 className="mb-4 text-4xl">Frequently Asked Questions</h2>
-          <p className="mx-auto max-w-2xl text-gray-600">
+          <p className="mx-auto max-w-2xl text-muted-foreground">
             Find answers to common questions about our services, pricing, and support
           </p>
         </div>
@@ -147,7 +147,7 @@ export function CollapsibleTextBlock() {
               <AccordionItem
                 key={item.id}
                 value={item.id}
-                className="rounded-xl border border-gray-200 bg-white px-6 shadow-sm transition-all duration-300 hover:shadow-lg data-[state=open]:border-indigo-200 data-[state=open]:shadow-lg"
+                className="rounded-xl border border-border bg-white px-6 shadow-sm transition-all duration-300 hover:shadow-lg data-[state=open]:border-indigo-200 data-[state=open]:shadow-lg"
               >
                 <AccordionTrigger className="py-5 text-left hover:no-underline">
                   <span className="flex items-start gap-3">
@@ -156,7 +156,7 @@ export function CollapsibleTextBlock() {
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className="pb-5">
-                  <div className="prose prose-sm max-w-none whitespace-pre-line pl-8 text-gray-600">
+                  <div className="prose prose-sm max-w-none whitespace-pre-line pl-8 text-muted-foreground">
                     {item.answer}
                   </div>
                 </AccordionContent>
