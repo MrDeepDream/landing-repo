@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import {
   ChevronDown,
+  ChevronRight,
   Globe,
   Eye,
   Facebook,
@@ -16,6 +17,11 @@ import {
   Menu,
   Search,
   Sparkles,
+  Home,
+  Newspaper,
+  Users,
+  BookOpen,
+  MessageCircle,
 } from 'lucide-react'
 import { Button } from './ui/button'
 import {
@@ -327,64 +333,188 @@ export function Header({
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent>
-                <SheetTitle>Navigation Menu</SheetTitle>
-                <SheetDescription>Browse through our main navigation sections</SheetDescription>
-                <div className="mt-4 space-y-4">
-                  {Array.isArray(navigationData)
-                    ? // CMS format: 3-level navigation
-                      navigationData.map((item) => (
-                        <div key={item.id} className="space-y-2">
-                          <p className="text-sm font-medium">{item.label}</p>
-                          {item.children && item.children.length > 0 && (
-                            <div className="ml-4 space-y-1">
-                              {item.children.map((group) => (
-                                <div key={group.id}>
-                                  <p className="text-sm text-muted-foreground">{group.label}</p>
-                                  {group.items && group.items.length > 0 && (
-                                    <div className="ml-4 space-y-1">
-                                      {group.items.map((link) => (
-                                        <Link
-                                          key={link.id}
-                                          href={link.href}
-                                          className="block py-1 text-sm text-muted-foreground hover:text-indigo-600"
-                                          {...(link.openInNewTab
-                                            ? { target: '_blank', rel: 'noopener noreferrer' }
-                                            : {})}
-                                        >
-                                          {link.label}
-                                        </Link>
-                                      ))}
-                                    </div>
-                                  )}
+              <SheetContent
+                side="right"
+                className="w-full border-l-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-0 sm:max-w-md [&>button]:text-slate-400 [&>button]:hover:text-white [&>button]:focus:ring-slate-700"
+              >
+                {/* Decorative ambient orbs */}
+                <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                  <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-indigo-600/20 blur-3xl" />
+                  <div className="absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-purple-600/15 blur-3xl" />
+                  <div className="absolute right-10 top-1/2 h-40 w-40 rounded-full bg-cyan-500/10 blur-2xl" />
+                </div>
+
+                {/* Header section */}
+                <div className="relative border-b border-slate-800/60 px-6 pb-6 pt-8">
+                  <SheetTitle className="flex items-center gap-3 text-xl font-semibold tracking-tight text-white">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/30">
+                      <Sparkles className="h-5 w-5 text-white" />
+                    </div>
+                    {siteTitle}
+                  </SheetTitle>
+                  <SheetDescription className="mt-2 text-sm text-slate-400">
+                    {siteTagline}
+                  </SheetDescription>
+                </div>
+
+                {/* Navigation content */}
+                <div className="relative flex-1 overflow-y-auto px-4 py-6">
+                  <nav className="space-y-2">
+                    {Array.isArray(navigationData)
+                      ? // CMS format: 3-level navigation with icons and staggered animation
+                        navigationData.map((item, index) => {
+                          // Icon mapping for Ukrainian labels
+                          const getNavIcon = (label: string) => {
+                            const iconMap: Record<string, typeof Home> = {
+                              Головна: Home,
+                              Новини: Newspaper,
+                              'Про нас': Users,
+                              Ресурси: BookOpen,
+                              Спільнота: MessageCircle,
+                            }
+                            return iconMap[label] || ChevronRight
+                          }
+                          const NavIcon = getNavIcon(item.label)
+
+                          return (
+                            <div
+                              key={item.id}
+                              className="animate-in fade-in slide-in-from-right-4"
+                              style={{
+                                animationDelay: `${index * 75}ms`,
+                                animationFillMode: 'backwards',
+                              }}
+                            >
+                              {/* Main nav item - 48px touch target */}
+                              <div className="group flex min-h-[48px] items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 hover:bg-slate-800/50">
+                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-800/80 text-slate-400 ring-1 ring-slate-700/50 transition-all duration-200 group-hover:bg-indigo-500/20 group-hover:text-indigo-400 group-hover:ring-indigo-500/30">
+                                  <NavIcon className="h-4 w-4" />
                                 </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ))
-                    : // Hardcoded format
-                      Object.entries(navigationData).map(([mainItem, subItems]) => (
-                        <div key={mainItem} className="space-y-2">
-                          <p className="text-sm font-medium">{mainItem}</p>
-                          {Object.entries(subItems as Record<string, string[]>).map(
-                            ([category, items]) => (
-                              <div key={category} className="ml-4 space-y-1">
-                                <p className="text-sm text-muted-foreground">{category}</p>
-                                {items.map((item) => (
-                                  <a
-                                    key={item}
-                                    href="#"
-                                    className="ml-4 block py-1 text-sm text-muted-foreground hover:text-indigo-600"
-                                  >
-                                    {item}
-                                  </a>
-                                ))}
+                                <span className="text-base font-medium text-white transition-colors group-hover:text-indigo-300">
+                                  {item.label}
+                                </span>
                               </div>
-                            )
-                          )}
-                        </div>
-                      ))}
+
+                              {/* Sub-navigation */}
+                              {item.children && item.children.length > 0 && (
+                                <div className="ml-4 mt-1 space-y-1 border-l border-slate-800 pl-4">
+                                  {item.children.map((group) => (
+                                    <div key={group.id} className="py-1">
+                                      <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                                        {group.label}
+                                      </p>
+                                      {group.items && group.items.length > 0 && (
+                                        <div className="space-y-0.5">
+                                          {group.items.map((link) => (
+                                            <Link
+                                              key={link.id}
+                                              href={link.href}
+                                              className="flex min-h-[44px] items-center rounded-lg px-3 py-2 text-sm text-slate-300 transition-all duration-150 hover:bg-slate-800/40 hover:text-white focus:bg-slate-800/40 focus:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                                              {...(link.openInNewTab
+                                                ? { target: '_blank', rel: 'noopener noreferrer' }
+                                                : {})}
+                                            >
+                                              {link.label}
+                                            </Link>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })
+                      : // Hardcoded format with staggered animation
+                        Object.entries(navigationData).map(([mainItem, subItems], index) => {
+                          // Icon mapping for English labels
+                          const getNavIcon = (label: string) => {
+                            const iconMap: Record<string, typeof Home> = {
+                              About: Users,
+                              Services: BookOpen,
+                              Products: Sparkles,
+                              Resources: BookOpen,
+                            }
+                            return iconMap[label] || ChevronRight
+                          }
+                          const NavIcon = getNavIcon(mainItem)
+
+                          return (
+                            <div
+                              key={mainItem}
+                              className="animate-in fade-in slide-in-from-right-4"
+                              style={{
+                                animationDelay: `${index * 75}ms`,
+                                animationFillMode: 'backwards',
+                              }}
+                            >
+                              {/* Main nav item - 48px touch target */}
+                              <div className="group flex min-h-[48px] items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 hover:bg-slate-800/50">
+                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-800/80 text-slate-400 ring-1 ring-slate-700/50 transition-all duration-200 group-hover:bg-indigo-500/20 group-hover:text-indigo-400 group-hover:ring-indigo-500/30">
+                                  <NavIcon className="h-4 w-4" />
+                                </div>
+                                <span className="text-base font-medium text-white transition-colors group-hover:text-indigo-300">
+                                  {mainItem}
+                                </span>
+                              </div>
+
+                              {/* Sub-navigation */}
+                              <div className="ml-4 mt-1 space-y-1 border-l border-slate-800 pl-4">
+                                {Object.entries(subItems as Record<string, string[]>).map(
+                                  ([category, items]) => (
+                                    <div key={category} className="py-1">
+                                      <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                                        {category}
+                                      </p>
+                                      <div className="space-y-0.5">
+                                        {items.map((item) => (
+                                          <a
+                                            key={item}
+                                            href="#"
+                                            className="flex min-h-[44px] items-center rounded-lg px-3 py-2 text-sm text-slate-300 transition-all duration-150 hover:bg-slate-800/40 hover:text-white focus:bg-slate-800/40 focus:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                                          >
+                                            {item}
+                                          </a>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })}
+                  </nav>
+                </div>
+
+                {/* Footer section with language switcher */}
+                <div className="relative mt-auto border-t border-slate-800/60 px-6 py-5">
+                  <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-500">
+                    Language
+                  </p>
+                  <div className="flex gap-2">
+                    {availableLocales.map((locale) => {
+                      const flagEmoji =
+                        locale.code === 'uk' ? '🇺🇦' : locale.code === 'en' ? '🇬🇧' : '🇪🇸'
+                      const isActive = locale.code === localeString
+
+                      return (
+                        <Link
+                          key={locale.code}
+                          href={`/${locale.code}`}
+                          className={`flex min-h-[48px] min-w-[48px] flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 ${
+                            isActive
+                              ? 'bg-indigo-500/20 text-indigo-300 ring-1 ring-indigo-500/40'
+                              : 'bg-slate-800/50 text-slate-300 ring-1 ring-slate-700/50 hover:bg-slate-800 hover:text-white'
+                          }`}
+                        >
+                          <span className="text-lg">{flagEmoji}</span>
+                          <span className="hidden sm:inline">{locale.code.toUpperCase()}</span>
+                        </Link>
+                      )
+                    })}
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
