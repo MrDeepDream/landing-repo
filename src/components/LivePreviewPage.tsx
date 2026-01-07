@@ -3,9 +3,20 @@
 import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
-import type { Page, PageBlock } from '@/payload-types'
+import type {
+  Page,
+  PageBlock,
+  PersonPlaceBlock as PersonPlaceBlockType,
+  TabBlock as TabBlockType,
+  MediaBlock as MediaBlockType,
+  AccordionBlock as AccordionBlockType,
+} from '@/payload-types'
 import { SectionHeaderBlock } from '@/components/SectionHeaderBlock'
 import { MarkdownRichTextBlock } from '@/components/MarkdownRichTextBlock'
+import { PersonPlaceBlock } from '@/components/PersonPlaceBlock'
+import { TabBlock } from '@/components/TabBlock'
+import { MediaBlock } from '@/components/MediaBlock'
+import { AccordionBlock } from '@/components/AccordionBlock'
 import type { IconName } from '@/lib/icons'
 import type { GradientPreset } from '@/lib/gradients'
 
@@ -308,6 +319,39 @@ function BlockRenderer({ block }: { block: PageBlock }) {
             </p>
           </div>
         </div>
+      )
+
+    case 'personPlaceBlock':
+      return (
+        <PersonPlaceBlock
+          displayMode={block.displayMode || 'grid'}
+          itemsPerRow={block.itemsPerRow ?? undefined}
+          items={block.items as PersonPlaceBlockType['items']}
+        />
+      )
+
+    case 'tabBlock':
+      return <TabBlock tabs={block.tabs as TabBlockType['tabs']} />
+
+    case 'mediaBlock':
+      return (
+        <MediaBlock
+          title={block.title ?? undefined}
+          displayMode={block.displayMode || 'grid'}
+          columns={block.columns ?? undefined}
+          media={block.media as MediaBlockType['media']}
+          enableLightbox={block.enableLightbox ?? undefined}
+        />
+      )
+
+    case 'accordionBlock':
+      return (
+        <AccordionBlock
+          title={block.title ?? undefined}
+          description={block.description ?? undefined}
+          allowMultiple={block.allowMultiple ?? undefined}
+          accordionItems={block.accordionItems as AccordionBlockType['accordionItems']}
+        />
       )
 
     default: {

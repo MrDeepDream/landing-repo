@@ -1,7 +1,15 @@
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { getPageBySlug, getSiteData, type SupportedLocale } from '@/lib/payload-data'
-import type { Media, Page, PageBlock } from '@/payload-types'
+import type {
+  Media,
+  Page,
+  PageBlock,
+  PersonPlaceBlock as PersonPlaceBlockType,
+  TabBlock as TabBlockType,
+  MediaBlock as MediaBlockType,
+  AccordionBlock as AccordionBlockType,
+} from '@/payload-types'
 import { FloatingNav } from '@/components/FloatingNav'
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/Breadcrumbs'
 import { Building2 } from 'lucide-react'
@@ -9,6 +17,10 @@ import { SectionHeaderBlock } from '@/components/SectionHeaderBlock'
 import { MarkdownRichTextBlock } from '@/components/MarkdownRichTextBlock'
 import { LivePreviewPage } from '@/components/LivePreviewPage'
 import { NewsBlockServer } from '@/components/NewsBlockServer'
+import { PersonPlaceBlock } from '@/components/PersonPlaceBlock'
+import { TabBlock } from '@/components/TabBlock'
+import { MediaBlock } from '@/components/MediaBlock'
+import { AccordionBlock } from '@/components/AccordionBlock'
 import type { IconName } from '@/lib/icons'
 import type { GradientPreset } from '@/lib/gradients'
 import { generateSEOMetadata, type SEOData } from '@/lib/seo'
@@ -391,6 +403,39 @@ async function BlockRenderer({
           }}
           locale={locale as SupportedLocale}
           draft={draft}
+        />
+      )
+
+    case 'personPlaceBlock':
+      return (
+        <PersonPlaceBlock
+          displayMode={block.displayMode || 'grid'}
+          itemsPerRow={block.itemsPerRow ?? undefined}
+          items={block.items as PersonPlaceBlockType['items']}
+        />
+      )
+
+    case 'tabBlock':
+      return <TabBlock tabs={block.tabs as TabBlockType['tabs']} />
+
+    case 'mediaBlock':
+      return (
+        <MediaBlock
+          title={block.title ?? undefined}
+          displayMode={block.displayMode || 'grid'}
+          columns={block.columns ?? undefined}
+          media={block.media as MediaBlockType['media']}
+          enableLightbox={block.enableLightbox ?? undefined}
+        />
+      )
+
+    case 'accordionBlock':
+      return (
+        <AccordionBlock
+          title={block.title ?? undefined}
+          description={block.description ?? undefined}
+          allowMultiple={block.allowMultiple ?? undefined}
+          accordionItems={block.accordionItems as AccordionBlockType['accordionItems']}
         />
       )
 

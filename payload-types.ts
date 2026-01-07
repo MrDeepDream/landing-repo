@@ -139,6 +139,10 @@ export type PageBlock =
   | ImageBlock
   | CallToActionBlock
   | NewsBlock
+  | PersonPlaceBlock
+  | TabBlock
+  | MediaBlock
+  | AccordionBlock
 
 export interface SectionHeaderBlock {
   id?: string | null
@@ -200,6 +204,101 @@ export interface NewsBlock {
   enableFilters?: boolean | null
   enablePagination?: boolean | null
   itemsPerPage?: number | null
+}
+
+export interface PersonPlaceBlock {
+  id?: string | null
+  blockType: 'personPlaceBlock'
+  displayMode: 'grid' | 'fullRow'
+  itemsPerRow?: '3' | '4' | null
+  items: {
+    id?: string | null
+    photo: string | Media
+    name: string
+    subtitle?: string | null
+    description?: string | null
+    customFields?: {
+      id?: string | null
+      label: string
+      value: string
+    }[] | null
+    readMoreLink?: {
+      enabled?: boolean | null
+      url?: string | null
+      openInNewTab?: boolean | null
+    } | null
+  }[]
+}
+
+export interface TabBlock {
+  id?: string | null
+  blockType: 'tabBlock'
+  tabs: {
+    id?: string | null
+    tabName: string
+    contentType: 'richText' | 'news' | 'images' | 'records'
+    richTextContent?: Record<string, unknown> | null
+    newsSource?: 'latest' | 'byTag' | 'manual' | null
+    newsTag?: string | NewsTag | null
+    selectedNews?: (string | News)[] | null
+    newsLimit?: number | null
+    images?: {
+      id?: string | null
+      image: string | Media
+      caption?: string | null
+    }[] | null
+    records?: {
+      id?: string | null
+      recordType: 'richText' | 'image' | 'video' | 'imageCard'
+      recordRichText?: Record<string, unknown> | null
+      recordImage?: string | Media | null
+      videoUrl?: string | null
+      cardImage?: string | Media | null
+      cardTitle?: string | null
+      cardDescription?: string | null
+      cardLink?: string | null
+    }[] | null
+  }[]
+}
+
+export interface MediaBlock {
+  id?: string | null
+  blockType: 'mediaBlock'
+  title?: string | null
+  displayMode: 'grid' | 'masonry' | 'carousel'
+  columns?: '2' | '3' | '4' | null
+  media: {
+    id?: string | null
+    image: string | Media
+    caption?: string | null
+  }[]
+  enableLightbox?: boolean | null
+}
+
+export interface AccordionBlock {
+  id?: string | null
+  blockType: 'accordionBlock'
+  title?: string | null
+  description?: string | null
+  allowMultiple?: boolean | null
+  accordionItems: {
+    id?: string | null
+    itemTitle: string
+    contentItems: {
+      id?: string | null
+      contentType: 'text' | 'richText' | 'image' | 'linkList'
+      text?: string | null
+      richText?: Record<string, unknown> | null
+      image?: string | Media | null
+      imageCaption?: string | null
+      links?: {
+        id?: string | null
+        linkText: string
+        linkUrl: string
+        openInNewTab?: boolean | null
+      }[] | null
+    }[]
+  }[]
 }
 
 /**

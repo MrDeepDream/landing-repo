@@ -10,12 +10,23 @@ import { CollapsibleTextBlock } from '@/components/CollapsibleTextBlock'
 import { SectionHeaderBlock } from '@/components/SectionHeaderBlock'
 import { LivePreviewPage } from '@/components/LivePreviewPage'
 import { NewsBlockServer } from '@/components/NewsBlockServer'
+import { PersonPlaceBlock } from '@/components/PersonPlaceBlock'
+import { TabBlock } from '@/components/TabBlock'
+import { MediaBlock } from '@/components/MediaBlock'
+import { AccordionBlock } from '@/components/AccordionBlock'
 import { getHomePage, getSiteData, type SupportedLocale } from '@/lib/payload-data'
 import { sanitizeHtml } from '@/lib/sanitize'
 import type { IconName } from '@/lib/icons'
 import type { GradientPreset } from '@/lib/gradients'
 import { generateSEOMetadata } from '@/lib/seo'
-import type { Media, PageBlock } from '@/payload-types'
+import type {
+  Media,
+  PageBlock,
+  PersonPlaceBlock as PersonPlaceBlockType,
+  TabBlock as TabBlockType,
+  MediaBlock as MediaBlockType,
+  AccordionBlock as AccordionBlockType,
+} from '@/payload-types'
 
 interface PageProps {
   params: Promise<{ locale: string }>
@@ -200,6 +211,38 @@ export default async function HomePage(props: PageProps) {
               }}
               locale={localeString as SupportedLocale}
               draft={isPreview}
+            />
+          )
+        case 'personPlaceBlock':
+          return (
+            <PersonPlaceBlock
+              key={index}
+              displayMode={block.displayMode || 'grid'}
+              itemsPerRow={block.itemsPerRow ?? undefined}
+              items={block.items as PersonPlaceBlockType['items']}
+            />
+          )
+        case 'tabBlock':
+          return <TabBlock key={index} tabs={block.tabs as TabBlockType['tabs']} />
+        case 'mediaBlock':
+          return (
+            <MediaBlock
+              key={index}
+              title={block.title ?? undefined}
+              displayMode={block.displayMode || 'grid'}
+              columns={block.columns ?? undefined}
+              media={block.media as MediaBlockType['media']}
+              enableLightbox={block.enableLightbox ?? undefined}
+            />
+          )
+        case 'accordionBlock':
+          return (
+            <AccordionBlock
+              key={index}
+              title={block.title ?? undefined}
+              description={block.description ?? undefined}
+              allowMultiple={block.allowMultiple ?? undefined}
+              accordionItems={block.accordionItems as AccordionBlockType['accordionItems']}
             />
           )
         default:

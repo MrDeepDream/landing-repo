@@ -2,8 +2,13 @@ import React from 'react'
 import { SectionHeaderBlock } from './SectionHeaderBlock'
 // import { RichTextBlock } from './RichTextBlock' // TODO: Component needs to be updated
 import { MarkdownRichTextBlock } from './MarkdownRichTextBlock'
+import { PersonPlaceBlock } from './PersonPlaceBlock'
+import { AccordionBlock } from './AccordionBlock'
+import { TabBlock } from './TabBlock'
+import { MediaBlock } from './MediaBlock'
 import type { IconName } from '@/lib/icons'
 import type { GradientPreset } from '@/lib/gradients'
+import type { Media } from '@/payload-types'
 
 // Type definitions for blocks
 interface SectionHeaderBlockData {
@@ -54,12 +59,112 @@ interface CallToActionBlockData {
   id?: string
 }
 
+interface PersonPlaceBlockData {
+  blockType: 'personPlaceBlock'
+  displayMode: 'grid' | 'fullRow'
+  itemsPerRow?: '3' | '4'
+  items: {
+    photo: string | { url?: string | null; alt?: string }
+    name: string
+    subtitle?: string
+    description?: string
+    customFields?: { label: string; value: string; id?: string }[]
+    readMoreLink?: { enabled?: boolean; url?: string; openInNewTab?: boolean }
+    id?: string
+  }[]
+  id?: string
+}
+
+interface AccordionBlockLinkItem {
+  linkText: string
+  linkUrl: string
+  openInNewTab?: boolean
+  id?: string
+}
+
+interface AccordionBlockContentItem {
+  contentType: 'text' | 'richText' | 'image' | 'linkList'
+  text?: string
+  richText?: Record<string, unknown> | null
+  image?: string | { url?: string | null; alt?: string; width?: number; height?: number }
+  imageCaption?: string
+  links?: AccordionBlockLinkItem[]
+  id?: string
+}
+
+interface AccordionBlockItemData {
+  itemTitle: string
+  contentItems: AccordionBlockContentItem[]
+  id?: string
+}
+
+interface AccordionBlockData {
+  blockType: 'accordionBlock'
+  title?: string
+  description?: string
+  allowMultiple?: boolean
+  accordionItems: AccordionBlockItemData[]
+  id?: string
+}
+
+interface TabBlockImage {
+  image: string | Media
+  caption?: string
+}
+
+interface TabBlockRecord {
+  recordType: 'richText' | 'image' | 'video' | 'imageCard'
+  recordRichText?: Record<string, unknown> | null
+  recordImage?: string | Media
+  videoUrl?: string
+  cardImage?: string | Media
+  cardTitle?: string
+  cardDescription?: string
+  cardLink?: string
+}
+
+interface TabBlockTab {
+  tabName: string
+  contentType: 'richText' | 'news' | 'images' | 'records'
+  richTextContent?: Record<string, unknown> | null
+  newsSource?: 'latest' | 'byTag' | 'manual'
+  newsTag?: string | { id: string; name: string }
+  selectedNews?: (string | { id: string; title: string })[]
+  newsLimit?: number
+  images?: TabBlockImage[]
+  records?: TabBlockRecord[]
+}
+
+interface TabBlockData {
+  blockType: 'tabBlock'
+  tabs: TabBlockTab[]
+  id?: string
+}
+
+interface MediaBlockData {
+  blockType: 'mediaBlock'
+  title?: string | null
+  displayMode: 'grid' | 'masonry' | 'carousel'
+  columns?: '2' | '3' | '4'
+  media: {
+    image: string | { url?: string | null; alt?: string | null }
+    caption?: string | null
+    id?: string
+  }[]
+  enableLightbox?: boolean
+  id?: string
+}
+
 type BlockData =
   | SectionHeaderBlockData
   | RichTextBlockData
   | MarkdownRichTextBlockData
   | ImageBlockData
   | CallToActionBlockData
+  | PersonPlaceBlockData
+  | AccordionBlockData
+  | TabBlockData
+  | MediaBlockData
 
 interface RenderBlocksProps {
   blocks: BlockData[]
@@ -138,6 +243,42 @@ export function RenderBlocks({ blocks, className = '' }: RenderBlocksProps) {
                   </a>
                 )}
               </div>
+            )
+
+          case 'personPlaceBlock':
+            return (
+              <PersonPlaceBlock
+                key={key}
+                displayMode={block.displayMode}
+                itemsPerRow={block.itemsPerRow}
+                items={block.items}
+              />
+            )
+
+          case 'accordionBlock':
+            return (
+              <AccordionBlock
+                key={key}
+                title={block.title}
+                description={block.description}
+                allowMultiple={block.allowMultiple}
+                accordionItems={block.accordionItems}
+              />
+            )
+
+          case 'tabBlock':
+            return <TabBlock key={key} tabs={block.tabs} />
+
+          case 'mediaBlock':
+            return (
+              <MediaBlock
+                key={key}
+                title={block.title}
+                displayMode={block.displayMode}
+                columns={block.columns}
+                media={block.media}
+                enableLightbox={block.enableLightbox}
+              />
             )
 
           default:

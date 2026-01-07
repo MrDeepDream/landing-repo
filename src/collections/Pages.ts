@@ -611,6 +611,523 @@ export const Pages: CollectionConfig = {
                     },
                   ],
                 },
+                {
+                  slug: 'accordionBlock',
+                  dbName: 'acc_blk',
+                  labels: {
+                    singular: 'Accordion Block',
+                    plural: 'Accordion Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section title above the accordion',
+                      },
+                    },
+                    {
+                      name: 'description',
+                      type: 'textarea',
+                      localized: true,
+                      admin: {
+                        description: 'Optional description text',
+                      },
+                    },
+                    {
+                      name: 'allowMultiple',
+                      type: 'checkbox',
+                      defaultValue: false,
+                      admin: {
+                        description: 'Allow multiple accordion items to be open at once',
+                      },
+                    },
+                    {
+                      name: 'accordionItems',
+                      type: 'array',
+                      dbName: 'acc_items',
+                      required: true,
+                      minRows: 1,
+                      labels: {
+                        singular: 'Accordion Item',
+                        plural: 'Accordion Items',
+                      },
+                      fields: [
+                        {
+                          name: 'itemTitle',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'Title shown in accordion header (clickable)',
+                          },
+                        },
+                        {
+                          name: 'contentItems',
+                          type: 'array',
+                          dbName: 'cnt_items',
+                          required: true,
+                          minRows: 1,
+                          labels: {
+                            singular: 'Content Item',
+                            plural: 'Content Items',
+                          },
+                          fields: [
+                            {
+                              name: 'contentType',
+                              type: 'select',
+                              dbName: 'cnt_type',
+                              required: true,
+                              defaultValue: 'text',
+                              options: [
+                                { label: 'Text', value: 'text' },
+                                { label: 'Rich Text', value: 'richText' },
+                                { label: 'Image', value: 'image' },
+                                { label: 'Link List', value: 'linkList' },
+                              ],
+                            },
+                            // Text content
+                            {
+                              name: 'text',
+                              type: 'textarea',
+                              localized: true,
+                              admin: {
+                                condition: (_data, siblingData) =>
+                                  siblingData?.contentType === 'text',
+                              },
+                            },
+                            // Rich text content
+                            {
+                              name: 'richText',
+                              type: 'richText',
+                              localized: true,
+                              admin: {
+                                condition: (_data, siblingData) =>
+                                  siblingData?.contentType === 'richText',
+                              },
+                            },
+                            // Image content
+                            {
+                              name: 'image',
+                              type: 'upload',
+                              relationTo: 'media',
+                              admin: {
+                                condition: (_data, siblingData) =>
+                                  siblingData?.contentType === 'image',
+                              },
+                            },
+                            {
+                              name: 'imageCaption',
+                              type: 'text',
+                              localized: true,
+                              admin: {
+                                condition: (_data, siblingData) =>
+                                  siblingData?.contentType === 'image',
+                              },
+                            },
+                            // Link list content
+                            {
+                              name: 'links',
+                              type: 'array',
+                              admin: {
+                                condition: (_data, siblingData) =>
+                                  siblingData?.contentType === 'linkList',
+                              },
+                              fields: [
+                                {
+                                  name: 'linkText',
+                                  type: 'text',
+                                  required: true,
+                                  localized: true,
+                                },
+                                {
+                                  name: 'linkUrl',
+                                  type: 'text',
+                                  required: true,
+                                },
+                                {
+                                  name: 'openInNewTab',
+                                  type: 'checkbox',
+                                  defaultValue: false,
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  slug: 'personPlaceBlock',
+                  labels: {
+                    singular: 'Person/Place Block',
+                    plural: 'Person/Place Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'displayMode',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'grid',
+                      options: [
+                        { label: 'Grid Mode', value: 'grid' },
+                        { label: 'Full Row Mode', value: 'fullRow' },
+                      ],
+                    },
+                    {
+                      name: 'itemsPerRow',
+                      type: 'select',
+                      defaultValue: '3',
+                      admin: {
+                        condition: (_data, siblingData) => siblingData?.displayMode === 'grid',
+                      },
+                      options: [
+                        { label: '3 Items per Row', value: '3' },
+                        { label: '4 Items per Row', value: '4' },
+                      ],
+                    },
+                    {
+                      name: 'items',
+                      type: 'array',
+                      required: true,
+                      minRows: 1,
+                      fields: [
+                        {
+                          name: 'photo',
+                          type: 'upload',
+                          relationTo: 'media',
+                          required: true,
+                        },
+                        {
+                          name: 'name',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                        },
+                        {
+                          name: 'subtitle',
+                          type: 'text',
+                          localized: true,
+                          admin: { description: 'Role, position, or short description' },
+                        },
+                        {
+                          name: 'description',
+                          type: 'textarea',
+                          localized: true,
+                          admin: {
+                            condition: (_data, _siblingData, { blockData }) =>
+                              blockData?.displayMode === 'fullRow',
+                          },
+                        },
+                        {
+                          name: 'customFields',
+                          type: 'array',
+                          admin: {
+                            condition: (_data, _siblingData, { blockData }) =>
+                              blockData?.displayMode === 'fullRow',
+                          },
+                          fields: [
+                            { name: 'label', type: 'text', required: true, localized: true },
+                            { name: 'value', type: 'text', required: true, localized: true },
+                          ],
+                        },
+                        {
+                          name: 'readMoreLink',
+                          type: 'group',
+                          fields: [
+                            { name: 'enabled', type: 'checkbox', defaultValue: false },
+                            {
+                              name: 'url',
+                              type: 'text',
+                              admin: { condition: (_data, siblingData) => siblingData?.enabled },
+                            },
+                            {
+                              name: 'openInNewTab',
+                              type: 'checkbox',
+                              defaultValue: false,
+                              admin: { condition: (_data, siblingData) => siblingData?.enabled },
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  slug: 'tabBlock',
+                  dbName: 'tab_blk',
+                  labels: {
+                    singular: 'Tab Block',
+                    plural: 'Tab Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'tabs',
+                      type: 'array',
+                      dbName: 'tb_tabs',
+                      required: true,
+                      minRows: 1,
+                      fields: [
+                        {
+                          name: 'tabName',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                        },
+                        {
+                          name: 'contentType',
+                          type: 'select',
+                          required: true,
+                          defaultValue: 'richText',
+                          options: [
+                            { label: 'Rich Text', value: 'richText' },
+                            { label: 'News', value: 'news' },
+                            { label: 'Images', value: 'images' },
+                            { label: 'Records', value: 'records' },
+                          ],
+                        },
+                        // Rich Text content
+                        {
+                          name: 'richTextContent',
+                          type: 'richText',
+                          localized: true,
+                          admin: {
+                            condition: (_data, siblingData) =>
+                              siblingData?.contentType === 'richText',
+                          },
+                        },
+                        // News content
+                        {
+                          name: 'newsSource',
+                          type: 'select',
+                          defaultValue: 'latest',
+                          admin: {
+                            condition: (_data, siblingData) => siblingData?.contentType === 'news',
+                          },
+                          options: [
+                            { label: 'Latest News', value: 'latest' },
+                            { label: 'By Tag', value: 'byTag' },
+                            { label: 'Manual Selection', value: 'manual' },
+                          ],
+                        },
+                        {
+                          name: 'newsTag',
+                          type: 'relationship',
+                          relationTo: 'news-tags',
+                          admin: {
+                            condition: (_data, siblingData) =>
+                              siblingData?.contentType === 'news' &&
+                              siblingData?.newsSource === 'byTag',
+                          },
+                        },
+                        {
+                          name: 'selectedNews',
+                          type: 'relationship',
+                          relationTo: 'news',
+                          hasMany: true,
+                          admin: {
+                            condition: (_data, siblingData) =>
+                              siblingData?.contentType === 'news' &&
+                              siblingData?.newsSource === 'manual',
+                          },
+                        },
+                        {
+                          name: 'newsLimit',
+                          type: 'number',
+                          defaultValue: 6,
+                          admin: {
+                            condition: (_data, siblingData) =>
+                              siblingData?.contentType === 'news' &&
+                              siblingData?.newsSource !== 'manual',
+                          },
+                        },
+                        // Images content
+                        {
+                          name: 'images',
+                          type: 'array',
+                          admin: {
+                            condition: (_data, siblingData) =>
+                              siblingData?.contentType === 'images',
+                          },
+                          fields: [
+                            {
+                              name: 'image',
+                              type: 'upload',
+                              relationTo: 'media',
+                              required: true,
+                            },
+                            {
+                              name: 'caption',
+                              type: 'text',
+                              localized: true,
+                            },
+                          ],
+                        },
+                        // Records content (flexible items)
+                        {
+                          name: 'records',
+                          type: 'array',
+                          dbName: 'tb_recs',
+                          admin: {
+                            condition: (_data, siblingData) =>
+                              siblingData?.contentType === 'records',
+                          },
+                          fields: [
+                            {
+                              name: 'recordType',
+                              type: 'select',
+                              required: true,
+                              defaultValue: 'richText',
+                              options: [
+                                { label: 'Rich Text', value: 'richText' },
+                                { label: 'Image', value: 'image' },
+                                { label: 'Video', value: 'video' },
+                                { label: 'Image Card', value: 'imageCard' },
+                              ],
+                            },
+                            // Rich text record
+                            {
+                              name: 'recordRichText',
+                              type: 'richText',
+                              localized: true,
+                              admin: {
+                                condition: (_data, siblingData) =>
+                                  siblingData?.recordType === 'richText',
+                              },
+                            },
+                            // Image record
+                            {
+                              name: 'recordImage',
+                              type: 'upload',
+                              relationTo: 'media',
+                              admin: {
+                                condition: (_data, siblingData) =>
+                                  siblingData?.recordType === 'image',
+                              },
+                            },
+                            // Video record
+                            {
+                              name: 'videoUrl',
+                              type: 'text',
+                              admin: {
+                                description: 'YouTube, Vimeo, or other video platform URL',
+                                condition: (_data, siblingData) =>
+                                  siblingData?.recordType === 'video',
+                              },
+                            },
+                            // Image Card record (image with title, desc, link)
+                            {
+                              name: 'cardImage',
+                              type: 'upload',
+                              relationTo: 'media',
+                              admin: {
+                                condition: (_data, siblingData) =>
+                                  siblingData?.recordType === 'imageCard',
+                              },
+                            },
+                            {
+                              name: 'cardTitle',
+                              type: 'text',
+                              localized: true,
+                              admin: {
+                                condition: (_data, siblingData) =>
+                                  siblingData?.recordType === 'imageCard',
+                              },
+                            },
+                            {
+                              name: 'cardDescription',
+                              type: 'textarea',
+                              localized: true,
+                              admin: {
+                                condition: (_data, siblingData) =>
+                                  siblingData?.recordType === 'imageCard',
+                              },
+                            },
+                            {
+                              name: 'cardLink',
+                              type: 'text',
+                              admin: {
+                                description: 'Internal route (/page) or external URL (https://...)',
+                                condition: (_data, siblingData) =>
+                                  siblingData?.recordType === 'imageCard',
+                              },
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  slug: 'mediaBlock',
+                  labels: {
+                    singular: 'Media Gallery Block',
+                    plural: 'Media Gallery Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Optional title for the gallery section',
+                      },
+                    },
+                    {
+                      name: 'displayMode',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'grid',
+                      options: [
+                        { label: 'Grid', value: 'grid' },
+                        { label: 'Masonry', value: 'masonry' },
+                        { label: 'Carousel', value: 'carousel' },
+                      ],
+                    },
+                    {
+                      name: 'columns',
+                      type: 'select',
+                      defaultValue: '3',
+                      admin: {
+                        condition: (_data, siblingData) => siblingData?.displayMode !== 'carousel',
+                      },
+                      options: [
+                        { label: '2 Columns', value: '2' },
+                        { label: '3 Columns', value: '3' },
+                        { label: '4 Columns', value: '4' },
+                      ],
+                    },
+                    {
+                      name: 'media',
+                      type: 'array',
+                      required: true,
+                      minRows: 1,
+                      fields: [
+                        {
+                          name: 'image',
+                          type: 'upload',
+                          relationTo: 'media',
+                          required: true,
+                        },
+                        {
+                          name: 'caption',
+                          type: 'text',
+                          localized: true,
+                        },
+                      ],
+                    },
+                    {
+                      name: 'enableLightbox',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Allow clicking images to view full size',
+                      },
+                    },
+                  ],
+                },
               ],
             },
           ],
