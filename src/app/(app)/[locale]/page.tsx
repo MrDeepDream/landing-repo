@@ -2,7 +2,6 @@ import Image from 'next/image'
 import { CarouselBlock } from '@/components/CarouselBlock'
 import { SplitContentBlock } from '@/components/SplitContentBlock'
 import { EventCardsBlock } from '@/components/EventCardsBlock'
-import { RichTextBlock } from '@/components/RichTextBlock'
 import { MarkdownRichTextBlock } from '@/components/MarkdownRichTextBlock'
 import { IframeBlock } from '@/components/IframeBlock'
 import { ContactCardsBlock } from '@/components/ContactCardsBlock'
@@ -126,20 +125,6 @@ export default async function HomePage(props: PageProps) {
               headingLevel={block.headingLevel || 'h2'}
               enableAnimation={block.enableAnimation !== false}
             />
-          )
-        case 'richText':
-          return (
-            <div key={index} className="prose prose-lg max-w-none">
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: sanitizeHtml(
-                    typeof block.content === 'string'
-                      ? block.content
-                      : JSON.stringify(block.content)
-                  ),
-                }}
-              />
-            </div>
           )
         case 'imageBlock': {
           const image = block.image
@@ -298,9 +283,6 @@ export default async function HomePage(props: PageProps) {
 
       {/* Event cards with date/time - 2 rows x 3 cards */}
       <EventCardsBlock />
-
-      {/* Rich text block with markdown-style content */}
-      <RichTextBlock />
 
       {/* Iframe block with map */}
       <IframeBlock />

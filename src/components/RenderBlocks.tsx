@@ -1,6 +1,5 @@
 import React from 'react'
 import { SectionHeaderBlock } from './SectionHeaderBlock'
-// import { RichTextBlock } from './RichTextBlock' // TODO: Component needs to be updated
 import { MarkdownRichTextBlock } from './MarkdownRichTextBlock'
 import { PersonPlaceBlock } from './PersonPlaceBlock'
 import { AccordionBlock } from './AccordionBlock'
@@ -25,12 +24,6 @@ interface SectionHeaderBlockData {
   }
   headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
   enableAnimation?: boolean
-  id?: string
-}
-
-interface RichTextBlockData {
-  blockType: 'richText'
-  content: Record<string, unknown> | null
   id?: string
 }
 
@@ -158,7 +151,6 @@ interface MediaBlockData {
 
 type BlockData =
   | SectionHeaderBlockData
-  | RichTextBlockData
   | MarkdownRichTextBlockData
   | ImageBlockData
   | CallToActionBlockData
@@ -203,10 +195,6 @@ export async function RenderBlocks({
                 enableAnimation={block.enableAnimation}
               />
             )
-
-          case 'richText':
-            // TODO: RichTextBlock needs to be updated to accept content prop
-            return null // <RichTextBlock key={key} content={block.content} />
 
           case 'markdownText':
             return (

@@ -2,6 +2,7 @@ import { FolderSelectField as FolderSelectField_75518f57cb508ba1ad10b99f264f02c4
 import { MediaFolderBrowser as MediaFolderBrowser_29501197d01b0288abc103c27a316316 } from '@/components/admin/MediaFolderBrowser'
 import { IconSelectField as IconSelectField_f0d5d5d237abab817963acdd5e4194ca } from '@/fields/IconSelectField'
 import { GradientSelectField as GradientSelectField_e1af6e011ab0ef85e6da4aca11efbc96 } from '@/fields/GradientSelectField'
+import { MarkdownEditorField as MarkdownEditorField_ee1141961c4b017a704c7fab670e8de2 } from '@/fields/MarkdownEditorField'
 import { RscEntrySlateCell as RscEntrySlateCell_0e78253914a550fdacd75626f1dabe17 } from '@payloadcms/richtext-slate/rsc'
 import { RscEntrySlateField as RscEntrySlateField_0e78253914a550fdacd75626f1dabe17 } from '@payloadcms/richtext-slate/rsc'
 import { BoldLeafButton as BoldLeafButton_0b388c087d9de8c4f011dd323a130cfb } from '@payloadcms/richtext-slate/client'
@@ -45,7 +46,6 @@ import { UnorderedListElement as UnorderedListElement_0b388c087d9de8c4f011dd323a
 import { UploadElementButton as UploadElementButton_0b388c087d9de8c4f011dd323a130cfb } from '@payloadcms/richtext-slate/client'
 import { UploadElement as UploadElement_0b388c087d9de8c4f011dd323a130cfb } from '@payloadcms/richtext-slate/client'
 import { WithUpload as WithUpload_0b388c087d9de8c4f011dd323a130cfb } from '@payloadcms/richtext-slate/client'
-import { MarkdownEditorField as MarkdownEditorField_ee1141961c4b017a704c7fab670e8de2 } from '@/fields/MarkdownEditorField'
 import { SEOValidationField as SEOValidationField_12a658893d3da7fce824c71e0ab712b1 } from '@/fields/SEOValidationField'
 
 export const importMap = {
@@ -56,6 +56,8 @@ export const importMap = {
   '@/fields/IconSelectField#IconSelectField': IconSelectField_f0d5d5d237abab817963acdd5e4194ca,
   '@/fields/GradientSelectField#GradientSelectField':
     GradientSelectField_e1af6e011ab0ef85e6da4aca11efbc96,
+  '@/fields/MarkdownEditorField#MarkdownEditorField':
+    MarkdownEditorField_ee1141961c4b017a704c7fab670e8de2,
   '@payloadcms/richtext-slate/rsc#RscEntrySlateCell':
     RscEntrySlateCell_0e78253914a550fdacd75626f1dabe17,
   '@payloadcms/richtext-slate/rsc#RscEntrySlateField':
@@ -131,8 +133,6 @@ export const importMap = {
     UploadElementButton_0b388c087d9de8c4f011dd323a130cfb,
   '@payloadcms/richtext-slate/client#UploadElement': UploadElement_0b388c087d9de8c4f011dd323a130cfb,
   '@payloadcms/richtext-slate/client#WithUpload': WithUpload_0b388c087d9de8c4f011dd323a130cfb,
-  '@/fields/MarkdownEditorField#MarkdownEditorField':
-    MarkdownEditorField_ee1141961c4b017a704c7fab670e8de2,
   '@/fields/SEOValidationField#SEOValidationField':
     SEOValidationField_12a658893d3da7fce824c71e0ab712b1,
 }

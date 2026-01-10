@@ -387,20 +387,6 @@ export const Pages: CollectionConfig = {
                   ],
                 },
                 {
-                  slug: 'richText',
-                  labels: {
-                    singular: 'Rich Text Block',
-                    plural: 'Rich Text Blocks',
-                  },
-                  fields: [
-                    {
-                      name: 'content',
-                      type: 'richText',
-                      required: true,
-                    },
-                  ],
-                },
-                {
                   slug: 'markdownText',
                   labels: {
                     singular: 'Markdown Rich Text Block',
