@@ -2,9 +2,11 @@
 
 import React, { useMemo } from 'react'
 import { useField } from '@payloadcms/ui'
-import { CheckCircle, AlertCircle, XCircle, TrendingUp, Sparkles } from 'lucide-react'
+import { CheckCircle2, AlertTriangle, XCircle, TrendingUp, Sparkles } from 'lucide-react'
 
 import type { Media } from '@/payload-types'
+
+import './seo-validation.css'
 
 interface SEOCheck {
   label: string
@@ -294,30 +296,20 @@ export const SEOValidationField: React.FC = () => {
 
   // Determine overall status
   let overallStatus: 'excellent' | 'good' | 'needs-improvement' | 'poor'
-  let statusColor: string
-  let statusBg: string
   let statusIcon: React.ReactNode
 
   if (score >= 80) {
     overallStatus = 'excellent'
-    statusColor = 'text-green-400'
-    statusBg = 'bg-green-500/20'
-    statusIcon = <CheckCircle className="h-6 w-6" />
+    statusIcon = <CheckCircle2 size={28} />
   } else if (score >= 60) {
     overallStatus = 'good'
-    statusColor = 'text-blue-400'
-    statusBg = 'bg-blue-500/20'
-    statusIcon = <TrendingUp className="h-6 w-6" />
+    statusIcon = <TrendingUp size={28} />
   } else if (score >= 40) {
     overallStatus = 'needs-improvement'
-    statusColor = 'text-yellow-400'
-    statusBg = 'bg-yellow-500/20'
-    statusIcon = <AlertCircle className="h-6 w-6" />
+    statusIcon = <AlertTriangle size={28} />
   } else {
     overallStatus = 'poor'
-    statusColor = 'text-red-400'
-    statusBg = 'bg-red-500/20'
-    statusIcon = <XCircle className="h-6 w-6" />
+    statusIcon = <XCircle size={28} />
   }
 
   const passCount = checks.filter((c) => c.status === 'pass').length
@@ -325,286 +317,84 @@ export const SEOValidationField: React.FC = () => {
   const failCount = checks.filter((c) => c.status === 'fail').length
 
   return (
-    <div className="seo-validation-widget">
+    <div className="seo-validation">
       {/* Score Card */}
-      <div className="score-card">
-        <div className="score-sparkle">
-          <Sparkles className="h-5 w-5 text-indigo-400" />
+      <div className={`seo-validation__score seo-validation__score--${overallStatus}`}>
+        <div className="seo-validation__score-icon">
+          <Sparkles size={18} />
         </div>
-        <div className="score-header">
-          <div className={`score-badge ${statusBg}`}>
-            <div className={statusColor}>{statusIcon}</div>
-            <span className="score-value">
+
+        <div className="seo-validation__score-header">
+          <div className={`seo-validation__badge seo-validation__badge--${overallStatus}`}>
+            {statusIcon}
+            <span className="seo-validation__badge-value">
               {score}
-              <span className="score-percent">%</span>
+              <span className="seo-validation__badge-percent">%</span>
             </span>
           </div>
-          <div className="score-info">
-            <h3 className="score-title">SEO Health Score</h3>
-            <p className="score-subtitle">
-              {overallStatus === 'excellent' && '🎉 Excellent! Your page is well optimized.'}
-              {overallStatus === 'good' && '👍 Good job! A few improvements will make it great.'}
-              {overallStatus === 'needs-improvement' &&
-                '⚠️ Needs work. Follow the suggestions below.'}
-              {overallStatus === 'poor' && '❌ Poor SEO. Please address the issues below.'}
+
+          <div className="seo-validation__score-info">
+            <h3 className="seo-validation__title">SEO Health Score</h3>
+            <p className="seo-validation__subtitle">
+              {overallStatus === 'excellent' && 'Excellent! Your page is well optimized.'}
+              {overallStatus === 'good' && 'Good job! A few improvements will make it great.'}
+              {overallStatus === 'needs-improvement' && 'Needs work. Follow the suggestions below.'}
+              {overallStatus === 'poor' && 'Poor SEO. Please address the issues below.'}
             </p>
           </div>
         </div>
 
-        <div className="score-progress">
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${score}%` }} />
+        <div className="seo-validation__progress">
+          <div className="seo-validation__progress-bar">
+            <div
+              className="seo-validation__progress-fill"
+              style={{ width: `${score}%` }}
+              role="progressbar"
+              aria-valuenow={score}
+              aria-valuemin={0}
+              aria-valuemax={100}
+            />
           </div>
         </div>
 
-        <div className="score-stats">
-          <div className="stat-item stat-pass">
-            <CheckCircle className="h-4 w-4" />
+        <div className="seo-validation__stats">
+          <div className="seo-validation__stat seo-validation__stat--pass">
+            <CheckCircle2 size={16} />
             <span>{passCount} Passed</span>
           </div>
-          <div className="stat-item stat-warning">
-            <AlertCircle className="h-4 w-4" />
+          <div className="seo-validation__stat seo-validation__stat--warning">
+            <AlertTriangle size={16} />
             <span>{warningCount} Warnings</span>
           </div>
-          <div className="stat-item stat-fail">
-            <XCircle className="h-4 w-4" />
+          <div className="seo-validation__stat seo-validation__stat--fail">
+            <XCircle size={16} />
             <span>{failCount} Failed</span>
           </div>
         </div>
       </div>
 
       {/* Checks List */}
-      <div className="checks-list">
+      <div className="seo-validation__checks">
         {checks.map((check, index) => (
-          <div key={index} className={`check-item check-${check.status}`}>
-            <div className="check-icon">
-              {check.status === 'pass' && <CheckCircle className="h-5 w-5 text-green-400" />}
-              {check.status === 'warning' && <AlertCircle className="h-5 w-5 text-yellow-400" />}
-              {check.status === 'fail' && <XCircle className="h-5 w-5 text-red-400" />}
+          <div
+            key={index}
+            className={`seo-validation__check seo-validation__check--${check.status}`}
+          >
+            <div className="seo-validation__check-icon">
+              {check.status === 'pass' && <CheckCircle2 size={18} />}
+              {check.status === 'warning' && <AlertTriangle size={18} />}
+              {check.status === 'fail' && <XCircle size={18} />}
             </div>
-            <div className="check-content">
-              <div className="check-header">
-                <span className="check-label">{check.label}</span>
-                <span className="check-points">{check.points}pts</span>
+            <div className="seo-validation__check-content">
+              <div className="seo-validation__check-header">
+                <span className="seo-validation__check-label">{check.label}</span>
+                <span className="seo-validation__check-points">{check.points} pts</span>
               </div>
-              <p className="check-message">{check.message}</p>
+              <p className="seo-validation__check-message">{check.message}</p>
             </div>
           </div>
         ))}
       </div>
-
-      <style jsx>{`
-        .seo-validation-widget {
-          margin-bottom: 24px;
-        }
-
-        .score-card {
-          position: relative;
-          background: linear-gradient(
-            135deg,
-            rgba(99, 102, 241, 0.1) 0%,
-            rgba(139, 92, 246, 0.1) 100%
-          );
-          border: 1px solid rgba(139, 92, 246, 0.3);
-          border-radius: 12px;
-          padding: 24px;
-          margin-bottom: 20px;
-          overflow: hidden;
-        }
-
-        .score-sparkle {
-          position: absolute;
-          top: 16px;
-          right: 16px;
-          opacity: 0.5;
-        }
-
-        .score-header {
-          display: flex;
-          align-items: center;
-          gap: 20px;
-          margin-bottom: 20px;
-        }
-
-        .score-badge {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          width: 90px;
-          height: 90px;
-          border-radius: 50%;
-          border: 2px solid rgba(139, 92, 246, 0.3);
-          backdrop-filter: blur(10px);
-        }
-
-        .score-value {
-          font-size: 24px;
-          font-weight: 700;
-          color: #e5e7eb;
-          margin-top: 6px;
-          letter-spacing: -0.5px;
-        }
-
-        .score-percent {
-          font-size: 16px;
-          opacity: 0.8;
-        }
-
-        .score-info {
-          flex: 1;
-        }
-
-        .score-title {
-          color: #f3f4f6;
-          font-size: 20px;
-          font-weight: 700;
-          margin: 0 0 6px 0;
-          letter-spacing: -0.3px;
-        }
-
-        .score-subtitle {
-          color: #d1d5db;
-          font-size: 14px;
-          margin: 0;
-          line-height: 1.5;
-        }
-
-        .score-progress {
-          margin-bottom: 16px;
-        }
-
-        .progress-bar {
-          height: 8px;
-          background-color: rgba(31, 41, 55, 0.6);
-          border-radius: 999px;
-          overflow: hidden;
-          border: 1px solid rgba(75, 85, 99, 0.4);
-        }
-
-        .progress-fill {
-          height: 100%;
-          background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
-          border-radius: 999px;
-          transition: width 0.5s ease;
-          box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
-        }
-
-        .score-stats {
-          display: flex;
-          gap: 20px;
-          padding-top: 16px;
-          border-top: 1px solid rgba(75, 85, 99, 0.3);
-        }
-
-        .stat-item {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          color: #d1d5db;
-          font-size: 14px;
-          font-weight: 500;
-        }
-
-        .stat-pass svg {
-          color: #34d399;
-        }
-        .stat-warning svg {
-          color: #fbbf24;
-        }
-        .stat-fail svg {
-          color: #f87171;
-        }
-
-        .checks-list {
-          background: rgba(31, 41, 55, 0.3);
-          border: 1px solid rgba(75, 85, 99, 0.4);
-          border-radius: 8px;
-          overflow: hidden;
-        }
-
-        .check-item {
-          display: flex;
-          gap: 12px;
-          padding: 16px;
-          border-bottom: 1px solid rgba(75, 85, 99, 0.3);
-          transition: background-color 0.2s ease;
-        }
-
-        .check-item:last-child {
-          border-bottom: none;
-        }
-
-        .check-item:hover {
-          background-color: rgba(55, 65, 81, 0.3);
-        }
-
-        .check-item.check-pass {
-          background-color: rgba(16, 185, 129, 0.05);
-          border-left: 3px solid #10b981;
-        }
-
-        .check-item.check-warning {
-          background-color: rgba(245, 158, 11, 0.05);
-          border-left: 3px solid #f59e0b;
-        }
-
-        .check-item.check-fail {
-          background-color: rgba(239, 68, 68, 0.05);
-          border-left: 3px solid #ef4444;
-        }
-
-        .check-icon {
-          flex-shrink: 0;
-          padding-top: 2px;
-        }
-
-        .check-content {
-          flex: 1;
-          min-width: 0;
-        }
-
-        .check-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 6px;
-        }
-
-        .check-label {
-          font-weight: 600;
-          font-size: 14px;
-          color: #f3f4f6;
-        }
-
-        .check-points {
-          font-size: 12px;
-          font-weight: 600;
-          color: #9ca3af;
-          background-color: rgba(55, 65, 81, 0.5);
-          padding: 3px 10px;
-          border-radius: 12px;
-          border: 1px solid rgba(75, 85, 99, 0.4);
-        }
-
-        .check-message {
-          font-size: 13px;
-          color: #d1d5db;
-          margin: 0;
-          line-height: 1.6;
-        }
-
-        /* Dark theme specific enhancements */
-        @media (prefers-color-scheme: dark) {
-          .score-card {
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-          }
-
-          .checks-list {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-          }
-        }
-      `}</style>
     </div>
   )
 }

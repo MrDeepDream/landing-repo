@@ -1,1 +1,66 @@
 // Custom styles for Payload admin panel
+
+// SEO Validation Field - Custom color tokens
+:root {
+  // Success colors
+  --theme-success-50: rgba(16, 185, 129, 0.05);
+  --theme-success-400: #10b981;
+  --theme-success-500: #059669;
+  --theme-success-600: #047857;
+
+  // Info colors (blue)
+  --theme-info-50: rgba(59, 130, 246, 0.05);
+  --theme-info-400: #3b82f6;
+  --theme-info-500: #2563eb;
+  --theme-info-600: #1d4ed8;
+
+  // Warning colors
+  --theme-warning-50: rgba(245, 158, 11, 0.05);
+  --theme-warning-400: #f59e0b;
+  --theme-warning-500: #d97706;
+  --theme-warning-600: #b45309;
+
+  // Error colors
+  --theme-error-50: rgba(239, 68, 68, 0.05);
+  --theme-error-400: #ef4444;
+  --theme-error-500: #dc2626;
+  --theme-error-600: #b91c1c;
+
+  // Elevation colors (light theme defaults)
+  --theme-elevation-50: rgba(0, 0, 0, 0.02);
+  --theme-elevation-100: rgba(0, 0, 0, 0.04);
+  --theme-elevation-150: rgba(0, 0, 0, 0.06);
+  --theme-elevation-200: rgba(0, 0, 0, 0.08);
+  --theme-elevation-400: rgba(0, 0, 0, 0.15);
+  --theme-elevation-700: rgba(0, 0, 0, 0.55);
+  --theme-elevation-800: rgba(0, 0, 0, 0.65);
+
+  // Border radius (Payload default)
+  --border-radius-m: 4px;
+  --base-unit: 20px;
+  --gutter-h: 24px;
+}
+
+// Dark theme adjustments
+[data-theme='dark'] {
+  // Elevation colors (dark theme)
+  --theme-elevation-50: rgba(255, 255, 255, 0.03);
+  --theme-elevation-100: rgba(255, 255, 255, 0.05);
+  --theme-elevation-150: rgba(255, 255, 255, 0.07);
+  --theme-elevation-200: rgba(255, 255, 255, 0.1);
+  --theme-elevation-400: rgba(255, 255, 255, 0.18);
+  --theme-elevation-700: rgba(255, 255, 255, 0.6);
+  --theme-elevation-800: rgba(255, 255, 255, 0.7);
+}
+
+// Improve SEO tab spacing and layout
+.field-type--tabs {
+  .tabs-field__content {
+    padding: var(--gutter-h, 24px);
+  }
+}
+
+// Ensure custom fields have proper spacing
+.field-type--ui {
+  margin-bottom: var(--base-unit, 20px);
+}
