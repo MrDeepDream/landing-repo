@@ -31,7 +31,7 @@ interface ContentItem {
 
 interface AccordionItemData {
   itemTitle: string
-  contentItems: ContentItem[]
+  contentItems?: ContentItem[] | null
   id?: string | null
 }
 
@@ -144,9 +144,10 @@ export function AccordionBlock({
               </AccordionTrigger>
               <AccordionContent className="pb-5">
                 <div className="space-y-4">
-                  {item.contentItems.map((contentItem, contentIndex) =>
-                    renderContentItem(contentItem, contentIndex)
-                  )}
+                  {Array.isArray(item.contentItems) &&
+                    item.contentItems.map((contentItem, contentIndex) =>
+                      renderContentItem(contentItem, contentIndex)
+                    )}
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -165,9 +166,10 @@ export function AccordionBlock({
               </AccordionTrigger>
               <AccordionContent className="pb-5">
                 <div className="space-y-4">
-                  {item.contentItems.map((contentItem, contentIndex) =>
-                    renderContentItem(contentItem, contentIndex)
-                  )}
+                  {Array.isArray(item.contentItems) &&
+                    item.contentItems.map((contentItem, contentIndex) =>
+                      renderContentItem(contentItem, contentIndex)
+                    )}
                 </div>
               </AccordionContent>
             </AccordionItem>
