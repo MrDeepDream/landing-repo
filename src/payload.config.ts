@@ -78,10 +78,6 @@ export default buildConfig({
         label: 'English',
         code: 'en',
       },
-      {
-        label: 'Spanish',
-        code: 'es',
-      },
     ],
     defaultLocale: 'uk',
     fallback: true,

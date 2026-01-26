@@ -133,6 +133,18 @@ export interface Page {
 }
 
 export type PageBlock =
+  | HeroBlock
+  | FeaturesBlock
+  | TestimonialsBlock
+  | StatsBlock
+  | TimelineBlock
+  | PricingBlock
+  | TeamBlock
+  | FAQBlock
+  | LogoCloudBlock
+  | VideoBlock
+  | CaseStudyBlock
+  | ComparisonBlock
   | SectionHeaderBlock
   | RichTextBlock
   | MarkdownTextBlock
@@ -144,10 +156,334 @@ export type PageBlock =
   | MediaBlock
   | AccordionBlock
 
+export interface HeroBlock {
+  id?: string | null
+  blockType: 'heroBlock'
+  layout: 'centered' | 'split-left' | 'split-right'
+  background?: {
+    type?: 'color' | 'gradient' | 'image' | null
+    color?: string | null
+    gradient?: string | null
+    image?: string | Media | null
+    overlay?: boolean | null
+    overlayOpacity?: number | null
+  } | null
+  badge?: {
+    text?: string | null
+    icon?: string | null
+    gradient?: string | null
+  } | null
+  headline: string
+  subheadline?: string | null
+  bulletPoints?: {
+    id?: string | null
+    icon?: string | null
+    text: string
+  }[] | null
+  primaryCTA?: {
+    label?: string | null
+    url?: string | null
+    style?: 'solid' | 'outline' | null
+    openInNewTab?: boolean | null
+  } | null
+  secondaryCTA?: {
+    label?: string | null
+    url?: string | null
+    style?: 'solid' | 'outline' | null
+    openInNewTab?: boolean | null
+  } | null
+  trustBadges?: {
+    id?: string | null
+    image: string | Media
+    alt?: string | null
+  }[] | null
+  heroImage?: string | Media | null
+  enableAnimation?: boolean | null
+}
+
+export interface FeaturesBlock {
+  id?: string | null
+  blockType: 'featuresBlock'
+  title?: string | null
+  subtitle?: string | null
+  layout: 'grid-2' | 'grid-3' | 'grid-4' | 'list'
+  cardStyle: 'minimal' | 'bordered' | 'elevated' | 'gradient'
+  items: {
+    id?: string | null
+    icon?: string | null
+    title: string
+    description?: string | null
+    link?: {
+      label?: string | null
+      url?: string | null
+      openInNewTab?: boolean | null
+    } | null
+  }[]
+  showCTAs?: boolean | null
+  enableAnimation?: boolean | null
+}
+
+export interface TestimonialsBlock {
+  id?: string | null
+  blockType: 'testimonialsBlock'
+  title?: string | null
+  subtitle?: string | null
+  displayMode: 'carousel' | 'grid' | 'single-featured'
+  testimonials: {
+    id?: string | null
+    quote: string
+    authorName: string
+    authorRole?: string | null
+    authorCompany?: string | null
+    authorPhoto?: string | Media | null
+    rating?: number | null
+    logo?: string | Media | null
+  }[]
+  showRatings?: boolean | null
+  autoplay?: boolean | null
+  autoplayInterval?: number | null
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue' | null
+  enableAnimation?: boolean | null
+}
+
+export interface StatsBlock {
+  id?: string | null
+  blockType: 'statsBlock'
+  title?: string | null
+  layout: 'row' | 'grid-2' | 'grid-4'
+  stats: {
+    id?: string | null
+    value: number
+    prefix?: string | null
+    suffix?: string | null
+    label: string
+    icon?: string | null
+  }[]
+  animateOnScroll?: boolean | null
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue' | null
+  enableAnimation?: boolean | null
+}
+
+export interface TimelineBlock {
+  id?: string | null
+  blockType: 'timelineBlock'
+  title?: string | null
+  subtitle?: string | null
+  layout: 'vertical' | 'horizontal' | 'alternating'
+  items: {
+    id?: string | null
+    label: string
+    title: string
+    description?: string | null
+    icon?: string | null
+    status?: 'completed' | 'current' | 'upcoming' | null
+  }[]
+  showConnectors?: boolean | null
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue' | null
+  enableAnimation?: boolean | null
+}
+
+export interface PricingBlock {
+  id?: string | null
+  blockType: 'pricingBlock'
+  title?: string | null
+  subtitle?: string | null
+  layout: 'cards' | 'table' | 'comparison'
+  billingToggle?: boolean | null
+  plans: {
+    id?: string | null
+    name: string
+    description?: string | null
+    monthlyPrice?: number | null
+    yearlyPrice?: number | null
+    currency?: string | null
+    billingPeriod?: string | null
+    features?: {
+      id?: string | null
+      text: string
+      included?: boolean | null
+    }[] | null
+    cta?: {
+      label?: string | null
+      url?: string | null
+      style?: 'solid' | 'outline' | null
+      openInNewTab?: boolean | null
+    } | null
+    highlighted?: boolean | null
+    badge?: string | null
+  }[]
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue' | null
+  enableAnimation?: boolean | null
+}
+
+export interface TeamBlock {
+  id?: string | null
+  blockType: 'teamBlock'
+  title?: string | null
+  subtitle?: string | null
+  layout: 'grid' | 'carousel' | 'list'
+  columns?: '2' | '3' | '4' | null
+  cardStyle: 'minimal' | 'card' | 'overlay'
+  showSocialLinks?: boolean | null
+  members: {
+    id?: string | null
+    photo: string | Media
+    name: string
+    role?: string | null
+    bio?: string | null
+    socialLinks?: {
+      id?: string | null
+      platform: 'linkedin' | 'twitter' | 'github' | 'email' | 'website'
+      url: string
+    }[] | null
+  }[]
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue' | null
+  enableAnimation?: boolean | null
+}
+
+export interface FAQBlock {
+  id?: string | null
+  blockType: 'faqBlock'
+  title?: string | null
+  subtitle?: string | null
+  layout: 'accordion' | 'two-column' | 'cards'
+  questions: {
+    id?: string | null
+    question: string
+    answer: string
+    category?: string | null
+  }[]
+  showSearch?: boolean | null
+  showCategories?: boolean | null
+  allowMultiple?: boolean | null
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue' | null
+  enableAnimation?: boolean | null
+}
+
+export interface LogoCloudBlock {
+  id?: string | null
+  blockType: 'logoCloudBlock'
+  title?: string | null
+  subtitle?: string | null
+  layout: 'grid' | 'carousel' | 'marquee'
+  logos: {
+    id?: string | null
+    image: string | Media
+    name?: string | null
+    url?: string | null
+  }[]
+  grayscale?: boolean | null
+  columns?: '4' | '5' | '6' | null
+  speed?: 'slow' | 'normal' | 'fast' | null
+  enableAnimation?: boolean | null
+}
+
+export interface VideoBlock {
+  id?: string | null
+  blockType: 'videoBlock'
+  source: 'youtube' | 'vimeo' | 'custom' | 'upload'
+  url?: string | null
+  file?: string | Media | null
+  title?: string | null
+  description?: string | null
+  thumbnail?: string | Media | null
+  autoplay?: boolean | null
+  loop?: boolean | null
+  controls?: boolean | null
+  aspectRatio?: '16:9' | '4:3' | '1:1' | '9:16' | null
+  enableAnimation?: boolean | null
+}
+
+export interface CaseStudyBlock {
+  id?: string | null
+  blockType: 'caseStudyBlock'
+  title?: string | null
+  subtitle?: string | null
+  displayMode: 'cards' | 'detailed' | 'carousel'
+  cases: {
+    id?: string | null
+    title: string
+    clientName?: string | null
+    industry?: string | null
+    challenge?: string | null
+    solution?: string | null
+    results?: {
+      id?: string | null
+      metric?: string | null
+      value?: string | null
+      description?: string | null
+    }[] | null
+    testimonial?: {
+      quote?: string | null
+      author?: string | null
+    } | null
+    image?: string | Media | null
+    logo?: string | Media | null
+    link?: {
+      label?: string | null
+      url?: string | null
+      openInNewTab?: boolean | null
+    } | null
+  }[]
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue' | null
+  enableAnimation?: boolean | null
+}
+
+export interface ComparisonBlock {
+  id?: string | null
+  blockType: 'comparisonBlock'
+  title?: string | null
+  subtitle?: string | null
+  type: 'before-after' | 'table' | 'cards'
+  // Before-after fields
+  beforeImage?: string | Media | null
+  afterImage?: string | Media | null
+  beforeLabel?: string | null
+  afterLabel?: string | null
+  sliderDefault?: number | null
+  // Table fields
+  headers?: {
+    id?: string | null
+    text: string
+    highlighted?: boolean | null
+  }[] | null
+  rows?: {
+    id?: string | null
+    label: string
+    values?: {
+      id?: string | null
+      text?: string | null
+      isCheckmark?: boolean | null
+    }[] | null
+  }[] | null
+  highlightColumn?: number | null
+  // Cards fields
+  items?: {
+    id?: string | null
+    title: string
+    description?: string | null
+    price?: string | null
+    features?: {
+      id?: string | null
+      text: string
+      included?: boolean | null
+    }[] | null
+    highlighted?: boolean | null
+    cta?: {
+      label?: string | null
+      url?: string | null
+      openInNewTab?: boolean | null
+    } | null
+  }[] | null
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue' | null
+  enableAnimation?: boolean | null
+}
+
 export interface SectionHeaderBlock {
   id?: string | null
   blockType: 'sectionHeader'
   type: 'small' | 'big'
+  layout?: 'centered' | 'left' | 'right' | null
   title: string
   subtitle?: string | null
   description?: string | null
@@ -156,6 +492,25 @@ export interface SectionHeaderBlock {
     text?: string | null
     icon?: string | null
     gradient?: string | null
+  } | null
+  background?: {
+    type?: 'none' | 'color' | 'gradient' | 'image' | null
+    color?: string | null
+    gradient?: string | null
+    image?: string | Media | null
+    overlay?: boolean | null
+    overlayOpacity?: number | null
+  } | null
+  bulletPoints?: {
+    id?: string | null
+    icon?: string | null
+    text: string
+  }[] | null
+  secondaryCTA?: {
+    label?: string | null
+    url?: string | null
+    style?: 'solid' | 'outline' | null
+    openInNewTab?: boolean | null
   } | null
   enableAnimation?: boolean | null
 }
@@ -185,11 +540,27 @@ export interface CallToActionBlock {
   blockType: 'callToAction'
   heading: string
   description?: string | null
+  icon?: string | null
   link?: {
     label: string
     url: string
     openInNewTab?: boolean | null
   } | null
+  secondaryButton?: {
+    label?: string | null
+    url?: string | null
+    style?: 'solid' | 'outline' | null
+    openInNewTab?: boolean | null
+  } | null
+  alignment?: 'centered' | 'left' | null
+  size?: 'compact' | 'standard' | 'large' | null
+  backgroundStyle?: 'gradient' | 'solid' | 'transparent' | 'image' | null
+  backgroundGradient?: string | null
+  backgroundColor?: string | null
+  backgroundImage?: string | Media | null
+  backgroundOverlay?: boolean | null
+  backgroundOverlayOpacity?: number | null
+  enableAnimation?: boolean | null
 }
 
 export interface NewsBlock {
@@ -280,6 +651,9 @@ export interface AccordionBlock {
   blockType: 'accordionBlock'
   title?: string | null
   description?: string | null
+  variant?: 'faq' | 'steps' | 'features' | null
+  showNumbers?: boolean | null
+  iconStyle?: 'chevron' | 'plus' | 'arrow' | null
   allowMultiple?: boolean | null
   accordionItems: {
     id?: string | null

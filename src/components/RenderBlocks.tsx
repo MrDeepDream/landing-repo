@@ -1,19 +1,356 @@
 import React from 'react'
+import { HeroBlock } from './HeroBlock'
+import { FeaturesBlock } from './FeaturesBlock'
+import { TestimonialsBlock } from './TestimonialsBlock'
+import { StatsBlock } from './StatsBlock'
+import { TimelineBlock } from './TimelineBlock'
+import { PricingBlock } from './PricingBlock'
+import { TeamBlock } from './TeamBlock'
+import { FAQBlock } from './FAQBlock'
+import { LogoCloudBlock } from './LogoCloudBlock'
+import { VideoBlock } from './VideoBlock'
+import { CaseStudyBlock } from './CaseStudyBlock'
+import { ComparisonBlock } from './ComparisonBlock'
 import { SectionHeaderBlock } from './SectionHeaderBlock'
 import { MarkdownRichTextBlock } from './MarkdownRichTextBlock'
 import { PersonPlaceBlock } from './PersonPlaceBlock'
 import { AccordionBlock } from './AccordionBlock'
 import { TabBlockServer } from './TabBlockServer'
 import { MediaBlock } from './MediaBlock'
+import { CallToActionBlock } from './CallToActionBlock'
 import type { IconName } from '@/lib/icons'
 import type { GradientPreset } from '@/lib/gradients'
 import type { Media } from '@/payload-types'
 import type { SupportedLocale } from '@/lib/payload-data'
 
 // Type definitions for blocks
+interface HeroBlockData {
+  blockType: 'heroBlock'
+  layout: 'centered' | 'split-left' | 'split-right'
+  background?: {
+    type?: 'color' | 'gradient' | 'image'
+    color?: string
+    gradient?: string
+    image?: string | Media
+    overlay?: boolean
+    overlayOpacity?: number
+  }
+  badge?: {
+    text?: string
+    icon?: IconName
+    gradient?: GradientPreset
+  }
+  headline: string
+  subheadline?: string
+  bulletPoints?: Array<{
+    icon?: IconName
+    text: string
+    id?: string
+  }>
+  primaryCTA?: {
+    label?: string
+    url?: string
+    style?: 'solid' | 'outline'
+    openInNewTab?: boolean
+  }
+  secondaryCTA?: {
+    label?: string
+    url?: string
+    style?: 'solid' | 'outline'
+    openInNewTab?: boolean
+  }
+  trustBadges?: Array<{
+    image: string | Media
+    alt?: string
+    id?: string
+  }>
+  heroImage?: string | Media
+  enableAnimation?: boolean
+  id?: string
+}
+
+interface FeaturesBlockData {
+  blockType: 'featuresBlock'
+  title?: string
+  subtitle?: string
+  layout?: 'grid-2' | 'grid-3' | 'grid-4' | 'list'
+  cardStyle?: 'minimal' | 'bordered' | 'elevated' | 'gradient'
+  items: {
+    icon?: IconName | string
+    title: string
+    description?: string
+    link?: {
+      label?: string
+      url?: string
+      openInNewTab?: boolean
+    }
+    id?: string
+  }[]
+  showCTAs?: boolean
+  enableAnimation?: boolean
+  id?: string
+}
+
+interface TestimonialsBlockData {
+  blockType: 'testimonialsBlock'
+  title?: string
+  subtitle?: string
+  displayMode?: 'carousel' | 'grid' | 'single-featured'
+  testimonials: {
+    quote: string
+    authorName: string
+    authorRole?: string
+    authorCompany?: string
+    authorPhoto?: string | Media
+    rating?: number
+    logo?: string | Media
+    id?: string
+  }[]
+  showRatings?: boolean
+  autoplay?: boolean
+  autoplayInterval?: number
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue'
+  enableAnimation?: boolean
+  id?: string
+}
+
+interface StatsBlockData {
+  blockType: 'statsBlock'
+  title?: string
+  layout?: 'row' | 'grid-2' | 'grid-4'
+  stats: {
+    value: number
+    prefix?: string
+    suffix?: string
+    label: string
+    icon?: IconName | string
+    id?: string
+  }[]
+  animateOnScroll?: boolean
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue'
+  enableAnimation?: boolean
+  id?: string
+}
+
+interface TimelineBlockData {
+  blockType: 'timelineBlock'
+  title?: string
+  subtitle?: string
+  layout?: 'vertical' | 'horizontal' | 'alternating'
+  items: {
+    label: string
+    title: string
+    description?: string
+    icon?: IconName | string
+    status?: 'completed' | 'current' | 'upcoming'
+    id?: string
+  }[]
+  showConnectors?: boolean
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue'
+  enableAnimation?: boolean
+  id?: string
+}
+
+interface PricingBlockData {
+  blockType: 'pricingBlock'
+  title?: string
+  subtitle?: string
+  layout?: 'cards' | 'table' | 'comparison'
+  billingToggle?: boolean
+  plans: {
+    name: string
+    description?: string
+    monthlyPrice?: number
+    yearlyPrice?: number
+    currency?: string
+    billingPeriod?: string
+    features?: {
+      text: string
+      included: boolean
+      id?: string
+    }[]
+    cta?: {
+      label?: string
+      url?: string
+      style?: 'solid' | 'outline'
+      openInNewTab?: boolean
+    }
+    highlighted?: boolean
+    badge?: string
+    id?: string
+  }[]
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue'
+  enableAnimation?: boolean
+  id?: string
+}
+
+interface TeamBlockData {
+  blockType: 'teamBlock'
+  title?: string
+  subtitle?: string
+  layout?: 'grid' | 'carousel' | 'list'
+  columns?: '2' | '3' | '4'
+  members: {
+    photo: string | Media
+    name: string
+    role?: string
+    bio?: string
+    socialLinks?: {
+      platform: 'linkedin' | 'twitter' | 'github' | 'email' | 'website'
+      url: string
+      id?: string
+    }[]
+    id?: string
+  }[]
+  showSocialLinks?: boolean
+  cardStyle?: 'minimal' | 'card' | 'overlay'
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue'
+  enableAnimation?: boolean
+  id?: string
+}
+
+interface FAQBlockData {
+  blockType: 'faqBlock'
+  title?: string
+  subtitle?: string
+  layout?: 'accordion' | 'two-column' | 'cards'
+  questions: {
+    question: string
+    answer: string
+    category?: string
+    id?: string
+  }[]
+  showSearch?: boolean
+  showCategories?: boolean
+  allowMultiple?: boolean
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue'
+  enableAnimation?: boolean
+  id?: string
+}
+
+interface LogoCloudBlockData {
+  blockType: 'logoCloudBlock'
+  title?: string
+  subtitle?: string
+  layout?: 'grid' | 'carousel' | 'marquee'
+  logos: {
+    image: string | Media
+    name?: string
+    url?: string
+    id?: string
+  }[]
+  grayscale?: boolean
+  columns?: '4' | '5' | '6'
+  speed?: 'slow' | 'normal' | 'fast'
+  enableAnimation?: boolean
+  id?: string
+}
+
+interface VideoBlockData {
+  blockType: 'videoBlock'
+  source?: 'youtube' | 'vimeo' | 'custom' | 'upload'
+  url?: string
+  file?: string | Media
+  title?: string
+  description?: string
+  thumbnail?: string | Media
+  autoplay?: boolean
+  loop?: boolean
+  controls?: boolean
+  aspectRatio?: '16:9' | '4:3' | '1:1' | '9:16'
+  enableAnimation?: boolean
+  id?: string
+}
+
+interface CaseStudyBlockData {
+  blockType: 'caseStudyBlock'
+  title?: string
+  subtitle?: string
+  displayMode?: 'cards' | 'detailed' | 'carousel'
+  cases: {
+    title: string
+    clientName?: string
+    industry?: string
+    challenge?: string
+    solution?: string
+    results?: {
+      metric?: string
+      value?: string
+      description?: string
+      id?: string
+    }[]
+    testimonial?: {
+      quote?: string
+      author?: string
+    }
+    image?: string | Media
+    logo?: string | Media
+    link?: {
+      label?: string
+      url?: string
+      openInNewTab?: boolean
+    }
+    id?: string
+  }[]
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue'
+  enableAnimation?: boolean
+  id?: string
+}
+
+interface ComparisonBlockData {
+  blockType: 'comparisonBlock'
+  title?: string
+  subtitle?: string
+  type?: 'before-after' | 'table' | 'cards'
+  // Before-after fields
+  beforeImage?: string | Media
+  afterImage?: string | Media
+  beforeLabel?: string
+  afterLabel?: string
+  sliderDefault?: number
+  // Table fields
+  headers?: {
+    text: string
+    highlighted?: boolean
+    id?: string
+  }[]
+  rows?: {
+    label: string
+    values?: {
+      text?: string
+      isCheckmark?: boolean
+      id?: string
+    }[]
+    id?: string
+  }[]
+  highlightColumn?: number
+  // Cards fields
+  items?: {
+    title: string
+    description?: string
+    price?: string
+    features?: {
+      text: string
+      included?: boolean
+      id?: string
+    }[]
+    highlighted?: boolean
+    cta?: {
+      label?: string
+      url?: string
+      openInNewTab?: boolean
+    }
+    id?: string
+  }[]
+  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue'
+  enableAnimation?: boolean
+  id?: string
+}
+
 interface SectionHeaderBlockData {
   blockType: 'sectionHeader'
   type: 'small' | 'big'
+  layout?: 'centered' | 'left' | 'right'
   title: string
   subtitle?: string
   description?: string
@@ -23,6 +360,25 @@ interface SectionHeaderBlockData {
     gradient?: GradientPreset
   }
   headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+  background?: {
+    type?: 'none' | 'color' | 'gradient' | 'image'
+    color?: string
+    gradient?: string
+    image?: string | Media
+    overlay?: boolean
+    overlayOpacity?: number
+  }
+  bulletPoints?: Array<{
+    icon?: IconName | string
+    text: string
+    id?: string
+  }>
+  secondaryCTA?: {
+    label?: string
+    url?: string
+    style?: 'solid' | 'outline'
+    openInNewTab?: boolean
+  }
   enableAnimation?: boolean
   id?: string
 }
@@ -45,11 +401,27 @@ interface CallToActionBlockData {
   blockType: 'callToAction'
   heading: string
   description?: string
+  icon?: IconName | string
   link?: {
-    label: string
-    url: string
+    label?: string
+    url?: string
     openInNewTab?: boolean
   }
+  secondaryButton?: {
+    label?: string
+    url?: string
+    style?: 'solid' | 'outline'
+    openInNewTab?: boolean
+  }
+  alignment?: 'centered' | 'left'
+  size?: 'compact' | 'standard' | 'large'
+  backgroundStyle?: 'gradient' | 'solid' | 'transparent' | 'image'
+  backgroundGradient?: GradientPreset | string
+  backgroundColor?: string
+  backgroundImage?: string | Media
+  backgroundOverlay?: boolean
+  backgroundOverlayOpacity?: number
+  enableAnimation?: boolean
   id?: string
 }
 
@@ -150,6 +522,18 @@ interface MediaBlockData {
 }
 
 type BlockData =
+  | HeroBlockData
+  | FeaturesBlockData
+  | TestimonialsBlockData
+  | StatsBlockData
+  | TimelineBlockData
+  | PricingBlockData
+  | TeamBlockData
+  | FAQBlockData
+  | LogoCloudBlockData
+  | VideoBlockData
+  | CaseStudyBlockData
+  | ComparisonBlockData
   | SectionHeaderBlockData
   | MarkdownRichTextBlockData
   | ImageBlockData
@@ -182,16 +566,222 @@ export async function RenderBlocks({
         const key = block.id || `${block.blockType}-${index}`
 
         switch (block.blockType) {
+          case 'heroBlock':
+            return (
+              <HeroBlock
+                key={key}
+                layout={block.layout}
+                background={
+                  block.background
+                    ? {
+                        ...block.background,
+                        gradient: block.background.gradient as GradientPreset | undefined,
+                      }
+                    : undefined
+                }
+                badge={block.badge?.text ? block.badge : undefined}
+                headline={block.headline}
+                subheadline={block.subheadline}
+                bulletPoints={block.bulletPoints}
+                primaryCTA={block.primaryCTA}
+                secondaryCTA={block.secondaryCTA}
+                trustBadges={block.trustBadges}
+                heroImage={block.heroImage}
+                enableAnimation={block.enableAnimation}
+              />
+            )
+
+          case 'featuresBlock':
+            return (
+              <FeaturesBlock
+                key={key}
+                title={block.title}
+                subtitle={block.subtitle}
+                layout={block.layout}
+                cardStyle={block.cardStyle}
+                items={block.items}
+                showCTAs={block.showCTAs}
+                enableAnimation={block.enableAnimation}
+              />
+            )
+
+          case 'testimonialsBlock':
+            return (
+              <TestimonialsBlock
+                key={key}
+                title={block.title}
+                subtitle={block.subtitle}
+                displayMode={block.displayMode}
+                testimonials={block.testimonials}
+                showRatings={block.showRatings}
+                autoplay={block.autoplay}
+                autoplayInterval={block.autoplayInterval}
+                accentColor={block.accentColor}
+                enableAnimation={block.enableAnimation}
+              />
+            )
+
+          case 'statsBlock':
+            return (
+              <StatsBlock
+                key={key}
+                title={block.title}
+                layout={block.layout}
+                stats={block.stats}
+                animateOnScroll={block.animateOnScroll}
+                accentColor={block.accentColor}
+                enableAnimation={block.enableAnimation}
+              />
+            )
+
+          case 'timelineBlock':
+            return (
+              <TimelineBlock
+                key={key}
+                title={block.title}
+                subtitle={block.subtitle}
+                layout={block.layout}
+                items={block.items}
+                showConnectors={block.showConnectors}
+                accentColor={block.accentColor}
+                enableAnimation={block.enableAnimation}
+              />
+            )
+
+          case 'pricingBlock':
+            return (
+              <PricingBlock
+                key={key}
+                title={block.title}
+                subtitle={block.subtitle}
+                layout={block.layout}
+                billingToggle={block.billingToggle}
+                plans={block.plans}
+                accentColor={block.accentColor}
+                enableAnimation={block.enableAnimation}
+              />
+            )
+
+          case 'teamBlock':
+            return (
+              <TeamBlock
+                key={key}
+                title={block.title}
+                subtitle={block.subtitle}
+                layout={block.layout}
+                columns={block.columns}
+                members={block.members}
+                showSocialLinks={block.showSocialLinks}
+                cardStyle={block.cardStyle}
+                accentColor={block.accentColor}
+                enableAnimation={block.enableAnimation}
+              />
+            )
+
+          case 'faqBlock':
+            return (
+              <FAQBlock
+                key={key}
+                title={block.title}
+                subtitle={block.subtitle}
+                layout={block.layout}
+                questions={block.questions}
+                showSearch={block.showSearch}
+                showCategories={block.showCategories}
+                allowMultiple={block.allowMultiple}
+                accentColor={block.accentColor}
+                enableAnimation={block.enableAnimation}
+              />
+            )
+
+          case 'logoCloudBlock':
+            return (
+              <LogoCloudBlock
+                key={key}
+                title={block.title}
+                subtitle={block.subtitle}
+                layout={block.layout}
+                logos={block.logos}
+                grayscale={block.grayscale}
+                columns={block.columns}
+                speed={block.speed}
+                enableAnimation={block.enableAnimation}
+              />
+            )
+
+          case 'videoBlock':
+            return (
+              <VideoBlock
+                key={key}
+                source={block.source}
+                url={block.url}
+                file={block.file}
+                title={block.title}
+                description={block.description}
+                thumbnail={block.thumbnail}
+                autoplay={block.autoplay}
+                loop={block.loop}
+                controls={block.controls}
+                aspectRatio={block.aspectRatio}
+                enableAnimation={block.enableAnimation}
+              />
+            )
+
+          case 'caseStudyBlock':
+            return (
+              <CaseStudyBlock
+                key={key}
+                title={block.title}
+                subtitle={block.subtitle}
+                displayMode={block.displayMode}
+                cases={block.cases}
+                accentColor={block.accentColor}
+                enableAnimation={block.enableAnimation}
+              />
+            )
+
+          case 'comparisonBlock':
+            return (
+              <ComparisonBlock
+                key={key}
+                title={block.title}
+                subtitle={block.subtitle}
+                type={block.type}
+                beforeImage={block.beforeImage}
+                afterImage={block.afterImage}
+                beforeLabel={block.beforeLabel}
+                afterLabel={block.afterLabel}
+                sliderDefault={block.sliderDefault}
+                headers={block.headers}
+                rows={block.rows}
+                highlightColumn={block.highlightColumn}
+                items={block.items}
+                accentColor={block.accentColor}
+                enableAnimation={block.enableAnimation}
+              />
+            )
+
           case 'sectionHeader':
             return (
               <SectionHeaderBlock
                 key={key}
                 type={block.type}
+                layout={block.layout}
                 title={block.title}
                 subtitle={block.subtitle}
                 description={block.description}
                 badge={block.badge?.text ? { ...block.badge, text: block.badge.text } : undefined}
                 headingLevel={block.headingLevel}
+                background={
+                  block.background
+                    ? {
+                        ...block.background,
+                        gradient: block.background.gradient as GradientPreset | undefined,
+                      }
+                    : undefined
+                }
+                bulletPoints={block.bulletPoints}
+                secondaryCTA={block.secondaryCTA}
                 enableAnimation={block.enableAnimation}
               />
             )
@@ -220,25 +810,23 @@ export async function RenderBlocks({
 
           case 'callToAction':
             return (
-              <div
+              <CallToActionBlock
                 key={key}
-                className="my-12 rounded-2xl bg-gradient-to-r from-indigo-50 to-purple-50 p-8 text-center"
-              >
-                <h3 className="mb-4 text-3xl font-bold">{block.heading}</h3>
-                {block.description && (
-                  <p className="mb-6 text-muted-foreground">{block.description}</p>
-                )}
-                {block.link && (
-                  <a
-                    href={block.link.url}
-                    target={block.link.openInNewTab ? '_blank' : '_self'}
-                    rel={block.link.openInNewTab ? 'noopener noreferrer' : undefined}
-                    className="inline-block rounded-lg bg-indigo-600 px-6 py-3 text-white transition-colors hover:bg-indigo-700"
-                  >
-                    {block.link.label}
-                  </a>
-                )}
-              </div>
+                heading={block.heading}
+                description={block.description}
+                icon={block.icon}
+                link={block.link}
+                secondaryButton={block.secondaryButton}
+                alignment={block.alignment}
+                size={block.size}
+                backgroundStyle={block.backgroundStyle}
+                backgroundGradient={block.backgroundGradient as GradientPreset | undefined}
+                backgroundColor={block.backgroundColor}
+                backgroundImage={block.backgroundImage}
+                backgroundOverlay={block.backgroundOverlay}
+                backgroundOverlayOpacity={block.backgroundOverlayOpacity}
+                enableAnimation={block.enableAnimation}
+              />
             )
 
           case 'personPlaceBlock':

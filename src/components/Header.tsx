@@ -89,6 +89,8 @@ interface HeaderProps {
   navigationItems?: NavigationItem[]
   currentLocale?: string
   availableLocales?: Array<{ code: string; label: string }>
+  /** Whether to show the search button in the header. Defaults to false (disabled). */
+  showSearch?: boolean
 }
 
 // Default fallback data
@@ -118,7 +120,6 @@ const defaultNavigationData = {
 const defaultLocales = [
   { code: 'en', label: 'English' },
   { code: 'uk', label: 'Ukrainian' },
-  { code: 'es', label: 'Spanish' },
 ]
 
 // Helper function to get icon component based on platform
@@ -141,6 +142,7 @@ export function Header({
   navigationItems,
   currentLocale = 'uk',
   availableLocales = defaultLocales,
+  showSearch = false,
 }: HeaderProps = {}) {
   const { fontSize, setFontSize, bwMode, setBwMode } = useAccessibility()
   const [showAccessibility, setShowAccessibility] = useState(false)
@@ -199,19 +201,21 @@ export function Header({
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Search Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hidden gap-2 md:flex"
-              onClick={() => setSearchOpen(true)}
-            >
-              <Search className="h-4 w-4" />
-              <span className="text-sm text-muted-foreground">Search</span>
-              <kbd className="hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 text-[10px] opacity-100 lg:inline-flex">
-                ⌘K
-              </kbd>
-            </Button>
+            {/* Search Button - conditionally rendered based on showSearch prop */}
+            {showSearch && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden gap-2 md:flex"
+                onClick={() => setSearchOpen(true)}
+              >
+                <Search className="h-4 w-4" />
+                <span className="text-sm text-muted-foreground">Search</span>
+                <kbd className="hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 text-[10px] opacity-100 lg:inline-flex">
+                  ⌘K
+                </kbd>
+              </Button>
+            )}
 
             {/* Social Icons */}
             {socialLinks.length > 0 && (
@@ -478,8 +482,7 @@ export function Header({
                   </p>
                   <div className="flex gap-2">
                     {availableLocales.map((locale) => {
-                      const flagEmoji =
-                        locale.code === 'uk' ? '🇺🇦' : locale.code === 'en' ? '🇬🇧' : '🇪🇸'
+                      const flagEmoji = locale.code === 'uk' ? '🇺🇦' : '🇬🇧'
                       const isActive = locale.code === localeString
 
                       return (
@@ -598,8 +601,8 @@ export function Header({
         </div>
       </div>
 
-      {/* Search Dialog */}
-      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
+      {/* Search Dialog - only rendered when search is enabled */}
+      {showSearch && <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />}
     </header>
   )
 }

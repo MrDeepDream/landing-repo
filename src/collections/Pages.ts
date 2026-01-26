@@ -276,6 +276,2165 @@ export const Pages: CollectionConfig = {
               },
               blocks: [
                 {
+                  slug: 'heroBlock',
+                  labels: {
+                    singular: 'Hero Block',
+                    plural: 'Hero Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'layout',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'centered',
+                      admin: {
+                        description: 'Layout style for the hero section',
+                      },
+                      options: [
+                        { label: 'Centered', value: 'centered' },
+                        { label: 'Split Left (content left, image right)', value: 'split-left' },
+                        { label: 'Split Right (image left, content right)', value: 'split-right' },
+                      ],
+                    },
+                    {
+                      name: 'background',
+                      type: 'group',
+                      admin: {
+                        description: 'Background settings for the hero section',
+                      },
+                      fields: [
+                        {
+                          name: 'type',
+                          type: 'select',
+                          defaultValue: 'gradient',
+                          options: [
+                            { label: 'Color', value: 'color' },
+                            { label: 'Gradient', value: 'gradient' },
+                            { label: 'Image', value: 'image' },
+                          ],
+                        },
+                        {
+                          name: 'color',
+                          type: 'text',
+                          admin: {
+                            description: 'Background color (e.g., #f8f9fa or rgb(248, 249, 250))',
+                            condition: (_data, siblingData) => siblingData?.type === 'color',
+                          },
+                        },
+                        {
+                          name: 'gradient',
+                          type: 'text',
+                          admin: {
+                            description: 'Background gradient preset',
+                            condition: (_data, siblingData) => siblingData?.type === 'gradient',
+                            components: {
+                              Field: '@/fields/GradientSelectField#GradientSelectField',
+                            },
+                          },
+                        },
+                        {
+                          name: 'image',
+                          type: 'upload',
+                          relationTo: 'media',
+                          admin: {
+                            description: 'Background image',
+                            condition: (_data, siblingData) => siblingData?.type === 'image',
+                          },
+                        },
+                        {
+                          name: 'overlay',
+                          type: 'checkbox',
+                          defaultValue: true,
+                          admin: {
+                            description: 'Add dark overlay for better text readability',
+                            condition: (_data, siblingData) => siblingData?.type === 'image',
+                          },
+                        },
+                        {
+                          name: 'overlayOpacity',
+                          type: 'number',
+                          defaultValue: 50,
+                          min: 0,
+                          max: 100,
+                          admin: {
+                            description: 'Overlay opacity (0-100%)',
+                            condition: (_data, siblingData) =>
+                              siblingData?.type === 'image' && siblingData?.overlay,
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'badge',
+                      type: 'group',
+                      admin: {
+                        description: 'Optional badge displayed above the headline',
+                      },
+                      fields: [
+                        {
+                          name: 'text',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description: 'Badge text (e.g., "New Feature", "Limited Offer")',
+                          },
+                        },
+                        {
+                          name: 'icon',
+                          type: 'text',
+                          admin: {
+                            description: 'Icon displayed in the badge',
+                            components: {
+                              Field: '@/fields/IconSelectField#IconSelectField',
+                            },
+                          },
+                        },
+                        {
+                          name: 'gradient',
+                          type: 'text',
+                          admin: {
+                            description: 'Gradient color scheme for the badge',
+                            components: {
+                              Field: '@/fields/GradientSelectField#GradientSelectField',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'headline',
+                      type: 'text',
+                      required: true,
+                      localized: true,
+                      admin: {
+                        description: 'Main headline (H1) - the primary message',
+                      },
+                    },
+                    {
+                      name: 'subheadline',
+                      type: 'textarea',
+                      localized: true,
+                      admin: {
+                        description: 'Supporting text below the headline',
+                      },
+                    },
+                    {
+                      name: 'bulletPoints',
+                      type: 'array',
+                      admin: {
+                        description: 'Key benefits or features as bullet points',
+                      },
+                      fields: [
+                        {
+                          name: 'icon',
+                          type: 'text',
+                          admin: {
+                            description: 'Icon for this bullet point',
+                            components: {
+                              Field: '@/fields/IconSelectField#IconSelectField',
+                            },
+                          },
+                        },
+                        {
+                          name: 'text',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'Bullet point text',
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'primaryCTA',
+                      type: 'group',
+                      admin: {
+                        description: 'Primary call-to-action button',
+                      },
+                      fields: [
+                        {
+                          name: 'label',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description: 'Button text (e.g., "Get Started", "Learn More")',
+                          },
+                        },
+                        {
+                          name: 'url',
+                          type: 'text',
+                          admin: {
+                            description: 'Button link URL',
+                          },
+                        },
+                        {
+                          name: 'style',
+                          type: 'select',
+                          defaultValue: 'solid',
+                          options: [
+                            { label: 'Solid', value: 'solid' },
+                            { label: 'Outline', value: 'outline' },
+                          ],
+                        },
+                        {
+                          name: 'openInNewTab',
+                          type: 'checkbox',
+                          defaultValue: false,
+                        },
+                      ],
+                    },
+                    {
+                      name: 'secondaryCTA',
+                      type: 'group',
+                      admin: {
+                        description: 'Secondary call-to-action button (optional)',
+                      },
+                      fields: [
+                        {
+                          name: 'label',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description: 'Button text',
+                          },
+                        },
+                        {
+                          name: 'url',
+                          type: 'text',
+                          admin: {
+                            description: 'Button link URL',
+                          },
+                        },
+                        {
+                          name: 'style',
+                          type: 'select',
+                          defaultValue: 'outline',
+                          options: [
+                            { label: 'Solid', value: 'solid' },
+                            { label: 'Outline', value: 'outline' },
+                          ],
+                        },
+                        {
+                          name: 'openInNewTab',
+                          type: 'checkbox',
+                          defaultValue: false,
+                        },
+                      ],
+                    },
+                    {
+                      name: 'trustBadges',
+                      type: 'array',
+                      admin: {
+                        description: 'Trust badges or partner logos (optional)',
+                      },
+                      fields: [
+                        {
+                          name: 'image',
+                          type: 'upload',
+                          relationTo: 'media',
+                          required: true,
+                        },
+                        {
+                          name: 'alt',
+                          type: 'text',
+                          admin: {
+                            description: 'Alt text for accessibility',
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'heroImage',
+                      type: 'upload',
+                      relationTo: 'media',
+                      admin: {
+                        description: 'Hero image (used in split layouts)',
+                        condition: (_data, siblingData) =>
+                          siblingData?.layout === 'split-left' ||
+                          siblingData?.layout === 'split-right',
+                      },
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Enable entrance animations',
+                      },
+                    },
+                  ],
+                },
+                {
+                  slug: 'featuresBlock',
+                  labels: {
+                    singular: 'Features Block',
+                    plural: 'Features Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section title above the features grid',
+                      },
+                    },
+                    {
+                      name: 'subtitle',
+                      type: 'textarea',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section description',
+                      },
+                    },
+                    {
+                      name: 'layout',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'grid-3',
+                      admin: {
+                        description: 'Layout style for the features',
+                      },
+                      options: [
+                        { label: '2 Column Grid', value: 'grid-2' },
+                        { label: '3 Column Grid', value: 'grid-3' },
+                        { label: '4 Column Grid', value: 'grid-4' },
+                        { label: 'List', value: 'list' },
+                      ],
+                    },
+                    {
+                      name: 'cardStyle',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'elevated',
+                      admin: {
+                        description: 'Visual style for the feature cards',
+                      },
+                      options: [
+                        { label: 'Minimal', value: 'minimal' },
+                        { label: 'Bordered', value: 'bordered' },
+                        { label: 'Elevated (Shadow)', value: 'elevated' },
+                        { label: 'Gradient', value: 'gradient' },
+                      ],
+                    },
+                    {
+                      name: 'items',
+                      type: 'array',
+                      required: true,
+                      minRows: 1,
+                      admin: {
+                        description: 'Feature/service items to display',
+                      },
+                      labels: {
+                        singular: 'Feature Item',
+                        plural: 'Feature Items',
+                      },
+                      fields: [
+                        {
+                          name: 'icon',
+                          type: 'text',
+                          admin: {
+                            description: 'Icon for this feature',
+                            components: {
+                              Field: '@/fields/IconSelectField#IconSelectField',
+                            },
+                          },
+                        },
+                        {
+                          name: 'title',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'Feature title',
+                          },
+                        },
+                        {
+                          name: 'description',
+                          type: 'textarea',
+                          localized: true,
+                          admin: {
+                            description: 'Feature description',
+                          },
+                        },
+                        {
+                          name: 'link',
+                          type: 'group',
+                          admin: {
+                            description: 'Optional call-to-action link',
+                          },
+                          fields: [
+                            {
+                              name: 'label',
+                              type: 'text',
+                              localized: true,
+                              admin: {
+                                description: 'Link text (e.g., "Learn More")',
+                              },
+                            },
+                            {
+                              name: 'url',
+                              type: 'text',
+                              admin: {
+                                description: 'Link URL',
+                              },
+                            },
+                            {
+                              name: 'openInNewTab',
+                              type: 'checkbox',
+                              defaultValue: false,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      name: 'showCTAs',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Show call-to-action links on feature cards',
+                      },
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Enable entrance animations',
+                      },
+                    },
+                  ],
+                },
+                {
+                  slug: 'testimonialsBlock',
+                  labels: {
+                    singular: 'Testimonials Block',
+                    plural: 'Testimonials Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section title above the testimonials',
+                      },
+                    },
+                    {
+                      name: 'subtitle',
+                      type: 'textarea',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section description',
+                      },
+                    },
+                    {
+                      name: 'displayMode',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'carousel',
+                      admin: {
+                        description: 'How to display the testimonials',
+                      },
+                      options: [
+                        { label: 'Carousel', value: 'carousel' },
+                        { label: 'Grid', value: 'grid' },
+                        { label: 'Single Featured', value: 'single-featured' },
+                      ],
+                    },
+                    {
+                      name: 'testimonials',
+                      type: 'array',
+                      required: true,
+                      minRows: 1,
+                      admin: {
+                        description: 'Customer testimonials to display',
+                      },
+                      labels: {
+                        singular: 'Testimonial',
+                        plural: 'Testimonials',
+                      },
+                      fields: [
+                        {
+                          name: 'quote',
+                          type: 'textarea',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'The testimonial quote text',
+                          },
+                        },
+                        {
+                          name: 'authorName',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'Name of the person giving the testimonial',
+                          },
+                        },
+                        {
+                          name: 'authorRole',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description: 'Job title or role (e.g., "CEO", "Marketing Director")',
+                          },
+                        },
+                        {
+                          name: 'authorCompany',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description: 'Company or organization name',
+                          },
+                        },
+                        {
+                          name: 'authorPhoto',
+                          type: 'upload',
+                          relationTo: 'media',
+                          admin: {
+                            description: 'Photo of the person (recommended: square, min 100x100px)',
+                          },
+                        },
+                        {
+                          name: 'rating',
+                          type: 'number',
+                          min: 1,
+                          max: 5,
+                          admin: {
+                            description: 'Star rating from 1 to 5 (optional)',
+                            step: 0.5,
+                          },
+                        },
+                        {
+                          name: 'logo',
+                          type: 'upload',
+                          relationTo: 'media',
+                          admin: {
+                            description: 'Company logo (optional)',
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'showRatings',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Display star ratings on testimonials',
+                      },
+                    },
+                    {
+                      name: 'autoplay',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description:
+                          'Auto-rotate testimonials (for carousel and single-featured modes)',
+                        condition: (_data, siblingData) =>
+                          siblingData?.displayMode === 'carousel' ||
+                          siblingData?.displayMode === 'single-featured',
+                      },
+                    },
+                    {
+                      name: 'autoplayInterval',
+                      type: 'number',
+                      defaultValue: 5000,
+                      min: 2000,
+                      max: 15000,
+                      admin: {
+                        description: 'Autoplay interval in milliseconds (2000-15000)',
+                        condition: (_data, siblingData) =>
+                          (siblingData?.displayMode === 'carousel' ||
+                            siblingData?.displayMode === 'single-featured') &&
+                          siblingData?.autoplay,
+                      },
+                    },
+                    {
+                      name: 'accentColor',
+                      type: 'select',
+                      defaultValue: 'amber',
+                      admin: {
+                        description: 'Accent color for ratings, borders, and decorations',
+                      },
+                      options: [
+                        { label: 'Amber', value: 'amber' },
+                        { label: 'Indigo', value: 'indigo' },
+                        { label: 'Purple', value: 'purple' },
+                        { label: 'Green', value: 'green' },
+                        { label: 'Blue', value: 'blue' },
+                      ],
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Enable entrance animations',
+                      },
+                    },
+                  ],
+                },
+                {
+                  slug: 'statsBlock',
+                  labels: {
+                    singular: 'Stats Block',
+                    plural: 'Stats Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section title above the stats',
+                      },
+                    },
+                    {
+                      name: 'layout',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'grid-4',
+                      admin: {
+                        description: 'Layout style for the stats',
+                      },
+                      options: [
+                        { label: 'Row (horizontal)', value: 'row' },
+                        { label: '2 Column Grid', value: 'grid-2' },
+                        { label: '4 Column Grid', value: 'grid-4' },
+                      ],
+                    },
+                    {
+                      name: 'stats',
+                      type: 'array',
+                      required: true,
+                      minRows: 1,
+                      admin: {
+                        description: 'Statistics to display with animated counters',
+                      },
+                      labels: {
+                        singular: 'Stat',
+                        plural: 'Stats',
+                      },
+                      fields: [
+                        {
+                          name: 'value',
+                          type: 'number',
+                          required: true,
+                          admin: {
+                            description: 'The numeric value to display (will animate from 0)',
+                          },
+                        },
+                        {
+                          name: 'prefix',
+                          type: 'text',
+                          admin: {
+                            description: 'Text before the number (e.g., "$", ">")',
+                          },
+                        },
+                        {
+                          name: 'suffix',
+                          type: 'text',
+                          admin: {
+                            description: 'Text after the number (e.g., "+", "%", "K", "/7")',
+                          },
+                        },
+                        {
+                          name: 'label',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'Description label below the number',
+                          },
+                        },
+                        {
+                          name: 'icon',
+                          type: 'text',
+                          admin: {
+                            description: 'Optional icon above the stat',
+                            components: {
+                              Field: '@/fields/IconSelectField#IconSelectField',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'animateOnScroll',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Animate numbers when the block enters viewport',
+                      },
+                    },
+                    {
+                      name: 'accentColor',
+                      type: 'select',
+                      defaultValue: 'indigo',
+                      admin: {
+                        description: 'Accent color for numbers and decorations',
+                      },
+                      options: [
+                        { label: 'Amber', value: 'amber' },
+                        { label: 'Indigo', value: 'indigo' },
+                        { label: 'Purple', value: 'purple' },
+                        { label: 'Green', value: 'green' },
+                        { label: 'Blue', value: 'blue' },
+                      ],
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Enable entrance animations',
+                      },
+                    },
+                  ],
+                },
+                {
+                  slug: 'timelineBlock',
+                  labels: {
+                    singular: 'Timeline Block',
+                    plural: 'Timeline Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section title above the timeline',
+                      },
+                    },
+                    {
+                      name: 'subtitle',
+                      type: 'textarea',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section description',
+                      },
+                    },
+                    {
+                      name: 'layout',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'vertical',
+                      admin: {
+                        description: 'Layout style for the timeline',
+                      },
+                      options: [
+                        { label: 'Vertical (connector on left)', value: 'vertical' },
+                        { label: 'Horizontal (scrollable)', value: 'horizontal' },
+                        { label: 'Alternating (left/right)', value: 'alternating' },
+                      ],
+                    },
+                    {
+                      name: 'items',
+                      type: 'array',
+                      required: true,
+                      minRows: 1,
+                      admin: {
+                        description: 'Timeline items to display',
+                      },
+                      labels: {
+                        singular: 'Timeline Item',
+                        plural: 'Timeline Items',
+                      },
+                      fields: [
+                        {
+                          name: 'label',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'Date or label (e.g., "2024", "Step 1", "Phase A")',
+                          },
+                        },
+                        {
+                          name: 'title',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'Title for this timeline item',
+                          },
+                        },
+                        {
+                          name: 'description',
+                          type: 'textarea',
+                          localized: true,
+                          admin: {
+                            description: 'Description text for this timeline item',
+                          },
+                        },
+                        {
+                          name: 'icon',
+                          type: 'text',
+                          admin: {
+                            description: 'Optional icon for this timeline item',
+                            components: {
+                              Field: '@/fields/IconSelectField#IconSelectField',
+                            },
+                          },
+                        },
+                        {
+                          name: 'status',
+                          type: 'select',
+                          defaultValue: 'upcoming',
+                          admin: {
+                            description: 'Status of this timeline item',
+                          },
+                          options: [
+                            { label: 'Completed', value: 'completed' },
+                            { label: 'Current', value: 'current' },
+                            { label: 'Upcoming', value: 'upcoming' },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      name: 'showConnectors',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Show connector lines between timeline items',
+                      },
+                    },
+                    {
+                      name: 'accentColor',
+                      type: 'select',
+                      defaultValue: 'indigo',
+                      admin: {
+                        description: 'Accent color for the timeline',
+                      },
+                      options: [
+                        { label: 'Amber', value: 'amber' },
+                        { label: 'Indigo', value: 'indigo' },
+                        { label: 'Purple', value: 'purple' },
+                        { label: 'Green', value: 'green' },
+                        { label: 'Blue', value: 'blue' },
+                      ],
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Enable entrance animations',
+                      },
+                    },
+                  ],
+                },
+                {
+                  slug: 'pricingBlock',
+                  labels: {
+                    singular: 'Pricing Block',
+                    plural: 'Pricing Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section title above the pricing plans',
+                      },
+                    },
+                    {
+                      name: 'subtitle',
+                      type: 'textarea',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section description',
+                      },
+                    },
+                    {
+                      name: 'layout',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'cards',
+                      admin: {
+                        description: 'Layout style for the pricing display',
+                      },
+                      options: [
+                        { label: 'Cards (side-by-side)', value: 'cards' },
+                        { label: 'Table (comparison table)', value: 'table' },
+                        { label: 'Comparison (feature grid)', value: 'comparison' },
+                      ],
+                    },
+                    {
+                      name: 'billingToggle',
+                      type: 'checkbox',
+                      defaultValue: false,
+                      admin: {
+                        description: 'Show monthly/yearly billing toggle (requires yearly prices)',
+                      },
+                    },
+                    {
+                      name: 'plans',
+                      type: 'array',
+                      required: true,
+                      minRows: 1,
+                      admin: {
+                        description: 'Pricing plans to display',
+                      },
+                      labels: {
+                        singular: 'Plan',
+                        plural: 'Plans',
+                      },
+                      fields: [
+                        {
+                          name: 'name',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'Plan name (e.g., "Basic", "Pro", "Enterprise")',
+                          },
+                        },
+                        {
+                          name: 'description',
+                          type: 'textarea',
+                          localized: true,
+                          admin: {
+                            description: 'Short description of the plan',
+                          },
+                        },
+                        {
+                          name: 'monthlyPrice',
+                          type: 'number',
+                          admin: {
+                            description: 'Monthly price (leave empty for "Contact Us")',
+                          },
+                        },
+                        {
+                          name: 'yearlyPrice',
+                          type: 'number',
+                          admin: {
+                            description: 'Yearly price per month (for billing toggle)',
+                            condition: (_data, siblingData) => siblingData?.monthlyPrice != null,
+                          },
+                        },
+                        {
+                          name: 'currency',
+                          type: 'text',
+                          defaultValue: '$',
+                          admin: {
+                            description: 'Currency symbol (e.g., "$", "€", "₴")',
+                          },
+                        },
+                        {
+                          name: 'billingPeriod',
+                          type: 'text',
+                          defaultValue: '/month',
+                          localized: true,
+                          admin: {
+                            description: 'Billing period text (e.g., "/month", "/user/month")',
+                          },
+                        },
+                        {
+                          name: 'features',
+                          type: 'array',
+                          admin: {
+                            description: 'Features included or excluded in this plan',
+                          },
+                          labels: {
+                            singular: 'Feature',
+                            plural: 'Features',
+                          },
+                          fields: [
+                            {
+                              name: 'text',
+                              type: 'text',
+                              required: true,
+                              localized: true,
+                              admin: {
+                                description: 'Feature description',
+                              },
+                            },
+                            {
+                              name: 'included',
+                              type: 'checkbox',
+                              defaultValue: true,
+                              admin: {
+                                description: 'Is this feature included in the plan?',
+                              },
+                            },
+                          ],
+                        },
+                        {
+                          name: 'cta',
+                          type: 'group',
+                          admin: {
+                            description: 'Call-to-action button for this plan',
+                          },
+                          fields: [
+                            {
+                              name: 'label',
+                              type: 'text',
+                              localized: true,
+                              admin: {
+                                description: 'Button text (e.g., "Get Started", "Contact Sales")',
+                              },
+                            },
+                            {
+                              name: 'url',
+                              type: 'text',
+                              admin: {
+                                description: 'Button link URL',
+                              },
+                            },
+                            {
+                              name: 'style',
+                              type: 'select',
+                              defaultValue: 'solid',
+                              options: [
+                                { label: 'Solid', value: 'solid' },
+                                { label: 'Outline', value: 'outline' },
+                              ],
+                            },
+                            {
+                              name: 'openInNewTab',
+                              type: 'checkbox',
+                              defaultValue: false,
+                            },
+                          ],
+                        },
+                        {
+                          name: 'highlighted',
+                          type: 'checkbox',
+                          defaultValue: false,
+                          admin: {
+                            description: 'Feature this plan (special styling, slightly larger)',
+                          },
+                        },
+                        {
+                          name: 'badge',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description: 'Badge text (e.g., "Most Popular", "Best Value")',
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'accentColor',
+                      type: 'select',
+                      defaultValue: 'indigo',
+                      admin: {
+                        description: 'Accent color for pricing elements',
+                      },
+                      options: [
+                        { label: 'Amber', value: 'amber' },
+                        { label: 'Indigo', value: 'indigo' },
+                        { label: 'Purple', value: 'purple' },
+                        { label: 'Green', value: 'green' },
+                        { label: 'Blue', value: 'blue' },
+                      ],
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Enable entrance animations',
+                      },
+                    },
+                  ],
+                },
+                {
+                  slug: 'teamBlock',
+                  labels: {
+                    singular: 'Team Block',
+                    plural: 'Team Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section title above the team members',
+                      },
+                    },
+                    {
+                      name: 'subtitle',
+                      type: 'textarea',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section description',
+                      },
+                    },
+                    {
+                      name: 'layout',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'grid',
+                      admin: {
+                        description: 'Layout style for the team display',
+                      },
+                      options: [
+                        { label: 'Grid (responsive grid of cards)', value: 'grid' },
+                        { label: 'Carousel (horizontal with navigation)', value: 'carousel' },
+                        { label: 'List (vertical with larger photos)', value: 'list' },
+                      ],
+                    },
+                    {
+                      name: 'columns',
+                      type: 'select',
+                      defaultValue: '3',
+                      admin: {
+                        description: 'Number of columns in grid layout',
+                        condition: (_data, siblingData) => siblingData?.layout === 'grid',
+                      },
+                      options: [
+                        { label: '2 Columns', value: '2' },
+                        { label: '3 Columns', value: '3' },
+                        { label: '4 Columns', value: '4' },
+                      ],
+                    },
+                    {
+                      name: 'cardStyle',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'card',
+                      admin: {
+                        description: 'Visual style for team member cards',
+                      },
+                      options: [
+                        { label: 'Minimal (simple, no background)', value: 'minimal' },
+                        { label: 'Card (elevated with shadow)', value: 'card' },
+                        { label: 'Overlay (photo with gradient overlay)', value: 'overlay' },
+                      ],
+                    },
+                    {
+                      name: 'showSocialLinks',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Display social media links for team members',
+                      },
+                    },
+                    {
+                      name: 'members',
+                      type: 'array',
+                      required: true,
+                      minRows: 1,
+                      admin: {
+                        description: 'Team members to display',
+                      },
+                      labels: {
+                        singular: 'Team Member',
+                        plural: 'Team Members',
+                      },
+                      fields: [
+                        {
+                          name: 'photo',
+                          type: 'upload',
+                          relationTo: 'media',
+                          required: true,
+                          admin: {
+                            description: 'Team member photo (recommended: square aspect ratio)',
+                          },
+                        },
+                        {
+                          name: 'name',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'Full name of the team member',
+                          },
+                        },
+                        {
+                          name: 'role',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description: 'Job title or position (e.g., "CEO", "Lead Designer")',
+                          },
+                        },
+                        {
+                          name: 'bio',
+                          type: 'textarea',
+                          localized: true,
+                          admin: {
+                            description: 'Short biography or description',
+                          },
+                        },
+                        {
+                          name: 'socialLinks',
+                          type: 'array',
+                          admin: {
+                            description: 'Social media and contact links',
+                          },
+                          labels: {
+                            singular: 'Social Link',
+                            plural: 'Social Links',
+                          },
+                          fields: [
+                            {
+                              name: 'platform',
+                              type: 'select',
+                              required: true,
+                              options: [
+                                { label: 'LinkedIn', value: 'linkedin' },
+                                { label: 'Twitter / X', value: 'twitter' },
+                                { label: 'GitHub', value: 'github' },
+                                { label: 'Email', value: 'email' },
+                                { label: 'Website', value: 'website' },
+                              ],
+                            },
+                            {
+                              name: 'url',
+                              type: 'text',
+                              required: true,
+                              admin: {
+                                description:
+                                  'Full URL or email address (for email, just enter the address)',
+                              },
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      name: 'accentColor',
+                      type: 'select',
+                      defaultValue: 'indigo',
+                      admin: {
+                        description: 'Accent color for team member elements',
+                      },
+                      options: [
+                        { label: 'Amber', value: 'amber' },
+                        { label: 'Indigo', value: 'indigo' },
+                        { label: 'Purple', value: 'purple' },
+                        { label: 'Green', value: 'green' },
+                        { label: 'Blue', value: 'blue' },
+                      ],
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Enable entrance animations',
+                      },
+                    },
+                  ],
+                },
+                {
+                  slug: 'faqBlock',
+                  labels: {
+                    singular: 'FAQ Block',
+                    plural: 'FAQ Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section title above the FAQ',
+                      },
+                    },
+                    {
+                      name: 'subtitle',
+                      type: 'textarea',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section description',
+                      },
+                    },
+                    {
+                      name: 'layout',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'accordion',
+                      admin: {
+                        description: 'How to display the FAQ items',
+                      },
+                      options: [
+                        { label: 'Accordion (single column)', value: 'accordion' },
+                        { label: 'Two Column', value: 'two-column' },
+                        { label: 'Cards (grid)', value: 'cards' },
+                      ],
+                    },
+                    {
+                      name: 'questions',
+                      type: 'array',
+                      required: true,
+                      minRows: 1,
+                      admin: {
+                        description: 'Frequently asked questions and answers',
+                      },
+                      labels: {
+                        singular: 'Question',
+                        plural: 'Questions',
+                      },
+                      fields: [
+                        {
+                          name: 'question',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'The question text',
+                          },
+                        },
+                        {
+                          name: 'answer',
+                          type: 'textarea',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'The answer text',
+                          },
+                        },
+                        {
+                          name: 'category',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description:
+                              'Optional category for grouping/filtering (e.g., "Billing", "Technical")',
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'showSearch',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Show search bar to filter questions',
+                      },
+                    },
+                    {
+                      name: 'showCategories',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description:
+                          'Show category filter buttons (requires categories on questions)',
+                      },
+                    },
+                    {
+                      name: 'allowMultiple',
+                      type: 'checkbox',
+                      defaultValue: false,
+                      admin: {
+                        description: 'Allow multiple FAQ items to be open at the same time',
+                      },
+                    },
+                    {
+                      name: 'accentColor',
+                      type: 'select',
+                      defaultValue: 'indigo',
+                      admin: {
+                        description: 'Accent color for FAQ elements',
+                      },
+                      options: [
+                        { label: 'Amber', value: 'amber' },
+                        { label: 'Indigo', value: 'indigo' },
+                        { label: 'Purple', value: 'purple' },
+                        { label: 'Green', value: 'green' },
+                        { label: 'Blue', value: 'blue' },
+                      ],
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Enable entrance animations',
+                      },
+                    },
+                  ],
+                },
+                {
+                  slug: 'logoCloudBlock',
+                  labels: {
+                    singular: 'Logo Cloud Block',
+                    plural: 'Logo Cloud Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section title (e.g., "Trusted by", "Our Partners")',
+                      },
+                    },
+                    {
+                      name: 'subtitle',
+                      type: 'textarea',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section description',
+                      },
+                    },
+                    {
+                      name: 'layout',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'grid',
+                      admin: {
+                        description: 'How to display the logos',
+                      },
+                      options: [
+                        { label: 'Grid (static layout)', value: 'grid' },
+                        { label: 'Carousel (auto-scrolling with dots)', value: 'carousel' },
+                        { label: 'Marquee (infinite scroll)', value: 'marquee' },
+                      ],
+                    },
+                    {
+                      name: 'logos',
+                      type: 'array',
+                      required: true,
+                      minRows: 1,
+                      admin: {
+                        description: 'Partner/client logos to display',
+                      },
+                      labels: {
+                        singular: 'Logo',
+                        plural: 'Logos',
+                      },
+                      fields: [
+                        {
+                          name: 'image',
+                          type: 'upload',
+                          relationTo: 'media',
+                          required: true,
+                          admin: {
+                            description:
+                              'Logo image (recommended: PNG with transparent background)',
+                          },
+                        },
+                        {
+                          name: 'name',
+                          type: 'text',
+                          admin: {
+                            description: 'Company name (used for alt text)',
+                          },
+                        },
+                        {
+                          name: 'url',
+                          type: 'text',
+                          admin: {
+                            description: 'Optional link to partner website',
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'grayscale',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Show logos in grayscale (color on hover)',
+                      },
+                    },
+                    {
+                      name: 'columns',
+                      type: 'select',
+                      defaultValue: '5',
+                      admin: {
+                        description: 'Number of columns for grid layout',
+                        condition: (_data, siblingData) => siblingData?.layout === 'grid',
+                      },
+                      options: [
+                        { label: '4 Columns', value: '4' },
+                        { label: '5 Columns', value: '5' },
+                        { label: '6 Columns', value: '6' },
+                      ],
+                    },
+                    {
+                      name: 'speed',
+                      type: 'select',
+                      defaultValue: 'normal',
+                      admin: {
+                        description: 'Animation speed for carousel/marquee',
+                        condition: (_data, siblingData) =>
+                          siblingData?.layout === 'carousel' || siblingData?.layout === 'marquee',
+                      },
+                      options: [
+                        { label: 'Slow', value: 'slow' },
+                        { label: 'Normal', value: 'normal' },
+                        { label: 'Fast', value: 'fast' },
+                      ],
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Enable entrance animations',
+                      },
+                    },
+                  ],
+                },
+                {
+                  slug: 'videoBlock',
+                  labels: {
+                    singular: 'Video Block',
+                    plural: 'Video Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'source',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'youtube',
+                      admin: {
+                        description: 'Video source type',
+                      },
+                      options: [
+                        { label: 'YouTube', value: 'youtube' },
+                        { label: 'Vimeo', value: 'vimeo' },
+                        { label: 'Custom URL (MP4/WebM)', value: 'custom' },
+                        { label: 'Upload', value: 'upload' },
+                      ],
+                    },
+                    {
+                      name: 'url',
+                      type: 'text',
+                      admin: {
+                        description: 'Video URL (YouTube, Vimeo, or direct video URL)',
+                        condition: (_data, siblingData) =>
+                          siblingData?.source === 'youtube' ||
+                          siblingData?.source === 'vimeo' ||
+                          siblingData?.source === 'custom',
+                      },
+                    },
+                    {
+                      name: 'file',
+                      type: 'upload',
+                      relationTo: 'media',
+                      admin: {
+                        description: 'Upload a video file (MP4, WebM recommended)',
+                        condition: (_data, siblingData) => siblingData?.source === 'upload',
+                      },
+                    },
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Optional video title',
+                      },
+                    },
+                    {
+                      name: 'description',
+                      type: 'textarea',
+                      localized: true,
+                      admin: {
+                        description: 'Optional video description',
+                      },
+                    },
+                    {
+                      name: 'thumbnail',
+                      type: 'upload',
+                      relationTo: 'media',
+                      admin: {
+                        description:
+                          'Custom thumbnail image (optional, defaults to video thumbnail for YouTube)',
+                      },
+                    },
+                    {
+                      name: 'autoplay',
+                      type: 'checkbox',
+                      defaultValue: false,
+                      admin: {
+                        description: 'Auto-play video when visible (muted for YouTube/Vimeo)',
+                      },
+                    },
+                    {
+                      name: 'loop',
+                      type: 'checkbox',
+                      defaultValue: false,
+                      admin: {
+                        description: 'Loop video continuously',
+                      },
+                    },
+                    {
+                      name: 'controls',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Show video playback controls',
+                      },
+                    },
+                    {
+                      name: 'aspectRatio',
+                      type: 'select',
+                      defaultValue: '16:9',
+                      admin: {
+                        description: 'Video aspect ratio',
+                      },
+                      options: [
+                        { label: '16:9 (Widescreen)', value: '16:9' },
+                        { label: '4:3 (Standard)', value: '4:3' },
+                        { label: '1:1 (Square)', value: '1:1' },
+                        { label: '9:16 (Vertical/Mobile)', value: '9:16' },
+                      ],
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Enable entrance animations',
+                      },
+                    },
+                  ],
+                },
+                {
+                  slug: 'caseStudyBlock',
+                  labels: {
+                    singular: 'Case Study Block',
+                    plural: 'Case Study Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section title above the case studies',
+                      },
+                    },
+                    {
+                      name: 'subtitle',
+                      type: 'textarea',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section description',
+                      },
+                    },
+                    {
+                      name: 'displayMode',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'cards',
+                      admin: {
+                        description: 'How to display the case studies',
+                      },
+                      options: [
+                        { label: 'Cards (grid layout)', value: 'cards' },
+                        { label: 'Detailed (full-width sections)', value: 'detailed' },
+                        { label: 'Carousel (horizontal slider)', value: 'carousel' },
+                      ],
+                    },
+                    {
+                      name: 'cases',
+                      type: 'array',
+                      required: true,
+                      minRows: 1,
+                      admin: {
+                        description: 'Case studies to display',
+                      },
+                      labels: {
+                        singular: 'Case Study',
+                        plural: 'Case Studies',
+                      },
+                      fields: [
+                        {
+                          name: 'title',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'Case study title',
+                          },
+                        },
+                        {
+                          name: 'clientName',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description: 'Client or company name',
+                          },
+                        },
+                        {
+                          name: 'industry',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description: 'Industry or sector (e.g., "Technology", "Healthcare")',
+                          },
+                        },
+                        {
+                          name: 'challenge',
+                          type: 'textarea',
+                          localized: true,
+                          admin: {
+                            description: 'The challenge or problem faced by the client',
+                          },
+                        },
+                        {
+                          name: 'solution',
+                          type: 'textarea',
+                          localized: true,
+                          admin: {
+                            description: 'How you solved the challenge',
+                          },
+                        },
+                        {
+                          name: 'results',
+                          type: 'array',
+                          admin: {
+                            description: 'Key results and metrics achieved',
+                          },
+                          labels: {
+                            singular: 'Result',
+                            plural: 'Results',
+                          },
+                          fields: [
+                            {
+                              name: 'metric',
+                              type: 'text',
+                              localized: true,
+                              admin: {
+                                description: 'Metric name (e.g., "Revenue Increase", "Time Saved")',
+                              },
+                            },
+                            {
+                              name: 'value',
+                              type: 'text',
+                              admin: {
+                                description: 'Metric value (e.g., "150%", "$1M", "50 hours")',
+                              },
+                            },
+                            {
+                              name: 'description',
+                              type: 'text',
+                              localized: true,
+                              admin: {
+                                description: 'Optional additional context',
+                              },
+                            },
+                          ],
+                        },
+                        {
+                          name: 'testimonial',
+                          type: 'group',
+                          admin: {
+                            description: 'Optional client testimonial quote',
+                          },
+                          fields: [
+                            {
+                              name: 'quote',
+                              type: 'textarea',
+                              localized: true,
+                              admin: {
+                                description: 'Testimonial quote text',
+                              },
+                            },
+                            {
+                              name: 'author',
+                              type: 'text',
+                              localized: true,
+                              admin: {
+                                description: 'Quote author name and title',
+                              },
+                            },
+                          ],
+                        },
+                        {
+                          name: 'image',
+                          type: 'upload',
+                          relationTo: 'media',
+                          admin: {
+                            description: 'Main case study image or project screenshot',
+                          },
+                        },
+                        {
+                          name: 'logo',
+                          type: 'upload',
+                          relationTo: 'media',
+                          admin: {
+                            description: 'Client company logo',
+                          },
+                        },
+                        {
+                          name: 'link',
+                          type: 'group',
+                          admin: {
+                            description: 'Optional link to full case study',
+                          },
+                          fields: [
+                            {
+                              name: 'label',
+                              type: 'text',
+                              localized: true,
+                              admin: {
+                                description: 'Link text (e.g., "Read Full Story")',
+                              },
+                            },
+                            {
+                              name: 'url',
+                              type: 'text',
+                              admin: {
+                                description: 'Link URL',
+                              },
+                            },
+                            {
+                              name: 'openInNewTab',
+                              type: 'checkbox',
+                              defaultValue: false,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      name: 'accentColor',
+                      type: 'select',
+                      defaultValue: 'indigo',
+                      admin: {
+                        description: 'Accent color for case study elements',
+                      },
+                      options: [
+                        { label: 'Amber', value: 'amber' },
+                        { label: 'Indigo', value: 'indigo' },
+                        { label: 'Purple', value: 'purple' },
+                        { label: 'Green', value: 'green' },
+                        { label: 'Blue', value: 'blue' },
+                      ],
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Enable entrance animations',
+                      },
+                    },
+                  ],
+                },
+                {
+                  slug: 'comparisonBlock',
+                  labels: {
+                    singular: 'Comparison Block',
+                    plural: 'Comparison Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section title above the comparison',
+                      },
+                    },
+                    {
+                      name: 'subtitle',
+                      type: 'textarea',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section description',
+                      },
+                    },
+                    {
+                      name: 'type',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'before-after',
+                      admin: {
+                        description: 'Type of comparison display',
+                      },
+                      options: [
+                        { label: 'Before/After Slider', value: 'before-after' },
+                        { label: 'Feature Table', value: 'table' },
+                        { label: 'Comparison Cards', value: 'cards' },
+                      ],
+                    },
+                    // Before/After fields
+                    {
+                      name: 'beforeImage',
+                      type: 'upload',
+                      relationTo: 'media',
+                      admin: {
+                        description: 'The "before" image',
+                        condition: (_data, siblingData) => siblingData?.type === 'before-after',
+                      },
+                    },
+                    {
+                      name: 'afterImage',
+                      type: 'upload',
+                      relationTo: 'media',
+                      admin: {
+                        description: 'The "after" image',
+                        condition: (_data, siblingData) => siblingData?.type === 'before-after',
+                      },
+                    },
+                    {
+                      name: 'beforeLabel',
+                      type: 'text',
+                      defaultValue: 'Before',
+                      localized: true,
+                      admin: {
+                        description: 'Label for the before image (e.g., "Before", "Old")',
+                        condition: (_data, siblingData) => siblingData?.type === 'before-after',
+                      },
+                    },
+                    {
+                      name: 'afterLabel',
+                      type: 'text',
+                      defaultValue: 'After',
+                      localized: true,
+                      admin: {
+                        description: 'Label for the after image (e.g., "After", "New")',
+                        condition: (_data, siblingData) => siblingData?.type === 'before-after',
+                      },
+                    },
+                    {
+                      name: 'sliderDefault',
+                      type: 'number',
+                      defaultValue: 50,
+                      min: 0,
+                      max: 100,
+                      admin: {
+                        description: 'Default slider position (0-100%)',
+                        condition: (_data, siblingData) => siblingData?.type === 'before-after',
+                      },
+                    },
+                    // Table fields
+                    {
+                      name: 'headers',
+                      type: 'array',
+                      admin: {
+                        description: 'Column headers for the comparison table',
+                        condition: (_data, siblingData) => siblingData?.type === 'table',
+                      },
+                      labels: {
+                        singular: 'Header',
+                        plural: 'Headers',
+                      },
+                      fields: [
+                        {
+                          name: 'text',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'Header text (e.g., "Basic", "Pro", "Enterprise")',
+                          },
+                        },
+                        {
+                          name: 'highlighted',
+                          type: 'checkbox',
+                          defaultValue: false,
+                          admin: {
+                            description: 'Highlight this column as recommended',
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'rows',
+                      type: 'array',
+                      admin: {
+                        description: 'Feature rows for the comparison table',
+                        condition: (_data, siblingData) => siblingData?.type === 'table',
+                      },
+                      labels: {
+                        singular: 'Row',
+                        plural: 'Rows',
+                      },
+                      fields: [
+                        {
+                          name: 'label',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'Feature name (e.g., "Storage", "Support")',
+                          },
+                        },
+                        {
+                          name: 'values',
+                          type: 'array',
+                          admin: {
+                            description: 'Values for each column (should match number of headers)',
+                          },
+                          labels: {
+                            singular: 'Value',
+                            plural: 'Values',
+                          },
+                          fields: [
+                            {
+                              name: 'text',
+                              type: 'text',
+                              localized: true,
+                              admin: {
+                                description: 'Cell text (e.g., "10GB", "Unlimited")',
+                              },
+                            },
+                            {
+                              name: 'isCheckmark',
+                              type: 'checkbox',
+                              defaultValue: false,
+                              admin: {
+                                description: 'Display as checkmark instead of text',
+                              },
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      name: 'highlightColumn',
+                      type: 'number',
+                      defaultValue: 1,
+                      min: 0,
+                      admin: {
+                        description: 'Column index to highlight (0-based)',
+                        condition: (_data, siblingData) => siblingData?.type === 'table',
+                      },
+                    },
+                    // Cards fields
+                    {
+                      name: 'items',
+                      type: 'array',
+                      admin: {
+                        description: 'Comparison card items',
+                        condition: (_data, siblingData) => siblingData?.type === 'cards',
+                      },
+                      labels: {
+                        singular: 'Card',
+                        plural: 'Cards',
+                      },
+                      fields: [
+                        {
+                          name: 'title',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'Card title',
+                          },
+                        },
+                        {
+                          name: 'description',
+                          type: 'textarea',
+                          localized: true,
+                          admin: {
+                            description: 'Card description',
+                          },
+                        },
+                        {
+                          name: 'price',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description: 'Price or value (e.g., "$29/mo", "Free", "Contact Us")',
+                          },
+                        },
+                        {
+                          name: 'features',
+                          type: 'array',
+                          admin: {
+                            description: 'Feature list for this card',
+                          },
+                          labels: {
+                            singular: 'Feature',
+                            plural: 'Features',
+                          },
+                          fields: [
+                            {
+                              name: 'text',
+                              type: 'text',
+                              required: true,
+                              localized: true,
+                              admin: {
+                                description: 'Feature text',
+                              },
+                            },
+                            {
+                              name: 'included',
+                              type: 'checkbox',
+                              defaultValue: true,
+                              admin: {
+                                description: 'Is this feature included?',
+                              },
+                            },
+                          ],
+                        },
+                        {
+                          name: 'highlighted',
+                          type: 'checkbox',
+                          defaultValue: false,
+                          admin: {
+                            description: 'Highlight this card as recommended',
+                          },
+                        },
+                        {
+                          name: 'cta',
+                          type: 'group',
+                          admin: {
+                            description: 'Call-to-action button',
+                          },
+                          fields: [
+                            {
+                              name: 'label',
+                              type: 'text',
+                              localized: true,
+                              admin: {
+                                description: 'Button text',
+                              },
+                            },
+                            {
+                              name: 'url',
+                              type: 'text',
+                              admin: {
+                                description: 'Button link URL',
+                              },
+                            },
+                            {
+                              name: 'openInNewTab',
+                              type: 'checkbox',
+                              defaultValue: false,
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    // Common fields
+                    {
+                      name: 'accentColor',
+                      type: 'select',
+                      defaultValue: 'indigo',
+                      admin: {
+                        description: 'Accent color for comparison elements',
+                      },
+                      options: [
+                        { label: 'Amber', value: 'amber' },
+                        { label: 'Indigo', value: 'indigo' },
+                        { label: 'Purple', value: 'purple' },
+                        { label: 'Green', value: 'green' },
+                        { label: 'Blue', value: 'blue' },
+                      ],
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Enable entrance animations',
+                      },
+                    },
+                  ],
+                },
+                {
                   slug: 'sectionHeader',
                   labels: {
                     singular: 'Section Header',
@@ -303,9 +2462,23 @@ export const Pages: CollectionConfig = {
                       ],
                     },
                     {
+                      name: 'layout',
+                      type: 'select',
+                      defaultValue: 'centered',
+                      admin: {
+                        description: 'Text alignment and layout direction',
+                      },
+                      options: [
+                        { label: 'Centered', value: 'centered' },
+                        { label: 'Left Aligned', value: 'left' },
+                        { label: 'Right Aligned', value: 'right' },
+                      ],
+                    },
+                    {
                       name: 'title',
                       type: 'text',
                       required: true,
+                      localized: true,
                       admin: {
                         description: 'Main heading text (required)',
                       },
@@ -313,6 +2486,7 @@ export const Pages: CollectionConfig = {
                     {
                       name: 'subtitle',
                       type: 'text',
+                      localized: true,
                       admin: {
                         description: 'Secondary text below the title (optional)',
                       },
@@ -320,6 +2494,7 @@ export const Pages: CollectionConfig = {
                     {
                       name: 'description',
                       type: 'textarea',
+                      localized: true,
                       admin: {
                         description: 'Additional description text (optional)',
                       },
@@ -350,6 +2525,7 @@ export const Pages: CollectionConfig = {
                         {
                           name: 'text',
                           type: 'text',
+                          localized: true,
                           admin: {
                             description: 'Badge text (e.g., "Featured Content")',
                           },
@@ -372,6 +2548,144 @@ export const Pages: CollectionConfig = {
                             components: {
                               Field: '@/fields/GradientSelectField#GradientSelectField',
                             },
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'background',
+                      type: 'group',
+                      admin: {
+                        description: 'Background settings for the section header',
+                      },
+                      fields: [
+                        {
+                          name: 'type',
+                          type: 'select',
+                          defaultValue: 'none',
+                          options: [
+                            { label: 'None', value: 'none' },
+                            { label: 'Color', value: 'color' },
+                            { label: 'Gradient', value: 'gradient' },
+                            { label: 'Image', value: 'image' },
+                          ],
+                        },
+                        {
+                          name: 'color',
+                          type: 'text',
+                          admin: {
+                            description: 'Background color (e.g., #f8f9fa or rgb(248, 249, 250))',
+                            condition: (_data, siblingData) => siblingData?.type === 'color',
+                          },
+                        },
+                        {
+                          name: 'gradient',
+                          type: 'text',
+                          admin: {
+                            description: 'Background gradient preset',
+                            condition: (_data, siblingData) => siblingData?.type === 'gradient',
+                            components: {
+                              Field: '@/fields/GradientSelectField#GradientSelectField',
+                            },
+                          },
+                        },
+                        {
+                          name: 'image',
+                          type: 'upload',
+                          relationTo: 'media',
+                          admin: {
+                            description: 'Background image',
+                            condition: (_data, siblingData) => siblingData?.type === 'image',
+                          },
+                        },
+                        {
+                          name: 'overlay',
+                          type: 'checkbox',
+                          defaultValue: true,
+                          admin: {
+                            description: 'Add dark overlay for better text readability',
+                            condition: (_data, siblingData) => siblingData?.type === 'image',
+                          },
+                        },
+                        {
+                          name: 'overlayOpacity',
+                          type: 'number',
+                          defaultValue: 50,
+                          min: 0,
+                          max: 100,
+                          admin: {
+                            description: 'Overlay opacity (0-100%)',
+                            condition: (_data, siblingData) =>
+                              siblingData?.type === 'image' && siblingData?.overlay,
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'bulletPoints',
+                      type: 'array',
+                      admin: {
+                        description: 'Key points or features as bullet list',
+                      },
+                      fields: [
+                        {
+                          name: 'icon',
+                          type: 'text',
+                          admin: {
+                            description: 'Icon for this bullet point',
+                            components: {
+                              Field: '@/fields/IconSelectField#IconSelectField',
+                            },
+                          },
+                        },
+                        {
+                          name: 'text',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                          admin: {
+                            description: 'Bullet point text',
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'secondaryCTA',
+                      type: 'group',
+                      admin: {
+                        description: 'Optional call-to-action button',
+                      },
+                      fields: [
+                        {
+                          name: 'label',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description: 'Button text',
+                          },
+                        },
+                        {
+                          name: 'url',
+                          type: 'text',
+                          admin: {
+                            description: 'Button link URL',
+                          },
+                        },
+                        {
+                          name: 'style',
+                          type: 'select',
+                          defaultValue: 'outline',
+                          options: [
+                            { label: 'Solid', value: 'solid' },
+                            { label: 'Outline', value: 'outline' },
+                          ],
+                        },
+                        {
+                          name: 'openInNewTab',
+                          type: 'checkbox',
+                          defaultValue: false,
+                          admin: {
+                            description: 'Open link in new tab',
                           },
                         },
                       ],
@@ -448,18 +2762,40 @@ export const Pages: CollectionConfig = {
                     plural: 'Call to Actions',
                   },
                   fields: [
+                    // Content fields
                     {
                       name: 'heading',
                       type: 'text',
                       required: true,
+                      admin: {
+                        description: 'Main heading for the CTA block',
+                      },
                     },
                     {
                       name: 'description',
                       type: 'textarea',
+                      admin: {
+                        description: 'Supporting text below the heading',
+                      },
                     },
+                    {
+                      name: 'icon',
+                      type: 'text',
+                      admin: {
+                        description: 'Optional icon displayed before the heading',
+                        components: {
+                          Field: '@/fields/IconSelectField#IconSelectField',
+                        },
+                      },
+                    },
+                    // Primary button (original link field)
                     {
                       name: 'link',
                       type: 'group',
+                      label: 'Primary Button',
+                      admin: {
+                        description: 'Main call-to-action button',
+                      },
                       fields: [
                         {
                           name: 'label',
@@ -477,6 +2813,140 @@ export const Pages: CollectionConfig = {
                           defaultValue: false,
                         },
                       ],
+                    },
+                    // Secondary button (new)
+                    {
+                      name: 'secondaryButton',
+                      type: 'group',
+                      label: 'Secondary Button',
+                      admin: {
+                        description: 'Optional secondary action button',
+                      },
+                      fields: [
+                        {
+                          name: 'label',
+                          type: 'text',
+                        },
+                        {
+                          name: 'url',
+                          type: 'text',
+                        },
+                        {
+                          name: 'style',
+                          type: 'select',
+                          defaultValue: 'outline',
+                          options: [
+                            { label: 'Solid', value: 'solid' },
+                            { label: 'Outline', value: 'outline' },
+                          ],
+                        },
+                        {
+                          name: 'openInNewTab',
+                          type: 'checkbox',
+                          defaultValue: false,
+                        },
+                      ],
+                    },
+                    // Layout options
+                    {
+                      name: 'alignment',
+                      type: 'select',
+                      defaultValue: 'centered',
+                      admin: {
+                        description: 'Content alignment',
+                      },
+                      options: [
+                        { label: 'Centered', value: 'centered' },
+                        { label: 'Left Aligned', value: 'left' },
+                      ],
+                    },
+                    {
+                      name: 'size',
+                      type: 'select',
+                      defaultValue: 'standard',
+                      admin: {
+                        description: 'Size variant affects padding and text sizes',
+                      },
+                      options: [
+                        { label: 'Compact', value: 'compact' },
+                        { label: 'Standard', value: 'standard' },
+                        { label: 'Large', value: 'large' },
+                      ],
+                    },
+                    // Background options
+                    {
+                      name: 'backgroundStyle',
+                      type: 'select',
+                      defaultValue: 'gradient',
+                      admin: {
+                        description: 'Background style for the CTA block',
+                      },
+                      options: [
+                        { label: 'Gradient', value: 'gradient' },
+                        { label: 'Solid Color', value: 'solid' },
+                        { label: 'Transparent', value: 'transparent' },
+                        { label: 'Image', value: 'image' },
+                      ],
+                    },
+                    {
+                      name: 'backgroundGradient',
+                      type: 'text',
+                      admin: {
+                        description: 'Gradient preset for the background',
+                        condition: (_data, siblingData) =>
+                          siblingData?.backgroundStyle === 'gradient',
+                        components: {
+                          Field: '@/fields/GradientSelectField#GradientSelectField',
+                        },
+                      },
+                    },
+                    {
+                      name: 'backgroundColor',
+                      type: 'text',
+                      admin: {
+                        description: 'Background color (e.g., #4F46E5 or rgb(79, 70, 229))',
+                        condition: (_data, siblingData) => siblingData?.backgroundStyle === 'solid',
+                      },
+                    },
+                    {
+                      name: 'backgroundImage',
+                      type: 'upload',
+                      relationTo: 'media',
+                      admin: {
+                        description: 'Background image for the CTA block',
+                        condition: (_data, siblingData) => siblingData?.backgroundStyle === 'image',
+                      },
+                    },
+                    {
+                      name: 'backgroundOverlay',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Add a dark overlay on top of the background image',
+                        condition: (_data, siblingData) => siblingData?.backgroundStyle === 'image',
+                      },
+                    },
+                    {
+                      name: 'backgroundOverlayOpacity',
+                      type: 'number',
+                      defaultValue: 50,
+                      min: 0,
+                      max: 100,
+                      admin: {
+                        description: 'Overlay opacity (0-100%)',
+                        condition: (_data, siblingData) =>
+                          siblingData?.backgroundStyle === 'image' &&
+                          siblingData?.backgroundOverlay,
+                      },
+                    },
+                    // Animation
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Enable entrance animation',
+                      },
                     },
                   ],
                 },
@@ -610,6 +3080,42 @@ export const Pages: CollectionConfig = {
                       localized: true,
                       admin: {
                         description: 'Optional description text',
+                      },
+                    },
+                    {
+                      name: 'variant',
+                      type: 'select',
+                      defaultValue: 'faq',
+                      options: [
+                        { label: 'FAQ Style', value: 'faq' },
+                        { label: 'Steps', value: 'steps' },
+                        { label: 'Features', value: 'features' },
+                      ],
+                      admin: {
+                        description:
+                          'Visual style: FAQ (clean Q&A), Steps (numbered progress), Features (with icons)',
+                      },
+                    },
+                    {
+                      name: 'showNumbers',
+                      type: 'checkbox',
+                      defaultValue: true,
+                      admin: {
+                        description: 'Show step numbers in the accordion headers',
+                        condition: (_data, siblingData) => siblingData?.variant === 'steps',
+                      },
+                    },
+                    {
+                      name: 'iconStyle',
+                      type: 'select',
+                      defaultValue: 'chevron',
+                      options: [
+                        { label: 'Chevron', value: 'chevron' },
+                        { label: 'Plus/Minus', value: 'plus' },
+                        { label: 'Arrow', value: 'arrow' },
+                      ],
+                      admin: {
+                        description: 'Style of expand/collapse icon',
                       },
                     },
                     {

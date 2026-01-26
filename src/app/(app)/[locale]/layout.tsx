@@ -15,7 +15,6 @@ interface LocaleLayoutProps {
 const availableLocales = [
   { code: 'uk', label: 'Ukrainian' },
   { code: 'en', label: 'English' },
-  { code: 'es', label: 'Spanish' },
 ]
 
 /**
