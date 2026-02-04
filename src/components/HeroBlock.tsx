@@ -50,6 +50,15 @@ export interface HeroBlockProps {
   enableAnimation?: boolean | null
 }
 
+function isColorDark(color: string): boolean {
+  const hex = color.replace('#', '')
+  if (hex.length !== 6) return true
+  const r = parseInt(hex.slice(0, 2), 16)
+  const g = parseInt(hex.slice(2, 4), 16)
+  const b = parseInt(hex.slice(4, 6), 16)
+  return (r * 299 + g * 587 + b * 114) / 1000 < 128
+}
+
 export function HeroBlock({
   layout = 'centered',
   background,
@@ -110,16 +119,24 @@ export function HeroBlock({
     : {}
 
   // Render CTA button
-  const renderCTA = (cta: NonNullable<HeroBlockProps['primaryCTA']>) => {
+  const renderCTA = (cta: NonNullable<HeroBlockProps['primaryCTA']>, isDarkBg: boolean) => {
     if (!cta.label || !cta.url) return null
 
     const baseClasses =
-      'inline-flex items-center justify-center rounded-lg px-6 py-3 text-base font-semibold transition-all duration-200'
+      'inline-flex items-center justify-center rounded-full px-8 py-3.5 text-base font-medium transition-all duration-200'
 
-    const styleClasses =
-      cta.style === 'outline'
-        ? 'border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50'
-        : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg hover:shadow-xl'
+    let styleClasses: string
+    if (isDarkBg) {
+      styleClasses =
+        cta.style === 'outline'
+          ? 'border border-white/30 text-white hover:bg-white/10'
+          : 'border border-white/30 text-white hover:bg-white/10'
+    } else {
+      styleClasses =
+        cta.style === 'outline'
+          ? 'border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50'
+          : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg hover:shadow-xl'
+    }
 
     return (
       <Link
@@ -157,16 +174,21 @@ export function HeroBlock({
       return <div className="absolute inset-0" style={{ backgroundColor: background.color }} />
     }
 
-    // Default gradient background
-    return <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-indigo-50" />
+    // Default dark background
+    return <div className="absolute inset-0 bg-[#1c1c1c]" />
   }
 
-  // Determine text color based on background
+  // Determine if background is dark
   const hasImageBackground = background?.type === 'image' && backgroundImageUrl
-  const textColorClass =
-    hasImageBackground && background?.overlay ? 'text-white' : 'text-foreground'
-  const mutedTextColorClass =
-    hasImageBackground && background?.overlay ? 'text-white/80' : 'text-muted-foreground'
+  const isDarkBackground = Boolean(
+    (hasImageBackground && background?.overlay) ||
+    !background?.type ||
+    background?.type === null ||
+    (background?.type === 'color' && background.color && isColorDark(background.color))
+  )
+
+  const textColorClass = isDarkBackground ? 'text-white' : 'text-foreground'
+  const mutedTextColorClass = isDarkBackground ? 'text-white/70' : 'text-muted-foreground'
 
   // Centered layout
   if (layout === 'centered') {
@@ -194,14 +216,14 @@ export function HeroBlock({
 
             {/* Headline */}
             <h1
-              className={`mb-6 text-4xl font-bold leading-tight md:text-5xl lg:text-6xl ${textColorClass}`}
+              className={`mb-6 text-4xl font-extrabold uppercase leading-[1.1] tracking-tight md:text-5xl lg:text-6xl xl:text-7xl ${textColorClass}`}
             >
               {headline}
             </h1>
 
             {/* Subheadline */}
             {subheadline && (
-              <p className={`mb-8 max-w-2xl text-lg md:text-xl ${mutedTextColorClass}`}>
+              <p className={`mb-10 max-w-2xl text-base md:text-lg ${mutedTextColorClass}`}>
                 {subheadline}
               </p>
             )}
@@ -231,8 +253,8 @@ export function HeroBlock({
             {/* CTAs */}
             {(primaryCTA?.label || secondaryCTA?.label) && (
               <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:gap-4">
-                {primaryCTA && renderCTA(primaryCTA)}
-                {secondaryCTA && renderCTA(secondaryCTA)}
+                {primaryCTA && renderCTA(primaryCTA, isDarkBackground)}
+                {secondaryCTA && renderCTA(secondaryCTA, isDarkBackground)}
               </div>
             )}
 
@@ -268,7 +290,7 @@ export function HeroBlock({
   return (
     <motion.section
       {...containerVariants}
-      className="relative min-h-[70vh] overflow-hidden py-16 md:py-24"
+      className="relative min-h-[70vh] overflow-hidden py-20 md:py-28"
     >
       {renderBackground()}
 
@@ -279,7 +301,10 @@ export function HeroBlock({
           }`}
         >
           {/* Content Side */}
-          <motion.div {...contentVariants} className="flex-1 text-center lg:text-left">
+          <motion.div
+            {...contentVariants}
+            className={`${heroImageUrl ? 'flex-1' : 'w-full max-w-3xl'} text-left`}
+          >
             {/* Badge */}
             {badge?.text && (
               <div
@@ -292,14 +317,16 @@ export function HeroBlock({
 
             {/* Headline */}
             <h1
-              className={`mb-6 text-3xl font-bold leading-tight md:text-4xl lg:text-5xl ${textColorClass}`}
+              className={`mb-6 text-4xl font-extrabold uppercase leading-[1.1] tracking-tight md:text-5xl lg:text-6xl xl:text-7xl ${textColorClass}`}
             >
               {headline}
             </h1>
 
             {/* Subheadline */}
             {subheadline && (
-              <p className={`mb-8 text-lg md:text-xl ${mutedTextColorClass}`}>{subheadline}</p>
+              <p className={`mb-10 max-w-2xl text-base md:text-lg ${mutedTextColorClass}`}>
+                {subheadline}
+              </p>
             )}
 
             {/* Bullet Points */}
@@ -326,9 +353,9 @@ export function HeroBlock({
 
             {/* CTAs */}
             {(primaryCTA?.label || secondaryCTA?.label) && (
-              <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:justify-center lg:justify-start">
-                {primaryCTA && renderCTA(primaryCTA)}
-                {secondaryCTA && renderCTA(secondaryCTA)}
+              <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:justify-start">
+                {primaryCTA && renderCTA(primaryCTA, isDarkBackground)}
+                {secondaryCTA && renderCTA(secondaryCTA, isDarkBackground)}
               </div>
             )}
 

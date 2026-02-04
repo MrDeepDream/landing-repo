@@ -4,6 +4,7 @@ import { GradientSelectField as GradientSelectField_e1af6e011ab0ef85e6da4aca11ef
 import { IconSelectField as IconSelectField_f0d5d5d237abab817963acdd5e4194ca } from '@/fields/IconSelectField'
 import { MarkdownEditorField as MarkdownEditorField_ee1141961c4b017a704c7fab670e8de2 } from '@/fields/MarkdownEditorField'
 import { SEOValidationField as SEOValidationField_12a658893d3da7fce824c71e0ab712b1 } from '@/fields/SEOValidationField'
+import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 
 export const importMap = {
   '@/fields/FolderSelectField#FolderSelectField':
@@ -17,4 +18,6 @@ export const importMap = {
     MarkdownEditorField_ee1141961c4b017a704c7fab670e8de2,
   '@/fields/SEOValidationField#SEOValidationField':
     SEOValidationField_12a658893d3da7fce824c71e0ab712b1,
+  '@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler':
+    VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
 }
