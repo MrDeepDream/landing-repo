@@ -89,7 +89,7 @@ function LogoImage({
 
   const imageElement = (
     <div
-      className={`relative flex h-12 w-full items-center justify-center transition-all duration-300 sm:h-16 ${
+      className={`flex items-center justify-center transition-all duration-300 ${
         grayscale
           ? 'opacity-60 grayscale hover:opacity-100 hover:grayscale-0'
           : 'opacity-80 hover:opacity-100'
@@ -98,9 +98,10 @@ function LogoImage({
       <Image
         src={imageUrl}
         alt={altText}
-        fill
-        className="object-contain"
+        width={0}
+        height={0}
         sizes="(max-width: 640px) 100px, (max-width: 1024px) 120px, 150px"
+        className="h-10 w-auto sm:h-14"
       />
     </div>
   )
@@ -292,13 +293,20 @@ function MarqueeLayout({
 
           const imageElement = (
             <div
-              className={`relative mx-8 flex h-12 w-32 flex-shrink-0 items-center justify-center transition-all duration-300 sm:h-16 sm:w-40 ${
+              className={`mx-8 flex flex-shrink-0 items-center justify-center transition-all duration-300 ${
                 grayscale
                   ? 'opacity-60 grayscale hover:opacity-100 hover:grayscale-0'
                   : 'opacity-80 hover:opacity-100'
               }`}
             >
-              <Image src={imageUrl} alt={altText} fill className="object-contain" sizes="160px" />
+              <Image
+                src={imageUrl}
+                alt={altText}
+                width={0}
+                height={0}
+                sizes="160px"
+                className="h-10 w-auto sm:h-14"
+              />
             </div>
           )
 
