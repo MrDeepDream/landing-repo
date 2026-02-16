@@ -15,6 +15,7 @@ export interface Config {
     pages: Page
     news: News
     'news-tags': NewsTag
+    'contact-submissions': ContactSubmission
   }
   globals: {
     'site-settings': SiteSettings
@@ -155,6 +156,10 @@ export type PageBlock =
   | TabBlock
   | MediaBlock
   | AccordionBlock
+  | ServiceCardsBlock
+  | AboutBlock
+  | ValueCardsBlock
+  | CaseCardsBlock
 
 export interface HeroBlock {
   id?: string | null
@@ -345,18 +350,12 @@ export interface FAQBlock {
   id?: string | null
   blockType: 'faqBlock'
   title?: string | null
-  subtitle?: string | null
-  layout: 'accordion' | 'two-column' | 'cards'
   questions: {
     id?: string | null
     question: string
     answer: string
-    category?: string | null
   }[]
-  showSearch?: boolean | null
-  showCategories?: boolean | null
   allowMultiple?: boolean | null
-  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue' | null
   enableAnimation?: boolean | null
 }
 
@@ -506,6 +505,12 @@ export interface SectionHeaderBlock {
     icon?: string | null
     text: string
   }[] | null
+  primaryCTA?: {
+    label?: string | null
+    url?: string | null
+    style?: 'solid' | 'outline' | null
+    openInNewTab?: boolean | null
+  } | null
   secondaryCTA?: {
     label?: string | null
     url?: string | null
@@ -675,6 +680,91 @@ export interface AccordionBlock {
   }[]
 }
 
+export interface ServiceCardsBlock {
+  id?: string | null
+  blockType: 'serviceCardsBlock'
+  title?: string | null
+  cards: {
+    id?: string | null
+    title: string
+    bulletPoints?: {
+      id?: string | null
+      text: string
+    }[] | null
+    ctaLabel?: string | null
+    ctaUrl?: string | null
+    ctaOpenInNewTab?: boolean | null
+  }[]
+  tags?: {
+    id?: string | null
+    text: string
+  }[] | null
+  enableAnimation?: boolean | null
+}
+
+export interface AboutBlock {
+  id?: string | null
+  blockType: 'aboutBlock'
+  title?: string | null
+  image?: string | Media | null
+  badges?: {
+    id?: string | null
+    emoji?: string | null
+    text: string
+  }[] | null
+  description?: string | null
+  ctaLabel?: string | null
+  ctaUrl?: string | null
+  ctaOpenInNewTab?: boolean | null
+  enableAnimation?: boolean | null
+}
+
+export interface ValueCardsBlock {
+  id?: string | null
+  blockType: 'valueCardsBlock'
+  title?: string | null
+  description?: string | null
+  tags?:
+    | {
+        id?: string | null
+        text: string
+      }[]
+    | null
+  cards?:
+    | {
+        id?: string | null
+        text: string
+      }[]
+    | null
+  enableAnimation?: boolean | null
+}
+
+export interface CaseCardsBlock {
+  id?: string | null
+  blockType: 'caseCardsBlock'
+  title?: string | null
+  displayMode?: ('cases' | 'reviews') | null
+  cases: {
+    id?: string | null
+    title: string
+    sections: {
+      id?: string | null
+      emoji?: string | null
+      label: string
+      content: string
+    }[]
+  }[]
+  reviews?:
+    | {
+        id?: string | null
+        quote: string
+        authorName: string
+        authorSubtitle?: string | null
+      }[]
+    | null
+  enableAnimation?: boolean | null
+}
+
 /**
  * SEO Fields
  */
@@ -772,28 +862,60 @@ export interface SocialLink {
  */
 export interface Footer {
   id: string
+  title?: string | null
+  // Contact Info tab
+  sectionTitle?: string | null
+  sectionSubtitle?: string | null
+  messengerLinks?: FooterMessengerLink[] | null
+  phoneLabel?: string | null
+  phoneNumber?: string | null
+  phoneHref?: string | null
+  emailLabel?: string | null
+  emailAddress?: string | null
+  emailHref?: string | null
+  disclaimer?: string | null
+  // Contact Form tab
+  formHeading?: string | null
+  formNamePlaceholder?: string | null
+  formPhonePlaceholder?: string | null
+  formEmailPlaceholder?: string | null
+  formOrganizationPlaceholder?: string | null
+  formMessagePlaceholder?: string | null
+  consentText?: string | null
+  submitButtonText?: string | null
+  successMessage?: string | null
+  errorMessage?: string | null
+  sendAnotherButtonText?: string | null
+  loadingText?: string | null
+  nameRequiredError?: string | null
+  emailRequiredError?: string | null
+  consentRequiredError?: string | null
+  // Bottom Bar tab
   copyrightText?: string | null
-  description?: string | null
-  links?: FooterLink[] | null
-  contactColumns?: ContactColumn[] | null
   createdAt: string
   updatedAt: string
 }
 
-export interface FooterLink {
+export interface FooterMessengerLink {
+  id?: string | null
+  platform: 'telegram' | 'viber' | 'whatsapp' | 'signal'
   label: string
-  href: string
-  openInNewTab?: boolean | null
+  url: string
 }
 
-export interface ContactColumn {
-  title: string
-  items?: ContactItem[] | null
-}
-
-export interface ContactItem {
-  icon: 'location' | 'phone' | 'email' | 'fax' | 'time' | 'link'
-  label: string
-  href?: string | null
-  openInNewTab?: boolean | null
+/**
+ * ContactSubmission
+ */
+export interface ContactSubmission {
+  id: string
+  name: string
+  phone?: string | null
+  email: string
+  organization?: string | null
+  message?: string | null
+  consentGiven: boolean
+  locale?: string | null
+  status?: 'new' | 'in-progress' | 'resolved' | null
+  createdAt: string
+  updatedAt: string
 }

@@ -1,12 +1,43 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import localFont from 'next/font/local'
 import { AccessibilityProvider } from '@/components/providers/AccessibilityProvider'
 import '../globals.css'
 
-const inter = Inter({
-  subsets: ['latin'],
+const eUkraine = localFont({
+  src: [
+    {
+      path: '../../fonts/e-Ukraine-Thin.otf',
+      weight: '100',
+      style: 'normal',
+    },
+    {
+      path: '../../fonts/e-Ukraine-UltraLight.otf',
+      weight: '200',
+      style: 'normal',
+    },
+    {
+      path: '../../fonts/e-Ukraine-Light.otf',
+      weight: '300',
+      style: 'normal',
+    },
+    {
+      path: '../../fonts/e-Ukraine-Regular.otf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../../fonts/e-Ukraine-Medium.otf',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: '../../fonts/e-Ukraine-Bold.otf',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-e-ukraine',
   display: 'swap',
-  variable: '--font-inter',
 })
 
 export const metadata: Metadata = {
@@ -45,7 +76,7 @@ export const metadata: Metadata = {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="uk" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${eUkraine.variable} font-sans antialiased`}>
         <AccessibilityProvider>{children}</AccessibilityProvider>
       </body>
     </html>

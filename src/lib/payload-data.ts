@@ -84,29 +84,44 @@ interface SiteSettings {
   logoAltText?: string
   tagline?: string
   socialLinks?: SocialLink[]
+  hideHeaderControls?: boolean
 }
 
-interface ContactItem {
-  icon: 'location' | 'phone' | 'email' | 'fax' | 'time' | 'link'
+interface FooterMessengerLink {
+  id?: string | null
+  platform: 'telegram' | 'viber' | 'whatsapp' | 'signal'
   label: string
-  href?: string
-  openInNewTab?: boolean
-}
-
-interface ContactColumn {
-  title: string
-  items?: ContactItem[]
+  url: string
 }
 
 interface FooterData {
+  title?: string
+  sectionTitle?: string
+  sectionSubtitle?: string
+  messengerLinks?: FooterMessengerLink[]
+  phoneLabel?: string
+  phoneNumber?: string
+  phoneHref?: string
+  emailLabel?: string
+  emailAddress?: string
+  emailHref?: string
+  disclaimer?: string
+  formHeading?: string
+  formNamePlaceholder?: string
+  formPhonePlaceholder?: string
+  formEmailPlaceholder?: string
+  formOrganizationPlaceholder?: string
+  formMessagePlaceholder?: string
+  consentText?: string
+  submitButtonText?: string
+  successMessage?: string
+  errorMessage?: string
+  sendAnotherButtonText?: string
+  loadingText?: string
+  nameRequiredError?: string
+  emailRequiredError?: string
+  consentRequiredError?: string
   copyrightText?: string
-  description?: string
-  links?: Array<{
-    label: string
-    href: string
-    openInNewTab?: boolean
-  }>
-  contactColumns?: ContactColumn[]
 }
 
 /**
@@ -421,9 +436,9 @@ export const getSiteData = cache(async (locale: SupportedLocale = 'uk', draft: b
 
   // Transform site settings with proper null checks
   // Return undefined if no siteTitle to let components use defaults
-  const siteSettings: SiteSettings | undefined = settings?.siteTitle
+  const siteSettings: SiteSettings | undefined = settings
     ? {
-        siteTitle: settings.siteTitle,
+        siteTitle: settings.siteTitle || '',
         siteLogo:
           settings.siteLogo && typeof settings.siteLogo === 'object' && 'url' in settings.siteLogo
             ? {
@@ -434,6 +449,7 @@ export const getSiteData = cache(async (locale: SupportedLocale = 'uk', draft: b
         logoAltText: settings.logoAltText || undefined,
         tagline: settings.tagline || undefined,
         socialLinks: settings.socialLinks || undefined,
+        hideHeaderControls: settings.hideHeaderControls || false,
       }
     : undefined
 
@@ -484,19 +500,37 @@ export const getSiteData = cache(async (locale: SupportedLocale = 'uk', draft: b
       : undefined
 
   // Transform footer data - return undefined if no data
-  const footer: FooterData | undefined =
-    footerData &&
-    (footerData.copyrightText ||
-      footerData.description ||
-      footerData.links ||
-      footerData.contactColumns)
-      ? {
-          copyrightText: footerData.copyrightText || undefined,
-          description: footerData.description || undefined,
-          links: footerData.links || undefined,
-          contactColumns: footerData.contactColumns || undefined,
-        }
-      : undefined
+  const footer: FooterData | undefined = footerData
+    ? {
+        title: footerData.title || undefined,
+        sectionTitle: footerData.sectionTitle || undefined,
+        sectionSubtitle: footerData.sectionSubtitle || undefined,
+        messengerLinks: (footerData.messengerLinks as FooterMessengerLink[]) || undefined,
+        phoneLabel: footerData.phoneLabel || undefined,
+        phoneNumber: footerData.phoneNumber || undefined,
+        phoneHref: footerData.phoneHref || undefined,
+        emailLabel: footerData.emailLabel || undefined,
+        emailAddress: footerData.emailAddress || undefined,
+        emailHref: footerData.emailHref || undefined,
+        disclaimer: footerData.disclaimer || undefined,
+        formHeading: footerData.formHeading || undefined,
+        formNamePlaceholder: footerData.formNamePlaceholder || undefined,
+        formPhonePlaceholder: footerData.formPhonePlaceholder || undefined,
+        formEmailPlaceholder: footerData.formEmailPlaceholder || undefined,
+        formOrganizationPlaceholder: footerData.formOrganizationPlaceholder || undefined,
+        formMessagePlaceholder: footerData.formMessagePlaceholder || undefined,
+        consentText: footerData.consentText || undefined,
+        submitButtonText: footerData.submitButtonText || undefined,
+        successMessage: footerData.successMessage || undefined,
+        errorMessage: footerData.errorMessage || undefined,
+        sendAnotherButtonText: footerData.sendAnotherButtonText || undefined,
+        loadingText: footerData.loadingText || undefined,
+        nameRequiredError: footerData.nameRequiredError || undefined,
+        emailRequiredError: footerData.emailRequiredError || undefined,
+        consentRequiredError: footerData.consentRequiredError || undefined,
+        copyrightText: footerData.copyrightText || undefined,
+      }
+    : undefined
 
   return {
     siteSettings,

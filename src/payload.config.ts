@@ -12,6 +12,7 @@ import { Navigation } from './collections/Navigation'
 import { Pages } from './collections/Pages'
 import { News } from './collections/News'
 import { NewsTags } from './collections/NewsTags'
+import { ContactSubmissions } from './collections/ContactSubmissions'
 import { SiteSettings } from './globals/SiteSettings'
 import { Footer } from './globals/Footer'
 import { MediaFoldersGlobal } from './globals/MediaFolders'
@@ -42,7 +43,7 @@ export default buildConfig({
   ],
 
   // Collections (data models)
-  collections: [Users, Media, Navigation, Pages, News, NewsTags],
+  collections: [Users, Media, Navigation, Pages, News, NewsTags, ContactSubmissions],
 
   // Globals
   globals: [SiteSettings, Footer, MediaFoldersGlobal],

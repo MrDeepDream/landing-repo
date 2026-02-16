@@ -227,36 +227,30 @@ export const News: CollectionConfig = {
                   },
                   fields: [
                     {
-                      name: 'type',
+                      name: 'layout',
                       type: 'select',
-                      required: true,
-                      defaultValue: 'small',
+                      defaultValue: 'centered',
                       admin: {
-                        description:
-                          'Header style: Small (section headers) or Big (hero-style headers)',
+                        description: 'Text alignment and layout direction',
                       },
                       options: [
-                        {
-                          label: 'Small - Section Header',
-                          value: 'small',
-                        },
-                        {
-                          label: 'Big - Hero Header',
-                          value: 'big',
-                        },
+                        { label: 'Centered', value: 'centered' },
+                        { label: 'Left Aligned', value: 'left' },
+                        { label: 'Right Aligned', value: 'right' },
                       ],
                     },
                     {
                       name: 'title',
                       type: 'text',
-                      required: true,
+                      localized: true,
                       admin: {
-                        description: 'Main heading text (required)',
+                        description: 'Main heading text (optional)',
                       },
                     },
                     {
                       name: 'subtitle',
                       type: 'text',
+                      localized: true,
                       admin: {
                         description: 'Secondary text below the title (optional)',
                       },
@@ -264,59 +258,84 @@ export const News: CollectionConfig = {
                     {
                       name: 'description',
                       type: 'textarea',
+                      localized: true,
                       admin: {
                         description: 'Additional description text (optional)',
                       },
                     },
                     {
-                      name: 'headingLevel',
-                      type: 'select',
-                      defaultValue: 'h2',
-                      admin: {
-                        description: 'HTML heading level for SEO',
-                      },
-                      options: [
-                        { label: 'H1', value: 'h1' },
-                        { label: 'H2', value: 'h2' },
-                        { label: 'H3', value: 'h3' },
-                        { label: 'H4', value: 'h4' },
-                        { label: 'H5', value: 'h5' },
-                        { label: 'H6', value: 'h6' },
-                      ],
-                    },
-                    {
-                      name: 'badge',
+                      name: 'primaryCTA',
                       type: 'group',
                       admin: {
-                        description: 'Optional badge displayed above the title',
+                        description: 'Primary call-to-action button',
                       },
                       fields: [
                         {
-                          name: 'text',
+                          name: 'label',
                           type: 'text',
+                          localized: true,
                           admin: {
-                            description: 'Badge text (e.g., "Featured Content")',
+                            description: 'Button text (e.g., "Get Started", "Learn More")',
                           },
                         },
                         {
-                          name: 'icon',
+                          name: 'url',
                           type: 'text',
                           admin: {
-                            description: 'Icon displayed in the badge',
-                            components: {
-                              Field: '@/fields/IconSelectField#IconSelectField',
-                            },
+                            description: 'Button link URL',
                           },
                         },
                         {
-                          name: 'gradient',
+                          name: 'style',
+                          type: 'select',
+                          defaultValue: 'solid',
+                          options: [
+                            { label: 'Solid', value: 'solid' },
+                            { label: 'Outline', value: 'outline' },
+                          ],
+                        },
+                        {
+                          name: 'openInNewTab',
+                          type: 'checkbox',
+                          defaultValue: false,
+                        },
+                      ],
+                    },
+                    {
+                      name: 'secondaryCTA',
+                      type: 'group',
+                      admin: {
+                        description: 'Secondary call-to-action button (optional)',
+                      },
+                      fields: [
+                        {
+                          name: 'label',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description: 'Button text',
+                          },
+                        },
+                        {
+                          name: 'url',
                           type: 'text',
                           admin: {
-                            description: 'Gradient color scheme for the badge',
-                            components: {
-                              Field: '@/fields/GradientSelectField#GradientSelectField',
-                            },
+                            description: 'Button link URL',
                           },
+                        },
+                        {
+                          name: 'style',
+                          type: 'select',
+                          defaultValue: 'outline',
+                          options: [
+                            { label: 'Solid', value: 'solid' },
+                            { label: 'Outline', value: 'outline' },
+                          ],
+                        },
+                        {
+                          name: 'openInNewTab',
+                          type: 'checkbox',
+                          defaultValue: false,
                         },
                       ],
                     },

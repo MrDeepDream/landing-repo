@@ -77,7 +77,7 @@ export default async function LocaleLayout(props: LocaleLayoutProps) {
       <main id="main-content" className="flex-1">
         {children}
       </main>
-      <Footer siteSettings={siteSettings} footerData={footer} />
+      <Footer footerData={footer} locale={localeString} />
     </>
   )
 }

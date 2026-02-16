@@ -31,7 +31,7 @@ import { FloatingNav } from '@/components/FloatingNav'
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/Breadcrumbs'
 import { Building2 } from 'lucide-react'
 import { SectionHeaderBlock } from '@/components/SectionHeaderBlock'
-import { HeroBlock, type HeroBlockProps } from '@/components/HeroBlock'
+import { HeroBlock } from '@/components/HeroBlock'
 import { CallToActionBlock } from '@/components/CallToActionBlock'
 import { FeaturesBlock } from '@/components/FeaturesBlock'
 import { TestimonialsBlock } from '@/components/TestimonialsBlock'
@@ -51,7 +51,10 @@ import { PersonPlaceBlock } from '@/components/PersonPlaceBlock'
 import { TabBlockServer } from '@/components/TabBlockServer'
 import { MediaBlock } from '@/components/MediaBlock'
 import { AccordionBlock } from '@/components/AccordionBlock'
-import type { IconName } from '@/lib/icons'
+import { ServiceCardsBlock } from '@/components/ServiceCardsBlock'
+import { AboutBlock } from '@/components/AboutBlock'
+import { ValueCardsBlock } from '@/components/ValueCardsBlock'
+import { CaseCardsBlock } from '@/components/CaseCardsBlock'
 import type { GradientPreset } from '@/lib/gradients'
 import { generateSEOMetadata, type SEOData } from '@/lib/seo'
 import { sanitizeHtml } from '@/lib/sanitize'
@@ -79,6 +82,7 @@ interface PageProps {
     locale: string
     slug: string[]
   }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 /**
@@ -89,6 +93,7 @@ interface PageProps {
  */
 export default async function DynamicPage(props: PageProps) {
   const params = await props.params
+  const resolvedSearchParams = await props.searchParams
   const { locale, slug } = params
 
   // Ensure locale is always a string
@@ -97,9 +102,9 @@ export default async function DynamicPage(props: PageProps) {
   // Join slug array into a single string (for nested routes like /about/team)
   const pageSlug = slug.join('/')
 
-  // Check if draft mode is enabled via Next.js draftMode API
+  // Check if draft mode is enabled via Next.js draftMode API or ?preview=true query param
   const draft = await draftMode()
-  const isPreview = draft.isEnabled
+  const isPreview = draft.isEnabled || resolvedSearchParams?.preview === 'true'
 
   // Fetch page data by slug
   const page = await getPageBySlug(pageSlug, localeString as SupportedLocale, isPreview)
@@ -192,7 +197,13 @@ async function PageRenderer({
           <div className="space-y-8">
             {await Promise.all(
               blocks.map(async (block, index) => (
-                <BlockRenderer key={index} block={block} locale={locale} draft={draft} />
+                <BlockRenderer
+                  key={index}
+                  block={block}
+                  locale={locale}
+                  draft={draft}
+                  index={index}
+                />
               ))
             )}
           </div>
@@ -241,7 +252,13 @@ async function PageRenderer({
           <div className="space-y-8">
             {await Promise.all(
               blocks.map(async (block, index) => (
-                <BlockRenderer key={index} block={block} locale={locale} draft={draft} />
+                <BlockRenderer
+                  key={index}
+                  block={block}
+                  locale={locale}
+                  draft={draft}
+                  index={index}
+                />
               ))
             )}
           </div>
@@ -331,45 +348,23 @@ async function BlockRenderer({
   block,
   locale,
   draft,
+  index = 0,
 }: {
   block: PageBlock
   locale: string
   draft: boolean
+  index?: number
 }) {
   switch (block.blockType) {
     case 'heroBlock':
       return (
         <HeroBlock
-          layout={block.layout || 'centered'}
-          background={
-            block.background
-              ? {
-                  type: block.background.type ?? undefined,
-                  color: block.background.color ?? undefined,
-                  gradient: block.background.gradient as GradientPreset | undefined,
-                  image: block.background.image as Media | undefined,
-                  overlay: block.background.overlay ?? undefined,
-                  overlayOpacity: block.background.overlayOpacity ?? undefined,
-                }
-              : undefined
-          }
-          badge={
-            block.badge?.text
-              ? {
-                  text: block.badge.text,
-                  icon: block.badge.icon as IconName,
-                  gradient: block.badge.gradient as GradientPreset,
-                }
-              : undefined
-          }
           headline={block.headline || ''}
           subheadline={block.subheadline ?? undefined}
-          bulletPoints={block.bulletPoints as HeroBlockProps['bulletPoints']}
           primaryCTA={block.primaryCTA ?? undefined}
           secondaryCTA={block.secondaryCTA ?? undefined}
-          trustBadges={block.trustBadges as HeroBlockProps['trustBadges']}
-          heroImage={block.heroImage as Media | undefined}
           enableAnimation={block.enableAnimation !== false}
+          isFirstBlock={index === 0}
         />
       )
 
@@ -458,13 +453,8 @@ async function BlockRenderer({
       return (
         <FAQBlock
           title={block.title ?? undefined}
-          subtitle={block.subtitle ?? undefined}
-          layout={block.layout || 'accordion'}
           questions={block.questions as FAQBlockType['questions']}
-          showSearch={block.showSearch ?? true}
-          showCategories={block.showCategories ?? true}
           allowMultiple={block.allowMultiple ?? false}
-          accentColor={block.accentColor ?? undefined}
           enableAnimation={block.enableAnimation !== false}
         />
       )
@@ -535,20 +525,12 @@ async function BlockRenderer({
     case 'sectionHeader':
       return (
         <SectionHeaderBlock
-          type={block.type || 'small'}
-          title={block.title}
+          layout={block.layout ?? undefined}
+          title={block.title ?? undefined}
           subtitle={block.subtitle ?? undefined}
           description={block.description ?? undefined}
-          badge={
-            block.badge?.text
-              ? {
-                  text: block.badge.text,
-                  icon: block.badge.icon as IconName,
-                  gradient: block.badge.gradient as GradientPreset,
-                }
-              : undefined
-          }
-          headingLevel={block.headingLevel || 'h2'}
+          primaryCTA={block.primaryCTA ?? undefined}
+          secondaryCTA={block.secondaryCTA ?? undefined}
           enableAnimation={block.enableAnimation !== false}
         />
       )
@@ -669,6 +651,52 @@ async function BlockRenderer({
           description={block.description ?? undefined}
           allowMultiple={block.allowMultiple ?? undefined}
           accordionItems={block.accordionItems as AccordionBlockType['accordionItems']}
+        />
+      )
+
+    case 'serviceCardsBlock':
+      return (
+        <ServiceCardsBlock
+          title={block.title ?? undefined}
+          cards={block.cards}
+          tags={block.tags ?? undefined}
+          enableAnimation={block.enableAnimation !== false}
+        />
+      )
+
+    case 'aboutBlock':
+      return (
+        <AboutBlock
+          title={block.title ?? undefined}
+          image={block.image}
+          badges={block.badges}
+          description={block.description ?? undefined}
+          ctaLabel={block.ctaLabel ?? undefined}
+          ctaUrl={block.ctaUrl ?? undefined}
+          ctaOpenInNewTab={block.ctaOpenInNewTab ?? undefined}
+          enableAnimation={block.enableAnimation !== false}
+        />
+      )
+
+    case 'valueCardsBlock':
+      return (
+        <ValueCardsBlock
+          title={block.title ?? undefined}
+          description={block.description ?? undefined}
+          tags={block.tags ?? undefined}
+          cards={block.cards}
+          enableAnimation={block.enableAnimation !== false}
+        />
+      )
+
+    case 'caseCardsBlock':
+      return (
+        <CaseCardsBlock
+          title={block.title ?? undefined}
+          displayMode={block.displayMode}
+          cases={block.cases}
+          reviews={block.reviews}
+          enableAnimation={block.enableAnimation !== false}
         />
       )
 

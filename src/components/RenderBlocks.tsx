@@ -18,6 +18,10 @@ import { AccordionBlock } from './AccordionBlock'
 import { TabBlockServer } from './TabBlockServer'
 import { MediaBlock } from './MediaBlock'
 import { CallToActionBlock } from './CallToActionBlock'
+import { ServiceCardsBlock } from './ServiceCardsBlock'
+import { AboutBlock } from './AboutBlock'
+import { ValueCardsBlock } from './ValueCardsBlock'
+import { CaseCardsBlock } from './CaseCardsBlock'
 import type { IconName } from '@/lib/icons'
 import type { GradientPreset } from '@/lib/gradients'
 import type { Media } from '@/payload-types'
@@ -212,18 +216,12 @@ interface TeamBlockData {
 interface FAQBlockData {
   blockType: 'faqBlock'
   title?: string
-  subtitle?: string
-  layout?: 'accordion' | 'two-column' | 'cards'
   questions: {
     question: string
     answer: string
-    category?: string
     id?: string
   }[]
-  showSearch?: boolean
-  showCategories?: boolean
   allowMultiple?: boolean
-  accentColor?: 'amber' | 'indigo' | 'purple' | 'green' | 'blue'
   enableAnimation?: boolean
   id?: string
 }
@@ -349,30 +347,16 @@ interface ComparisonBlockData {
 
 interface SectionHeaderBlockData {
   blockType: 'sectionHeader'
-  type: 'small' | 'big'
   layout?: 'centered' | 'left' | 'right'
-  title: string
+  title?: string
   subtitle?: string
   description?: string
-  badge?: {
-    text?: string
-    icon?: IconName
-    gradient?: GradientPreset
+  primaryCTA?: {
+    label?: string
+    url?: string
+    style?: 'solid' | 'outline'
+    openInNewTab?: boolean
   }
-  headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-  background?: {
-    type?: 'none' | 'color' | 'gradient' | 'image'
-    color?: string
-    gradient?: string
-    image?: string | Media
-    overlay?: boolean
-    overlayOpacity?: number
-  }
-  bulletPoints?: Array<{
-    icon?: IconName | string
-    text: string
-    id?: string
-  }>
   secondaryCTA?: {
     label?: string
     url?: string
@@ -507,6 +491,72 @@ interface TabBlockData {
   id?: string
 }
 
+interface ServiceCardsBlockData {
+  blockType: 'serviceCardsBlock'
+  title?: string
+  cards: {
+    title: string
+    bulletPoints?: { text: string; id?: string }[]
+    ctaLabel?: string
+    ctaUrl?: string
+    ctaOpenInNewTab?: boolean
+    id?: string
+  }[]
+  tags?: { text: string; id?: string }[]
+  enableAnimation?: boolean
+  id?: string
+}
+
+interface AboutBlockData {
+  blockType: 'aboutBlock'
+  title?: string
+  image?: string | Media
+  badges?: { emoji?: string; text: string; id?: string }[]
+  description?: string
+  ctaLabel?: string
+  ctaUrl?: string
+  ctaOpenInNewTab?: boolean
+  enableAnimation?: boolean
+  id?: string
+}
+
+interface ValueCardsBlockData {
+  blockType: 'valueCardsBlock'
+  title?: string
+  description?: string
+  tags?: { text: string; id?: string }[]
+  cards?: {
+    text: string
+    id?: string
+  }[]
+  enableAnimation?: boolean
+  id?: string
+}
+
+interface CaseCardsBlockData {
+  blockType: 'caseCardsBlock'
+  title?: string
+  displayMode?: 'cases' | 'reviews'
+  cases: {
+    title: string
+    sections: {
+      emoji?: string
+      label: string
+      content: string
+      id?: string
+    }[]
+    id?: string
+  }[]
+  reviews?: {
+    quote: string
+    authorName: string
+    authorSubtitle?: string
+    id?: string
+  }[]
+  enableAnimation?: boolean
+  id?: string
+}
+
 interface MediaBlockData {
   blockType: 'mediaBlock'
   title?: string | null
@@ -541,6 +591,10 @@ type BlockData =
   | PersonPlaceBlockData
   | AccordionBlockData
   | TabBlockData
+  | ServiceCardsBlockData
+  | AboutBlockData
+  | ValueCardsBlockData
+  | CaseCardsBlockData
   | MediaBlockData
 
 interface RenderBlocksProps {
@@ -570,24 +624,12 @@ export async function RenderBlocks({
             return (
               <HeroBlock
                 key={key}
-                layout={block.layout}
-                background={
-                  block.background
-                    ? {
-                        ...block.background,
-                        gradient: block.background.gradient as GradientPreset | undefined,
-                      }
-                    : undefined
-                }
-                badge={block.badge?.text ? block.badge : undefined}
                 headline={block.headline}
                 subheadline={block.subheadline}
-                bulletPoints={block.bulletPoints}
                 primaryCTA={block.primaryCTA}
                 secondaryCTA={block.secondaryCTA}
-                trustBadges={block.trustBadges}
-                heroImage={block.heroImage}
                 enableAnimation={block.enableAnimation}
+                isFirstBlock={index === 0}
               />
             )
 
@@ -683,13 +725,8 @@ export async function RenderBlocks({
               <FAQBlock
                 key={key}
                 title={block.title}
-                subtitle={block.subtitle}
-                layout={block.layout}
                 questions={block.questions}
-                showSearch={block.showSearch}
-                showCategories={block.showCategories}
                 allowMultiple={block.allowMultiple}
-                accentColor={block.accentColor}
                 enableAnimation={block.enableAnimation}
               />
             )
@@ -765,22 +802,11 @@ export async function RenderBlocks({
             return (
               <SectionHeaderBlock
                 key={key}
-                type={block.type}
                 layout={block.layout}
                 title={block.title}
                 subtitle={block.subtitle}
                 description={block.description}
-                badge={block.badge?.text ? { ...block.badge, text: block.badge.text } : undefined}
-                headingLevel={block.headingLevel}
-                background={
-                  block.background
-                    ? {
-                        ...block.background,
-                        gradient: block.background.gradient as GradientPreset | undefined,
-                      }
-                    : undefined
-                }
-                bulletPoints={block.bulletPoints}
+                primaryCTA={block.primaryCTA}
                 secondaryCTA={block.secondaryCTA}
                 enableAnimation={block.enableAnimation}
               />
@@ -852,6 +878,56 @@ export async function RenderBlocks({
 
           case 'tabBlock':
             return <TabBlockServer key={key} tabs={block.tabs} locale={locale} draft={draft} />
+
+          case 'serviceCardsBlock':
+            return (
+              <ServiceCardsBlock
+                key={key}
+                title={block.title}
+                cards={block.cards}
+                tags={block.tags}
+                enableAnimation={block.enableAnimation}
+              />
+            )
+
+          case 'aboutBlock':
+            return (
+              <AboutBlock
+                key={key}
+                title={block.title}
+                image={block.image}
+                badges={block.badges}
+                description={block.description}
+                ctaLabel={block.ctaLabel}
+                ctaUrl={block.ctaUrl}
+                ctaOpenInNewTab={block.ctaOpenInNewTab}
+                enableAnimation={block.enableAnimation}
+              />
+            )
+
+          case 'valueCardsBlock':
+            return (
+              <ValueCardsBlock
+                key={key}
+                title={block.title}
+                description={block.description}
+                tags={block.tags}
+                cards={block.cards}
+                enableAnimation={block.enableAnimation}
+              />
+            )
+
+          case 'caseCardsBlock':
+            return (
+              <CaseCardsBlock
+                key={key}
+                title={block.title}
+                displayMode={block.displayMode}
+                cases={block.cases}
+                reviews={block.reviews}
+                enableAnimation={block.enableAnimation}
+              />
+            )
 
           case 'mediaBlock':
             return (

@@ -1,156 +1,31 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
-import { useSearchParams } from 'next/navigation'
+import { useLivePreview } from '@payloadcms/live-preview-react'
 import type { News, NewsContentBlock, NewsTag, User as PayloadUser } from '@/payload-types'
 import { Calendar, User, Tag } from 'lucide-react'
 import { SectionHeaderBlock } from '@/components/SectionHeaderBlock'
 import { MarkdownRichTextBlock } from '@/components/MarkdownRichTextBlock'
-import type { IconName } from '@/lib/icons'
-import type { GradientPreset } from '@/lib/gradients'
 
 interface LivePreviewNewsProps {
   initialData: News
 }
 
 export function LivePreviewNews({ initialData }: LivePreviewNewsProps) {
-  const [articleData, setArticleData] = useState<News>(initialData)
-  const [debugInfo, setDebugInfo] = useState<string[]>([])
-  const searchParams = useSearchParams()
-  const isPreview = searchParams.get('preview') === 'true'
+  const { data } = useLivePreview<News>({
+    initialData,
+    serverURL: process.env.NEXT_PUBLIC_SERVER_URL || '',
+    depth: 2,
+  })
 
-  const addDebugInfo = useCallback((info: string) => {
-    setDebugInfo((prev) => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${info}`])
-  }, [])
-
-  useEffect(() => {
-    if (!isPreview) return
-
-    addDebugInfo('News preview mode initialized')
-
-    // Listen for messages from Payload admin
-    const handleMessage = (event: MessageEvent<unknown>) => {
-      // Accept messages from same origin or parent origin
-      const validOrigins = [window.location.origin]
-      if (!validOrigins.includes(event.origin)) {
-        return
-      }
-
-      try {
-        const eventData = event.data as Record<string, unknown> | null
-
-        // Ignore certain system messages
-        if (!eventData || typeof eventData !== 'object') return
-        if (eventData.type === 'webpackOk') return
-        if (eventData.type === 'webpack') return
-
-        // Track Payload-related messages for debugging panel
-        const eventType = eventData.type as string | undefined
-        if (eventType?.includes('payload') || eventData.data || eventData.doc) {
-          addDebugInfo(`Message: ${eventType || JSON.stringify(eventData).slice(0, 30)}`)
-        }
-
-        // Handle different Payload message patterns
-        let updatedData: Record<string, unknown> | null = null
-
-        // Check various message patterns
-        if (eventData.type === 'payload' && eventData.data) {
-          updatedData = eventData.data as Record<string, unknown>
-          addDebugInfo('✓ Payload data pattern')
-        } else if (eventData.type === 'payload-live-preview' && eventData.data) {
-          updatedData = eventData.data as Record<string, unknown>
-          addDebugInfo('✓ Live preview pattern')
-        } else if (eventData.doc) {
-          updatedData = eventData.doc as Record<string, unknown>
-          addDebugInfo('✓ Doc pattern')
-        } else if (eventData.data && typeof eventData.data === 'object') {
-          updatedData = eventData.data as Record<string, unknown>
-          addDebugInfo('✓ Data object pattern')
-        } else if (eventData.title || eventData.blocks) {
-          // Direct document data
-          updatedData = eventData
-          addDebugInfo('✓ Direct document pattern')
-        }
-
-        if (updatedData && (updatedData.title || updatedData.id || updatedData.blocks)) {
-          const title = (updatedData.title as string) || 'Untitled'
-          addDebugInfo(`✅ Update: ${title.slice(0, 20)}`)
-          setArticleData(updatedData as unknown as News)
-        }
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error'
-        addDebugInfo(`❌ Error: ${errorMsg}`)
-        console.error('Error handling preview message:', error)
-      }
-    }
-
-    window.addEventListener('message', handleMessage, false)
-
-    // Send multiple ready signals with different formats
-    const sendReadySignals = () => {
-      if (window.parent && window.parent !== window) {
-        // Signal 1: Standard format
-        window.parent.postMessage({ type: 'payload-live-preview-ready' }, '*')
-        // Signal 2: With ready flag
-        window.parent.postMessage({ type: 'payload-live-preview', ready: true }, '*')
-        // Signal 3: Simple ready
-        window.parent.postMessage({ ready: true }, '*')
-
-        addDebugInfo('✓ Ready signals sent')
-      }
-    }
-
-    // Send ready signals multiple times to ensure parent receives them
-    sendReadySignals()
-    const timeout1 = setTimeout(sendReadySignals, 100)
-    const timeout2 = setTimeout(sendReadySignals, 500)
-    const timeout3 = setTimeout(sendReadySignals, 1000)
-
-    return () => {
-      window.removeEventListener('message', handleMessage)
-      clearTimeout(timeout1)
-      clearTimeout(timeout2)
-      clearTimeout(timeout3)
-    }
-  }, [isPreview, addDebugInfo])
-
-  return (
-    <>
-      {/* Debug panel - only visible in preview mode */}
-      {isPreview && process.env.NODE_ENV === 'development' && (
-        <div className="fixed bottom-4 right-4 z-50 max-w-xs rounded-lg bg-black/80 p-3 text-xs text-white">
-          <div className="mb-2 font-bold">Live Preview Debug (News)</div>
-          <div className="mb-1 text-yellow-400">Last update: {articleData.updatedAt || 'N/A'}</div>
-          {debugInfo.map((info, i) => (
-            <div key={i} className="opacity-70">
-              {info}
-            </div>
-          ))}
-        </div>
-      )}
-      <NewsArticleContent
-        key={`${articleData.id}-${articleData.updatedAt}`}
-        article={articleData}
-      />
-    </>
-  )
+  return <NewsArticleContent key={`${data.id}-${data.updatedAt}`} article={data} />
 }
 
 function NewsArticleContent({ article }: { article: News }) {
   const { title, excerpt, publishedDate, featuredImage, tags, author, blocks } = article
-  const searchParams = useSearchParams()
-  const isPreview = searchParams.get('preview') === 'true'
 
   return (
     <div className="container mx-auto px-4 py-12">
-      {/* Preview Banner */}
-      {isPreview && (
-        <div className="mb-8 border-l-4 border-blue-500 bg-blue-50 p-3 text-sm text-blue-700">
-          <strong>🔵 Live Preview Mode</strong> - Changes will appear here automatically
-        </div>
-      )}
-
       {/* Article Header */}
       <header className="mx-auto mb-12 max-w-4xl">
         {/* Tags */}
@@ -268,20 +143,11 @@ function BlockRenderer({ block }: { block: NewsContentBlock }) {
     case 'sectionHeader':
       return (
         <SectionHeaderBlock
-          type={block.type || 'small'}
           title={block.title}
           subtitle={block.subtitle ?? undefined}
           description={block.description ?? undefined}
-          badge={
-            block.badge?.text
-              ? {
-                  text: block.badge.text,
-                  icon: block.badge.icon as IconName,
-                  gradient: block.badge.gradient as GradientPreset,
-                }
-              : undefined
-          }
-          headingLevel={block.headingLevel ?? 'h2'}
+          primaryCTA={block.primaryCTA ?? undefined}
+          secondaryCTA={block.secondaryCTA ?? undefined}
           enableAnimation={block.enableAnimation !== false}
         />
       )

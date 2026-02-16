@@ -283,125 +283,6 @@ export const Pages: CollectionConfig = {
                   },
                   fields: [
                     {
-                      name: 'layout',
-                      type: 'select',
-                      required: true,
-                      defaultValue: 'centered',
-                      admin: {
-                        description: 'Layout style for the hero section',
-                      },
-                      options: [
-                        { label: 'Centered', value: 'centered' },
-                        { label: 'Split Left (content left, image right)', value: 'split-left' },
-                        { label: 'Split Right (image left, content right)', value: 'split-right' },
-                      ],
-                    },
-                    {
-                      name: 'background',
-                      type: 'group',
-                      admin: {
-                        description: 'Background settings for the hero section',
-                      },
-                      fields: [
-                        {
-                          name: 'type',
-                          type: 'select',
-                          defaultValue: 'gradient',
-                          options: [
-                            { label: 'Color', value: 'color' },
-                            { label: 'Gradient', value: 'gradient' },
-                            { label: 'Image', value: 'image' },
-                          ],
-                        },
-                        {
-                          name: 'color',
-                          type: 'text',
-                          admin: {
-                            description: 'Background color (e.g., #f8f9fa or rgb(248, 249, 250))',
-                            condition: (_data, siblingData) => siblingData?.type === 'color',
-                          },
-                        },
-                        {
-                          name: 'gradient',
-                          type: 'text',
-                          admin: {
-                            description: 'Background gradient preset',
-                            condition: (_data, siblingData) => siblingData?.type === 'gradient',
-                            components: {
-                              Field: '@/fields/GradientSelectField#GradientSelectField',
-                            },
-                          },
-                        },
-                        {
-                          name: 'image',
-                          type: 'upload',
-                          relationTo: 'media',
-                          admin: {
-                            description: 'Background image',
-                            condition: (_data, siblingData) => siblingData?.type === 'image',
-                          },
-                        },
-                        {
-                          name: 'overlay',
-                          type: 'checkbox',
-                          defaultValue: true,
-                          admin: {
-                            description: 'Add dark overlay for better text readability',
-                            condition: (_data, siblingData) => siblingData?.type === 'image',
-                          },
-                        },
-                        {
-                          name: 'overlayOpacity',
-                          type: 'number',
-                          defaultValue: 50,
-                          min: 0,
-                          max: 100,
-                          admin: {
-                            description: 'Overlay opacity (0-100%)',
-                            condition: (_data, siblingData) =>
-                              siblingData?.type === 'image' && siblingData?.overlay,
-                          },
-                        },
-                      ],
-                    },
-                    {
-                      name: 'badge',
-                      type: 'group',
-                      admin: {
-                        description: 'Optional badge displayed above the headline',
-                      },
-                      fields: [
-                        {
-                          name: 'text',
-                          type: 'text',
-                          localized: true,
-                          admin: {
-                            description: 'Badge text (e.g., "New Feature", "Limited Offer")',
-                          },
-                        },
-                        {
-                          name: 'icon',
-                          type: 'text',
-                          admin: {
-                            description: 'Icon displayed in the badge',
-                            components: {
-                              Field: '@/fields/IconSelectField#IconSelectField',
-                            },
-                          },
-                        },
-                        {
-                          name: 'gradient',
-                          type: 'text',
-                          admin: {
-                            description: 'Gradient color scheme for the badge',
-                            components: {
-                              Field: '@/fields/GradientSelectField#GradientSelectField',
-                            },
-                          },
-                        },
-                      ],
-                    },
-                    {
                       name: 'headline',
                       type: 'text',
                       required: true,
@@ -417,34 +298,6 @@ export const Pages: CollectionConfig = {
                       admin: {
                         description: 'Supporting text below the headline',
                       },
-                    },
-                    {
-                      name: 'bulletPoints',
-                      type: 'array',
-                      admin: {
-                        description: 'Key benefits or features as bullet points',
-                      },
-                      fields: [
-                        {
-                          name: 'icon',
-                          type: 'text',
-                          admin: {
-                            description: 'Icon for this bullet point',
-                            components: {
-                              Field: '@/fields/IconSelectField#IconSelectField',
-                            },
-                          },
-                        },
-                        {
-                          name: 'text',
-                          type: 'text',
-                          required: true,
-                          localized: true,
-                          admin: {
-                            description: 'Bullet point text',
-                          },
-                        },
-                      ],
                     },
                     {
                       name: 'primaryCTA',
@@ -521,39 +374,6 @@ export const Pages: CollectionConfig = {
                           defaultValue: false,
                         },
                       ],
-                    },
-                    {
-                      name: 'trustBadges',
-                      type: 'array',
-                      admin: {
-                        description: 'Trust badges or partner logos (optional)',
-                      },
-                      fields: [
-                        {
-                          name: 'image',
-                          type: 'upload',
-                          relationTo: 'media',
-                          required: true,
-                        },
-                        {
-                          name: 'alt',
-                          type: 'text',
-                          admin: {
-                            description: 'Alt text for accessibility',
-                          },
-                        },
-                      ],
-                    },
-                    {
-                      name: 'heroImage',
-                      type: 'upload',
-                      relationTo: 'media',
-                      admin: {
-                        description: 'Hero image (used in split layouts)',
-                        condition: (_data, siblingData) =>
-                          siblingData?.layout === 'split-left' ||
-                          siblingData?.layout === 'split-right',
-                      },
                     },
                     {
                       name: 'enableAnimation',
@@ -1545,28 +1365,6 @@ export const Pages: CollectionConfig = {
                       },
                     },
                     {
-                      name: 'subtitle',
-                      type: 'textarea',
-                      localized: true,
-                      admin: {
-                        description: 'Optional section description',
-                      },
-                    },
-                    {
-                      name: 'layout',
-                      type: 'select',
-                      required: true,
-                      defaultValue: 'accordion',
-                      admin: {
-                        description: 'How to display the FAQ items',
-                      },
-                      options: [
-                        { label: 'Accordion (single column)', value: 'accordion' },
-                        { label: 'Two Column', value: 'two-column' },
-                        { label: 'Cards (grid)', value: 'cards' },
-                      ],
-                    },
-                    {
                       name: 'questions',
                       type: 'array',
                       required: true,
@@ -1597,33 +1395,7 @@ export const Pages: CollectionConfig = {
                             description: 'The answer text',
                           },
                         },
-                        {
-                          name: 'category',
-                          type: 'text',
-                          localized: true,
-                          admin: {
-                            description:
-                              'Optional category for grouping/filtering (e.g., "Billing", "Technical")',
-                          },
-                        },
                       ],
-                    },
-                    {
-                      name: 'showSearch',
-                      type: 'checkbox',
-                      defaultValue: true,
-                      admin: {
-                        description: 'Show search bar to filter questions',
-                      },
-                    },
-                    {
-                      name: 'showCategories',
-                      type: 'checkbox',
-                      defaultValue: true,
-                      admin: {
-                        description:
-                          'Show category filter buttons (requires categories on questions)',
-                      },
                     },
                     {
                       name: 'allowMultiple',
@@ -1632,21 +1404,6 @@ export const Pages: CollectionConfig = {
                       admin: {
                         description: 'Allow multiple FAQ items to be open at the same time',
                       },
-                    },
-                    {
-                      name: 'accentColor',
-                      type: 'select',
-                      defaultValue: 'indigo',
-                      admin: {
-                        description: 'Accent color for FAQ elements',
-                      },
-                      options: [
-                        { label: 'Amber', value: 'amber' },
-                        { label: 'Indigo', value: 'indigo' },
-                        { label: 'Purple', value: 'purple' },
-                        { label: 'Green', value: 'green' },
-                        { label: 'Blue', value: 'blue' },
-                      ],
                     },
                     {
                       name: 'enableAnimation',
@@ -2442,26 +2199,6 @@ export const Pages: CollectionConfig = {
                   },
                   fields: [
                     {
-                      name: 'type',
-                      type: 'select',
-                      required: true,
-                      defaultValue: 'small',
-                      admin: {
-                        description:
-                          'Header style: Small (section headers) or Big (hero-style headers)',
-                      },
-                      options: [
-                        {
-                          label: 'Small - Section Header',
-                          value: 'small',
-                        },
-                        {
-                          label: 'Big - Hero Header',
-                          value: 'big',
-                        },
-                      ],
-                    },
-                    {
                       name: 'layout',
                       type: 'select',
                       defaultValue: 'centered',
@@ -2477,10 +2214,9 @@ export const Pages: CollectionConfig = {
                     {
                       name: 'title',
                       type: 'text',
-                      required: true,
                       localized: true,
                       admin: {
-                        description: 'Main heading text (required)',
+                        description: 'Main heading text (optional)',
                       },
                     },
                     {
@@ -2500,152 +2236,40 @@ export const Pages: CollectionConfig = {
                       },
                     },
                     {
-                      name: 'headingLevel',
-                      type: 'select',
-                      defaultValue: 'h2',
-                      admin: {
-                        description: 'HTML heading level for SEO',
-                      },
-                      options: [
-                        { label: 'H1', value: 'h1' },
-                        { label: 'H2', value: 'h2' },
-                        { label: 'H3', value: 'h3' },
-                        { label: 'H4', value: 'h4' },
-                        { label: 'H5', value: 'h5' },
-                        { label: 'H6', value: 'h6' },
-                      ],
-                    },
-                    {
-                      name: 'badge',
+                      name: 'primaryCTA',
                       type: 'group',
                       admin: {
-                        description: 'Optional badge displayed above the title',
+                        description: 'Primary call-to-action button',
                       },
                       fields: [
                         {
-                          name: 'text',
+                          name: 'label',
                           type: 'text',
                           localized: true,
                           admin: {
-                            description: 'Badge text (e.g., "Featured Content")',
+                            description: 'Button text (e.g., "Get Started", "Learn More")',
                           },
                         },
                         {
-                          name: 'icon',
+                          name: 'url',
                           type: 'text',
                           admin: {
-                            description: 'Icon displayed in the badge',
-                            components: {
-                              Field: '@/fields/IconSelectField#IconSelectField',
-                            },
+                            description: 'Button link URL',
                           },
                         },
                         {
-                          name: 'gradient',
-                          type: 'text',
-                          admin: {
-                            description: 'Gradient color scheme for the badge',
-                            components: {
-                              Field: '@/fields/GradientSelectField#GradientSelectField',
-                            },
-                          },
-                        },
-                      ],
-                    },
-                    {
-                      name: 'background',
-                      type: 'group',
-                      admin: {
-                        description: 'Background settings for the section header',
-                      },
-                      fields: [
-                        {
-                          name: 'type',
+                          name: 'style',
                           type: 'select',
-                          defaultValue: 'none',
+                          defaultValue: 'solid',
                           options: [
-                            { label: 'None', value: 'none' },
-                            { label: 'Color', value: 'color' },
-                            { label: 'Gradient', value: 'gradient' },
-                            { label: 'Image', value: 'image' },
+                            { label: 'Solid', value: 'solid' },
+                            { label: 'Outline', value: 'outline' },
                           ],
                         },
                         {
-                          name: 'color',
-                          type: 'text',
-                          admin: {
-                            description: 'Background color (e.g., #f8f9fa or rgb(248, 249, 250))',
-                            condition: (_data, siblingData) => siblingData?.type === 'color',
-                          },
-                        },
-                        {
-                          name: 'gradient',
-                          type: 'text',
-                          admin: {
-                            description: 'Background gradient preset',
-                            condition: (_data, siblingData) => siblingData?.type === 'gradient',
-                            components: {
-                              Field: '@/fields/GradientSelectField#GradientSelectField',
-                            },
-                          },
-                        },
-                        {
-                          name: 'image',
-                          type: 'upload',
-                          relationTo: 'media',
-                          admin: {
-                            description: 'Background image',
-                            condition: (_data, siblingData) => siblingData?.type === 'image',
-                          },
-                        },
-                        {
-                          name: 'overlay',
+                          name: 'openInNewTab',
                           type: 'checkbox',
-                          defaultValue: true,
-                          admin: {
-                            description: 'Add dark overlay for better text readability',
-                            condition: (_data, siblingData) => siblingData?.type === 'image',
-                          },
-                        },
-                        {
-                          name: 'overlayOpacity',
-                          type: 'number',
-                          defaultValue: 50,
-                          min: 0,
-                          max: 100,
-                          admin: {
-                            description: 'Overlay opacity (0-100%)',
-                            condition: (_data, siblingData) =>
-                              siblingData?.type === 'image' && siblingData?.overlay,
-                          },
-                        },
-                      ],
-                    },
-                    {
-                      name: 'bulletPoints',
-                      type: 'array',
-                      admin: {
-                        description: 'Key points or features as bullet list',
-                      },
-                      fields: [
-                        {
-                          name: 'icon',
-                          type: 'text',
-                          admin: {
-                            description: 'Icon for this bullet point',
-                            components: {
-                              Field: '@/fields/IconSelectField#IconSelectField',
-                            },
-                          },
-                        },
-                        {
-                          name: 'text',
-                          type: 'text',
-                          required: true,
-                          localized: true,
-                          admin: {
-                            description: 'Bullet point text',
-                          },
+                          defaultValue: false,
                         },
                       ],
                     },
@@ -2653,7 +2277,7 @@ export const Pages: CollectionConfig = {
                       name: 'secondaryCTA',
                       type: 'group',
                       admin: {
-                        description: 'Optional call-to-action button',
+                        description: 'Secondary call-to-action button (optional)',
                       },
                       fields: [
                         {
@@ -2684,9 +2308,6 @@ export const Pages: CollectionConfig = {
                           name: 'openInNewTab',
                           type: 'checkbox',
                           defaultValue: false,
-                          admin: {
-                            description: 'Open link in new tab',
-                          },
                         },
                       ],
                     },
@@ -3552,6 +3173,341 @@ export const Pages: CollectionConfig = {
                           ],
                         },
                       ],
+                    },
+                  ],
+                },
+                {
+                  slug: 'serviceCardsBlock',
+                  labels: {
+                    singular: 'Service Cards Block',
+                    plural: 'Service Cards Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Section heading, e.g. "ПОСЛУГИ"',
+                      },
+                    },
+                    {
+                      name: 'cards',
+                      type: 'array',
+                      required: true,
+                      minRows: 1,
+                      fields: [
+                        {
+                          name: 'title',
+                          type: 'text',
+                          localized: true,
+                          required: true,
+                        },
+                        {
+                          name: 'bulletPoints',
+                          type: 'array',
+                          minRows: 1,
+                          fields: [
+                            {
+                              name: 'text',
+                              type: 'text',
+                              localized: true,
+                              required: true,
+                            },
+                          ],
+                        },
+                        {
+                          name: 'ctaLabel',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description: 'Button text',
+                          },
+                        },
+                        {
+                          name: 'ctaUrl',
+                          type: 'text',
+                          admin: {
+                            description: 'Button link URL',
+                          },
+                        },
+                        {
+                          name: 'ctaOpenInNewTab',
+                          type: 'checkbox',
+                          defaultValue: false,
+                        },
+                      ],
+                    },
+                    {
+                      name: 'tags',
+                      type: 'array',
+                      admin: {
+                        description: 'Tags displayed below the cards',
+                      },
+                      fields: [
+                        {
+                          name: 'text',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                        },
+                      ],
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                    },
+                  ],
+                },
+                {
+                  slug: 'aboutBlock',
+                  labels: {
+                    singular: 'About Block',
+                    plural: 'About Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Section heading (e.g. "ПРО НАС")',
+                      },
+                    },
+                    {
+                      name: 'image',
+                      type: 'upload',
+                      relationTo: 'media',
+                      admin: {
+                        description: 'Left-column image',
+                      },
+                    },
+                    {
+                      name: 'badges',
+                      type: 'array',
+                      admin: {
+                        description: 'Pill-shaped badges with emoji + text',
+                      },
+                      fields: [
+                        {
+                          name: 'emoji',
+                          type: 'text',
+                          admin: {
+                            description: 'Emoji icon (e.g. 🏛️)',
+                          },
+                        },
+                        {
+                          name: 'text',
+                          type: 'text',
+                          localized: true,
+                          required: true,
+                        },
+                      ],
+                    },
+                    {
+                      name: 'description',
+                      type: 'textarea',
+                      localized: true,
+                      admin: {
+                        description:
+                          'Main description text. Use double newlines for separate paragraphs.',
+                      },
+                    },
+                    {
+                      name: 'ctaLabel',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Button text',
+                      },
+                    },
+                    {
+                      name: 'ctaUrl',
+                      type: 'text',
+                      admin: {
+                        description: 'Button link URL',
+                      },
+                    },
+                    {
+                      name: 'ctaOpenInNewTab',
+                      type: 'checkbox',
+                      defaultValue: false,
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                    },
+                  ],
+                },
+                {
+                  slug: 'valueCardsBlock',
+                  labels: {
+                    singular: 'Value Cards Block',
+                    plural: 'Value Cards Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Optional section heading',
+                      },
+                    },
+                    {
+                      name: 'description',
+                      type: 'textarea',
+                      localized: true,
+                      admin: {
+                        description: 'Optional description shown below the title',
+                      },
+                    },
+                    {
+                      name: 'tags',
+                      type: 'array',
+                      admin: {
+                        description: 'Optional pill-shaped tags displayed below the description',
+                      },
+                      fields: [
+                        {
+                          name: 'text',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                        },
+                      ],
+                    },
+                    {
+                      name: 'cards',
+                      type: 'array',
+                      fields: [
+                        {
+                          name: 'text',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                        },
+                      ],
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
+                    },
+                  ],
+                },
+                {
+                  slug: 'caseCardsBlock',
+                  labels: {
+                    singular: 'Case Cards Block',
+                    plural: 'Case Cards Blocks',
+                  },
+                  fields: [
+                    {
+                      name: 'title',
+                      type: 'text',
+                      localized: true,
+                      admin: {
+                        description: 'Section heading displayed above the cards',
+                      },
+                    },
+                    {
+                      name: 'displayMode',
+                      type: 'select',
+                      defaultValue: 'cases',
+                      options: [
+                        { label: 'Cases', value: 'cases' },
+                        { label: 'Reviews', value: 'reviews' },
+                      ],
+                      admin: {
+                        description: 'Choose between case study cards or review/testimonial cards',
+                      },
+                    },
+                    {
+                      name: 'cases',
+                      type: 'array',
+                      required: true,
+                      minRows: 1,
+                      admin: {
+                        condition: (_, siblingData) =>
+                          !siblingData?.displayMode || siblingData?.displayMode === 'cases',
+                      },
+                      fields: [
+                        {
+                          name: 'title',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                        },
+                        {
+                          name: 'sections',
+                          type: 'array',
+                          minRows: 1,
+                          fields: [
+                            {
+                              name: 'emoji',
+                              type: 'text',
+                              admin: {
+                                description:
+                                  'Optional emoji icon (e.g. \uD83D\uDC64, \uD83C\uDFAF, \u26A0\uFE0F, \uD83D\uDE80, \uD83C\uDFC6, \uD83D\uDCB0)',
+                              },
+                            },
+                            {
+                              name: 'label',
+                              type: 'text',
+                              required: true,
+                              localized: true,
+                            },
+                            {
+                              name: 'content',
+                              type: 'textarea',
+                              required: true,
+                              localized: true,
+                              admin: {
+                                description:
+                                  'Plain text or bullet list (start lines with \u2022, -, \u00B7, or * for bullets)',
+                              },
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      name: 'reviews',
+                      type: 'array',
+                      minRows: 1,
+                      admin: {
+                        condition: (_, siblingData) => siblingData?.displayMode === 'reviews',
+                      },
+                      fields: [
+                        {
+                          name: 'quote',
+                          type: 'textarea',
+                          required: true,
+                          localized: true,
+                        },
+                        {
+                          name: 'authorName',
+                          type: 'text',
+                          required: true,
+                          localized: true,
+                        },
+                        {
+                          name: 'authorSubtitle',
+                          type: 'text',
+                          localized: true,
+                          admin: {
+                            description: 'e.g. role, company, or confidentiality note',
+                          },
+                        },
+                      ],
+                    },
+                    {
+                      name: 'enableAnimation',
+                      type: 'checkbox',
+                      defaultValue: true,
                     },
                   ],
                 },

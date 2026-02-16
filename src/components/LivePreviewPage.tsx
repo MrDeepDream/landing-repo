@@ -1,8 +1,7 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
-import { useSearchParams } from 'next/navigation'
+import { useLivePreview } from '@payloadcms/live-preview-react'
 import type {
   Page,
   PageBlock,
@@ -24,7 +23,7 @@ import type {
   AccordionBlock as AccordionBlockType,
 } from '@/payload-types'
 import { SectionHeaderBlock } from '@/components/SectionHeaderBlock'
-import { HeroBlock, type HeroBlockProps } from '@/components/HeroBlock'
+import { HeroBlock } from '@/components/HeroBlock'
 import { FeaturesBlock } from '@/components/FeaturesBlock'
 import { TestimonialsBlock } from '@/components/TestimonialsBlock'
 import { StatsBlock } from '@/components/StatsBlock'
@@ -42,7 +41,10 @@ import { TabBlock } from '@/components/TabBlock'
 import { MediaBlock } from '@/components/MediaBlock'
 import { AccordionBlock } from '@/components/AccordionBlock'
 import { CallToActionBlock } from '@/components/CallToActionBlock'
-import type { IconName } from '@/lib/icons'
+import { ServiceCardsBlock } from '@/components/ServiceCardsBlock'
+import { AboutBlock } from '@/components/AboutBlock'
+import { ValueCardsBlock } from '@/components/ValueCardsBlock'
+import { CaseCardsBlock } from '@/components/CaseCardsBlock'
 import type { GradientPreset } from '@/lib/gradients'
 
 interface LivePreviewPageProps {
@@ -50,141 +52,20 @@ interface LivePreviewPageProps {
 }
 
 export function LivePreviewPage({ initialData }: LivePreviewPageProps) {
-  const [pageData, setPageData] = useState<Page>(initialData)
-  const [debugInfo, setDebugInfo] = useState<string[]>([])
-  const searchParams = useSearchParams()
-  const isPreview = searchParams.get('preview') === 'true'
+  const { data } = useLivePreview<Page>({
+    initialData,
+    serverURL: process.env.NEXT_PUBLIC_SERVER_URL || '',
+    depth: 2,
+  })
 
-  const addDebugInfo = useCallback((info: string) => {
-    setDebugInfo((prev) => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${info}`])
-  }, [])
-
-  useEffect(() => {
-    if (!isPreview) return
-
-    addDebugInfo('Preview mode initialized')
-
-    // Listen for messages from Payload admin
-    const handleMessage = (event: MessageEvent<unknown>) => {
-      // Accept messages from same origin or parent origin
-      const validOrigins = [window.location.origin]
-      if (!validOrigins.includes(event.origin)) {
-        return
-      }
-
-      try {
-        const eventData = event.data as Record<string, unknown> | null
-
-        // Ignore certain system messages
-        if (!eventData || typeof eventData !== 'object') return
-        if (eventData.type === 'webpackOk') return
-        if (eventData.type === 'webpack') return
-
-        // Track Payload-related messages for debugging panel
-        const eventType = eventData.type as string | undefined
-        if (eventType?.includes('payload') || eventData.data || eventData.doc) {
-          addDebugInfo(`Message: ${eventType || JSON.stringify(eventData).slice(0, 30)}`)
-        }
-
-        // Handle different Payload message patterns
-        let updatedData: Record<string, unknown> | null = null
-
-        // Check various message patterns
-        if (eventData.type === 'payload' && eventData.data) {
-          updatedData = eventData.data as Record<string, unknown>
-          addDebugInfo('✓ Payload data pattern')
-        } else if (eventData.type === 'payload-live-preview' && eventData.data) {
-          updatedData = eventData.data as Record<string, unknown>
-          addDebugInfo('✓ Live preview pattern')
-        } else if (eventData.doc) {
-          updatedData = eventData.doc as Record<string, unknown>
-          addDebugInfo('✓ Doc pattern')
-        } else if (eventData.data && typeof eventData.data === 'object') {
-          updatedData = eventData.data as Record<string, unknown>
-          addDebugInfo('✓ Data object pattern')
-        } else if (eventData.title || eventData.blocks) {
-          // Direct document data
-          updatedData = eventData
-          addDebugInfo('✓ Direct document pattern')
-        }
-
-        if (updatedData && (updatedData.title || updatedData.id || updatedData.blocks)) {
-          const title = (updatedData.title as string) || 'Untitled'
-          addDebugInfo(`✅ Update: ${title.slice(0, 20)}`)
-          setPageData(updatedData as unknown as Page)
-        }
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error'
-        addDebugInfo(`❌ Error: ${errorMsg}`)
-        console.error('Error handling preview message:', error)
-      }
-    }
-
-    window.addEventListener('message', handleMessage, false)
-
-    // Send multiple ready signals with different formats
-    const sendReadySignals = () => {
-      if (window.parent && window.parent !== window) {
-        // Signal 1: Standard format
-        window.parent.postMessage({ type: 'payload-live-preview-ready' }, '*')
-        // Signal 2: With ready flag
-        window.parent.postMessage({ type: 'payload-live-preview', ready: true }, '*')
-        // Signal 3: Simple ready
-        window.parent.postMessage({ ready: true }, '*')
-
-        addDebugInfo('✓ Ready signals sent')
-      }
-    }
-
-    // Send ready signals multiple times to ensure parent receives them
-    sendReadySignals()
-    const timeout1 = setTimeout(sendReadySignals, 100)
-    const timeout2 = setTimeout(sendReadySignals, 500)
-    const timeout3 = setTimeout(sendReadySignals, 1000)
-
-    return () => {
-      window.removeEventListener('message', handleMessage)
-      clearTimeout(timeout1)
-      clearTimeout(timeout2)
-      clearTimeout(timeout3)
-    }
-  }, [isPreview, addDebugInfo])
-
-  return (
-    <>
-      {/* Debug panel - only visible in preview mode */}
-      {isPreview && process.env.NODE_ENV === 'development' && (
-        <div className="fixed bottom-4 right-4 z-50 max-w-xs rounded-lg bg-black/80 p-3 text-xs text-white">
-          <div className="mb-2 font-bold">Live Preview Debug</div>
-          <div className="mb-1 text-yellow-400">Last update: {pageData.updatedAt || 'N/A'}</div>
-          {debugInfo.map((info, i) => (
-            <div key={i} className="opacity-70">
-              {info}
-            </div>
-          ))}
-        </div>
-      )}
-      <PageContent key={pageData.id} page={pageData} />
-    </>
-  )
+  return <PageContent key={data.id} page={data} />
 }
 
 function PageContent({ page }: { page: Page }) {
   const { content, blocks } = page
-  const searchParams = useSearchParams()
-  const isPreview = searchParams.get('preview') === 'true'
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Page Header */}
-      <header className="mb-8">
-        {isPreview && (
-          <div className="mb-4 border-l-4 border-blue-500 bg-blue-50 p-3 text-sm text-blue-700">
-            <strong>🔵 Live Preview Mode</strong> - Changes will appear here automatically
-          </div>
-        )}
-      </header>
-
       {/* Main Content */}
       <main>
         {/* Render rich text content if available */}
@@ -219,35 +100,10 @@ function BlockRenderer({ block }: { block: PageBlock }) {
     case 'heroBlock':
       return (
         <HeroBlock
-          layout={block.layout || 'centered'}
-          background={
-            block.background
-              ? {
-                  type: block.background.type ?? undefined,
-                  color: block.background.color ?? undefined,
-                  gradient: block.background.gradient as GradientPreset | undefined,
-                  image: block.background.image as Media | undefined,
-                  overlay: block.background.overlay ?? undefined,
-                  overlayOpacity: block.background.overlayOpacity ?? undefined,
-                }
-              : undefined
-          }
-          badge={
-            block.badge?.text
-              ? {
-                  text: block.badge.text,
-                  icon: block.badge.icon as IconName,
-                  gradient: block.badge.gradient as GradientPreset,
-                }
-              : undefined
-          }
           headline={block.headline || ''}
           subheadline={block.subheadline ?? undefined}
-          bulletPoints={block.bulletPoints as HeroBlockProps['bulletPoints']}
           primaryCTA={block.primaryCTA ?? undefined}
           secondaryCTA={block.secondaryCTA ?? undefined}
-          trustBadges={block.trustBadges as HeroBlockProps['trustBadges']}
-          heroImage={block.heroImage as Media | undefined}
           enableAnimation={block.enableAnimation !== false}
         />
       )
@@ -337,13 +193,8 @@ function BlockRenderer({ block }: { block: PageBlock }) {
       return (
         <FAQBlock
           title={block.title ?? undefined}
-          subtitle={block.subtitle ?? undefined}
-          layout={block.layout || 'accordion'}
           questions={block.questions as FAQBlockType['questions']}
-          showSearch={block.showSearch ?? true}
-          showCategories={block.showCategories ?? true}
           allowMultiple={block.allowMultiple ?? false}
-          accentColor={block.accentColor ?? undefined}
           enableAnimation={block.enableAnimation !== false}
         />
       )
@@ -414,20 +265,12 @@ function BlockRenderer({ block }: { block: PageBlock }) {
     case 'sectionHeader':
       return (
         <SectionHeaderBlock
-          type={block.type || 'small'}
-          title={block.title}
+          layout={block.layout ?? undefined}
+          title={block.title ?? undefined}
           subtitle={block.subtitle ?? undefined}
           description={block.description ?? undefined}
-          badge={
-            block.badge?.text
-              ? {
-                  text: block.badge.text,
-                  icon: block.badge.icon as IconName,
-                  gradient: block.badge.gradient as GradientPreset,
-                }
-              : undefined
-          }
-          headingLevel={block.headingLevel ?? 'h2'}
+          primaryCTA={block.primaryCTA ?? undefined}
+          secondaryCTA={block.secondaryCTA ?? undefined}
           enableAnimation={block.enableAnimation !== false}
         />
       )
@@ -573,6 +416,52 @@ function BlockRenderer({ block }: { block: PageBlock }) {
           description={block.description ?? undefined}
           allowMultiple={block.allowMultiple ?? undefined}
           accordionItems={block.accordionItems as AccordionBlockType['accordionItems']}
+        />
+      )
+
+    case 'serviceCardsBlock':
+      return (
+        <ServiceCardsBlock
+          title={block.title ?? undefined}
+          cards={block.cards}
+          tags={block.tags ?? undefined}
+          enableAnimation={block.enableAnimation ?? true}
+        />
+      )
+
+    case 'aboutBlock':
+      return (
+        <AboutBlock
+          title={block.title ?? undefined}
+          image={block.image}
+          badges={block.badges}
+          description={block.description ?? undefined}
+          ctaLabel={block.ctaLabel ?? undefined}
+          ctaUrl={block.ctaUrl ?? undefined}
+          ctaOpenInNewTab={block.ctaOpenInNewTab ?? undefined}
+          enableAnimation={block.enableAnimation ?? true}
+        />
+      )
+
+    case 'valueCardsBlock':
+      return (
+        <ValueCardsBlock
+          title={block.title ?? undefined}
+          description={block.description ?? undefined}
+          tags={block.tags ?? undefined}
+          cards={block.cards}
+          enableAnimation={block.enableAnimation ?? true}
+        />
+      )
+
+    case 'caseCardsBlock':
+      return (
+        <CaseCardsBlock
+          title={block.title ?? undefined}
+          displayMode={block.displayMode}
+          cases={block.cases}
+          reviews={block.reviews}
+          enableAnimation={block.enableAnimation ?? true}
         />
       )
 

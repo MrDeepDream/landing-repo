@@ -8,10 +8,9 @@ export const Footer: GlobalConfig = {
   versions: {
     drafts: {
       autosave: {
-        interval: 2000, // Auto-save every 2 seconds
+        interval: 2000,
       },
     },
-    // maxPerDoc: 50, // Property not supported in this version
   },
   admin: {
     livePreview: {
@@ -27,111 +26,266 @@ export const Footer: GlobalConfig = {
   },
   fields: [
     {
-      name: 'copyrightText',
+      name: 'title',
       type: 'text',
-      required: false,
       localized: true,
       admin: {
-        description: 'Copyright text displayed in the footer',
+        description: 'Footer title displayed above the two-column layout',
       },
     },
     {
-      name: 'description',
-      type: 'textarea',
-      required: false,
-      localized: true,
-      admin: {
-        description: 'Footer description or about text',
-      },
-    },
-    {
-      name: 'links',
-      type: 'array',
-      localized: true,
-      fields: [
+      type: 'tabs',
+      tabs: [
         {
-          name: 'label',
-          type: 'text',
-          required: true,
-        },
-        {
-          name: 'href',
-          type: 'text',
-          required: true,
-        },
-        {
-          name: 'openInNewTab',
-          type: 'checkbox',
-          defaultValue: false,
-        },
-      ],
-      admin: {
-        description: 'Footer links (localized)',
-      },
-    },
-    {
-      name: 'contactColumns',
-      type: 'array',
-      localized: true,
-      maxRows: 3,
-      admin: {
-        description: 'Contact information columns (up to 3 columns, localized)',
-      },
-      fields: [
-        {
-          name: 'title',
-          type: 'text',
-          required: true,
-          admin: {
-            description: 'Column title (e.g., "Main Office", "Support", "Sales")',
-          },
-        },
-        {
-          name: 'items',
-          type: 'array',
-          admin: {
-            description: 'Contact items in this column',
-          },
+          label: 'Contact Info',
           fields: [
             {
-              name: 'icon',
-              type: 'select',
-              required: true,
-              options: [
-                { label: 'Location/Address', value: 'location' },
-                { label: 'Phone', value: 'phone' },
-                { label: 'Email', value: 'email' },
-                { label: 'Fax', value: 'fax' },
-                { label: 'Time/Hours', value: 'time' },
-                { label: 'Link', value: 'link' },
+              name: 'sectionTitle',
+              type: 'text',
+              localized: true,
+              admin: {
+                description: 'Main heading in the left column (e.g., "ЗАЛИШИТИ ЗАПИТ")',
+              },
+            },
+            {
+              name: 'sectionSubtitle',
+              type: 'textarea',
+              localized: true,
+              admin: {
+                description: 'Subtitle text below the heading',
+              },
+            },
+            {
+              name: 'messengerLinks',
+              type: 'array',
+              maxRows: 6,
+              admin: {
+                description: 'Messenger pill buttons (Telegram, Viber, WhatsApp, Signal)',
+              },
+              fields: [
+                {
+                  name: 'platform',
+                  type: 'select',
+                  required: true,
+                  options: [
+                    { label: 'Telegram', value: 'telegram' },
+                    { label: 'Viber', value: 'viber' },
+                    { label: 'WhatsApp', value: 'whatsapp' },
+                    { label: 'Signal', value: 'signal' },
+                  ],
+                },
+                {
+                  name: 'label',
+                  type: 'text',
+                  required: true,
+                  localized: true,
+                },
+                {
+                  name: 'url',
+                  type: 'text',
+                  required: true,
+                  admin: {
+                    placeholder: 'https://t.me/username',
+                  },
+                },
               ],
-              admin: {
-                description: 'Icon type for this contact item',
-              },
             },
             {
-              name: 'label',
+              type: 'row',
+              fields: [
+                {
+                  name: 'phoneLabel',
+                  type: 'text',
+                  localized: true,
+                  admin: {
+                    description: 'Label above phone number (e.g., "Phone")',
+                    width: '33%',
+                  },
+                },
+                {
+                  name: 'phoneNumber',
+                  type: 'text',
+                  localized: true,
+                  admin: {
+                    description: 'Display phone number',
+                    width: '33%',
+                  },
+                },
+                {
+                  name: 'phoneHref',
+                  type: 'text',
+                  admin: {
+                    description: 'Phone link (e.g., tel:+380123456789)',
+                    width: '33%',
+                  },
+                },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'emailLabel',
+                  type: 'text',
+                  localized: true,
+                  admin: {
+                    description: 'Label above email (e.g., "Email")',
+                    width: '33%',
+                  },
+                },
+                {
+                  name: 'emailAddress',
+                  type: 'text',
+                  localized: true,
+                  admin: {
+                    description: 'Display email address',
+                    width: '33%',
+                  },
+                },
+                {
+                  name: 'emailHref',
+                  type: 'text',
+                  admin: {
+                    description: 'Email link (e.g., mailto:info@example.com)',
+                    width: '33%',
+                  },
+                },
+              ],
+            },
+            {
+              name: 'disclaimer',
+              type: 'textarea',
+              localized: true,
+              admin: {
+                description: 'Small disclaimer text at the bottom of the left column',
+              },
+            },
+          ],
+        },
+        {
+          label: 'Contact Form',
+          fields: [
+            {
+              name: 'formHeading',
               type: 'text',
-              required: true,
+              localized: true,
               admin: {
-                description: 'Contact information text',
+                description: 'Heading above the form',
               },
             },
             {
-              name: 'href',
+              type: 'row',
+              fields: [
+                {
+                  name: 'formNamePlaceholder',
+                  type: 'text',
+                  localized: true,
+                  admin: { width: '33%' },
+                },
+                {
+                  name: 'formPhonePlaceholder',
+                  type: 'text',
+                  localized: true,
+                  admin: { width: '33%' },
+                },
+                {
+                  name: 'formEmailPlaceholder',
+                  type: 'text',
+                  localized: true,
+                  admin: { width: '33%' },
+                },
+              ],
+            },
+            {
+              name: 'formOrganizationPlaceholder',
               type: 'text',
-              required: false,
+              localized: true,
+            },
+            {
+              name: 'formMessagePlaceholder',
+              type: 'text',
+              localized: true,
+            },
+            {
+              name: 'consentText',
+              type: 'textarea',
+              localized: true,
               admin: {
-                description: 'Optional link (e.g., tel:, mailto:, or URL)',
-                placeholder: 'tel:+1234567890 or mailto:email@example.com',
+                description: 'Consent checkbox text',
               },
             },
             {
-              name: 'openInNewTab',
-              type: 'checkbox',
-              defaultValue: false,
+              name: 'submitButtonText',
+              type: 'text',
+              localized: true,
+            },
+            {
+              name: 'successMessage',
+              type: 'text',
+              localized: true,
               admin: {
-                description: 'Open link in new tab',
+                description: 'Message shown after successful submission',
+              },
+            },
+            {
+              name: 'errorMessage',
+              type: 'text',
+              localized: true,
+              admin: {
+                description: 'Message shown on submission error',
+              },
+            },
+            {
+              name: 'sendAnotherButtonText',
+              type: 'text',
+              localized: true,
+              admin: {
+                description: 'Text for "Send another" button after successful submission',
+              },
+            },
+            {
+              name: 'loadingText',
+              type: 'text',
+              localized: true,
+              admin: {
+                description: 'Text shown while form is submitting (e.g., "Sending...")',
+              },
+            },
+            {
+              name: 'nameRequiredError',
+              type: 'text',
+              localized: true,
+              admin: {
+                description: 'Validation error for required name field',
+              },
+            },
+            {
+              name: 'emailRequiredError',
+              type: 'text',
+              localized: true,
+              admin: {
+                description: 'Validation error for invalid email',
+              },
+            },
+            {
+              name: 'consentRequiredError',
+              type: 'text',
+              localized: true,
+              admin: {
+                description: 'Validation error when consent checkbox is not checked',
+              },
+            },
+          ],
+        },
+        {
+          label: 'Bottom Bar',
+          fields: [
+            {
+              name: 'copyrightText',
+              type: 'text',
+              localized: true,
+              admin: {
+                description: 'Copyright text displayed in the bottom bar',
               },
             },
           ],

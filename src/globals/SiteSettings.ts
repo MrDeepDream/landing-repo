@@ -30,10 +30,10 @@ export const SiteSettings: GlobalConfig = {
     {
       name: 'siteTitle',
       type: 'text',
-      required: true,
+      required: false,
       localized: true,
       admin: {
-        description: 'The main site title displayed in the header',
+        description: 'The main site title displayed in the header (optional)',
       },
     },
     {
@@ -64,11 +64,20 @@ export const SiteSettings: GlobalConfig = {
       },
     },
     {
+      name: 'hideHeaderControls',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description: 'Hide Social links, Locale switcher, and Accessibility controls in the header',
+      },
+    },
+    {
       name: 'socialLinks',
       type: 'array',
       required: false,
       admin: {
         description: 'Social media links (not localized) - Add/remove as needed',
+        condition: (data) => !data?.hideHeaderControls,
       },
       fields: [
         {

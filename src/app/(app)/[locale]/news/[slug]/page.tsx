@@ -9,8 +9,6 @@ import { Calendar, User, Tag } from 'lucide-react'
 import { SectionHeaderBlock } from '@/components/SectionHeaderBlock'
 import { MarkdownRichTextBlock } from '@/components/MarkdownRichTextBlock'
 import { LivePreviewNews } from '@/components/LivePreviewNews'
-import type { IconName } from '@/lib/icons'
-import type { GradientPreset } from '@/lib/gradients'
 import { generateSEOMetadata, type SEOData } from '@/lib/seo'
 import { getTagColorClasses } from '@/lib/tag-colors'
 
@@ -36,6 +34,7 @@ interface PageProps {
     locale: string
     slug: string
   }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 /**
@@ -45,14 +44,15 @@ interface PageProps {
  */
 export default async function NewsArticlePage(props: PageProps) {
   const params = await props.params
+  const resolvedSearchParams = await props.searchParams
   const { locale, slug } = params
 
   // Ensure locale is always a string
   const localeString = String(locale || 'uk')
 
-  // Check if draft mode is enabled via Next.js draftMode API
+  // Check if draft mode is enabled via Next.js draftMode API or ?preview=true query param
   const draft = await draftMode()
-  const isPreview = draft.isEnabled
+  const isPreview = draft.isEnabled || resolvedSearchParams?.preview === 'true'
 
   // Fetch news article by slug
   const article = await getNewsBySlug(slug, localeString as SupportedLocale, isPreview)
@@ -222,20 +222,12 @@ function BlockRenderer({ block }: { block: NewsContentBlock }) {
     case 'sectionHeader':
       return (
         <SectionHeaderBlock
-          type={block.type || 'small'}
-          title={block.title}
+          layout={block.layout ?? undefined}
+          title={block.title ?? undefined}
           subtitle={block.subtitle ?? undefined}
           description={block.description ?? undefined}
-          badge={
-            block.badge?.text
-              ? {
-                  text: block.badge.text,
-                  icon: block.badge.icon as IconName,
-                  gradient: block.badge.gradient as GradientPreset,
-                }
-              : undefined
-          }
-          headingLevel={block.headingLevel || 'h2'}
+          primaryCTA={block.primaryCTA ?? undefined}
+          secondaryCTA={block.secondaryCTA ?? undefined}
           enableAnimation={block.enableAnimation !== false}
         />
       )

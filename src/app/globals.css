@@ -20,58 +20,31 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 237 84% 67%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 237 100% 97%;
-    --accent-foreground: 225 70% 40%;
+    --background: 146 54% 2.5%;
+    --foreground: 0 0% 100%;
+    --card: 146 54% 2.5%;
+    --card-foreground: 0 0% 100%;
+    --popover: 146 40% 5%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 146 54% 2.5%;
+    --secondary: 146 30% 8%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 146 30% 8%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 146 30% 12%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 237 84% 67%;
+    --border: 146 20% 15%;
+    --input: 146 20% 15%;
+    --ring: 0 0% 100%;
     --radius: 0.75rem;
-    --chart-1: 237 84% 67%;
-    --chart-2: 271 81% 56%;
-    --chart-3: 331 79% 64%;
-    --chart-4: 43 87% 59%;
-    --chart-5: 162 73% 46%;
-  }
-
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --chart-1: 162 73% 46%;
+    --chart-2: 146 60% 40%;
+    --chart-3: 120 50% 50%;
+    --chart-4: 180 60% 45%;
+    --chart-5: 200 70% 50%;
   }
 }
 
@@ -126,4 +99,172 @@ h4 {
 
 p {
   @apply leading-7;
+}
+
+/* ─── Glass Tag Effect ─── */
+.glass-tag {
+  --gt-radius: 9999px;
+  --gt-strength: 8px;
+  --gt-extra: 1px;
+  --gt-softness: 6px;
+  --gt-invert: 6%;
+
+  --gt-total: calc(var(--gt-strength) + var(--gt-extra));
+  --gt-edge-w: calc(0.3px + (var(--gt-softness) * 0.1));
+  --gt-emboss-w: calc(var(--gt-softness) * 0.38);
+  --gt-refract-w: calc(var(--gt-softness) * 0.3);
+
+  position: relative;
+  overflow: visible;
+  display: inline-flex;
+  align-items: center;
+}
+
+.glass-tag::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  border-radius: var(--gt-radius);
+  backdrop-filter: invert(var(--gt-invert));
+  pointer-events: none;
+}
+
+.glass-tag__content {
+  position: relative;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow: hidden;
+  border-radius: var(--gt-radius);
+  pointer-events: auto;
+}
+
+/* Material wrapper */
+.glass-tag__material {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.glass-tag__material::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  border-radius: var(--gt-radius);
+  padding: 1px;
+  background: linear-gradient(
+    155deg,
+    hsla(0, 0%, 100%, 0.12) 0%,
+    hsla(0, 0%, 0%, 0.18) 50%,
+    hsla(0, 0%, 100%, 0.12) 100%
+  );
+  backdrop-filter: invert(0.12) opacity(1);
+  mask:
+    linear-gradient(white 0 0) padding-box,
+    linear-gradient(white 0 0) content-box;
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+.glass-tag__material::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  border-radius: var(--gt-radius);
+}
+
+.glass-tag__material > div {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border-radius: var(--gt-radius);
+  z-index: 2;
+  overflow: hidden;
+}
+
+/* Edge reflection */
+.glass-tag__edge {
+  z-index: 4;
+  margin: calc(var(--gt-total) * -1);
+  border-radius: calc(var(--gt-radius) + var(--gt-total)) !important;
+  backdrop-filter: blur(var(--gt-total)) brightness(1.15) saturate(1.15);
+  padding: var(--gt-edge-w);
+  border: var(--gt-total) solid transparent;
+  mask:
+    linear-gradient(white 0 0) padding-box,
+    linear-gradient(white 0 0) content-box;
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+/* Emboss reflection */
+.glass-tag__emboss {
+  backdrop-filter: blur(calc(var(--gt-total) * 1.5)) invert(0.2) brightness(1.08) saturate(1.15) hue-rotate(-8deg) contrast(2);
+  padding: var(--gt-emboss-w);
+  mask:
+    linear-gradient(white 0 0) padding-box,
+    linear-gradient(white 0 0) content-box;
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+/* Refraction ring */
+.glass-tag__refraction {
+  backdrop-filter: invert(0.08) brightness(1.15) contrast(1.4);
+  padding: var(--gt-refract-w);
+  border: var(--gt-emboss-w) solid transparent;
+  mask:
+    linear-gradient(white 0 0) padding-box,
+    linear-gradient(white 0 0) content-box;
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+/* Inner blur fill */
+.glass-tag__blur {
+  backdrop-filter: blur(var(--gt-extra)) brightness(1.2);
+  border-radius: calc(var(--gt-radius) - (var(--gt-emboss-w) + var(--gt-refract-w))) !important;
+  margin: calc(var(--gt-emboss-w) + var(--gt-refract-w));
+}
+
+/* Blend layers */
+.glass-tag__blend {
+  z-index: 3;
+  backdrop-filter: blur(calc((var(--gt-softness) * 0.2) + (var(--gt-extra) * 0.2)));
+}
+
+.glass-tag__blend-edge {
+  z-index: 8;
+  backdrop-filter: blur(calc(var(--gt-edge-w) * 0.4)) contrast(1.5) saturate(1.4);
+}
+
+/* Highlight border */
+.glass-tag__highlight {
+  z-index: 12;
+  padding: 1px;
+  backdrop-filter: brightness(1.15) contrast(1.5) saturate(1.15) opacity(1);
+  mask:
+    linear-gradient(white 0 0) padding-box,
+    linear-gradient(white 0 0) content-box;
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+/* Reduced motion: strip backdrop-filter layers */
+@media (prefers-reduced-motion: reduce) {
+  .glass-tag__material,
+  .glass-tag__material::before,
+  .glass-tag::before {
+    backdrop-filter: none !important;
+  }
+  .glass-tag__material > div {
+    backdrop-filter: none !important;
+  }
 }
