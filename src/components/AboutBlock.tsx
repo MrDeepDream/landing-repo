@@ -3,7 +3,6 @@
 import { motion, type Variants } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
 import type { Media } from '@/payload-types'
 import { GlassTag } from './GlassTag'
 
@@ -13,9 +12,13 @@ export interface AboutBlockProps {
   badges?: { emoji?: string | null; text: string; id?: string | null }[] | null
   description?: string | null
   ctaLabel?: string | null
+  ctaLinkType?: ('page' | 'external' | 'anchor') | null
+  ctaPage?: (string | { slug?: string | null }) | null
   ctaUrl?: string | null
+  ctaAnchor?: string | null
   ctaOpenInNewTab?: boolean | null
   enableAnimation?: boolean | null
+  locale?: string
 }
 
 const sectionVariants: Variants = {
@@ -34,15 +37,55 @@ const fadeUp: Variants = {
   },
 }
 
+function resolveCtaHref(props: AboutBlockProps): string | undefined {
+  const linkType = props.ctaLinkType ?? 'external'
+  switch (linkType) {
+    case 'page': {
+      const page = props.ctaPage
+      if (typeof page === 'object' && page?.slug) {
+        return `/${props.locale || 'uk'}/${page.slug}`
+      }
+      return undefined
+    }
+    case 'external': {
+      const url = props.ctaUrl || undefined
+      if (url?.startsWith('#')) return url
+      return url
+    }
+    case 'anchor':
+      return props.ctaAnchor ? `#${props.ctaAnchor}` : undefined
+    default:
+      return props.ctaUrl || undefined
+  }
+}
+
+function isAnchorHref(href: string): boolean {
+  return href.startsWith('#')
+}
+
+function scrollToAnchor(href: string) {
+  const id = href.replace('#', '')
+  const el = document.getElementById(id)
+  if (el) {
+    const top = el.getBoundingClientRect().top + window.scrollY - 100
+    window.scrollTo({ top, behavior: 'smooth' })
+    window.history.pushState(null, '', href)
+  }
+}
+
 export function AboutBlock({
   title,
   image,
   badges,
   description,
   ctaLabel,
+  ctaLinkType,
+  ctaPage,
   ctaUrl,
+  ctaAnchor,
   ctaOpenInNewTab,
   enableAnimation = true,
+  locale,
 }: AboutBlockProps) {
   const imageData = typeof image === 'object' ? (image as Media) : null
   const imageUrl = imageData?.url
@@ -64,7 +107,7 @@ export function AboutBlock({
     >
       {title && (
         <Item {...(enableAnimation ? { variants: fadeUp } : {})} className="mb-8 sm:mb-10 md:mb-14">
-          <h2 className="text-2xl font-bold uppercase tracking-[0.1em] text-white sm:text-3xl sm:tracking-[0.2em] md:text-4xl">
+          <h2 className="text-[40px] font-bold uppercase leading-[90%] -tracking-[0.04em] text-white">
             {title}
           </h2>
         </Item>
@@ -74,7 +117,7 @@ export function AboutBlock({
         {/* Left column — image */}
         <Item {...(enableAnimation ? { variants: fadeUp } : {})}>
           {imageUrl ? (
-            <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white/[0.06] sm:rounded-2xl">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-xl sm:rounded-2xl">
               <Image
                 src={imageUrl}
                 alt={imageData?.alt || ''}
@@ -84,7 +127,7 @@ export function AboutBlock({
               />
             </div>
           ) : (
-            <div className="aspect-[4/3] rounded-xl border border-white/[0.06] bg-[#0f1613] sm:rounded-2xl" />
+            <div className="aspect-[4/3] rounded-xl sm:rounded-2xl" />
           )}
         </Item>
 
@@ -94,12 +137,12 @@ export function AboutBlock({
           {badges && badges.length > 0 && (
             <Item
               {...(enableAnimation ? { variants: fadeUp } : {})}
-              className="flex flex-wrap gap-2 sm:gap-3"
+              className="mb-8 flex flex-wrap gap-2 sm:gap-3"
             >
               {badges.map((badge, i) => (
                 <GlassTag
                   key={badge.id ?? i}
-                  className="px-3.5 py-1.5 text-sm text-white/80 sm:px-4 sm:py-2"
+                  className="px-3.5 py-1.5 text-sm text-white sm:px-4 sm:py-2"
                 >
                   {badge.emoji && <span>{badge.emoji}</span>}
                   <span>{badge.text}</span>
@@ -113,7 +156,10 @@ export function AboutBlock({
             <Item {...(enableAnimation ? { variants: fadeUp } : {})}>
               <div className="space-y-4">
                 {description.split('\n\n').map((paragraph, i) => (
-                  <p key={i} className="text-sm leading-relaxed text-gray-400 sm:text-base">
+                  <p
+                    key={i}
+                    className="text-base font-light leading-[120%] -tracking-[0.04em] text-white"
+                  >
                     {paragraph}
                   </p>
                 ))}
@@ -122,19 +168,40 @@ export function AboutBlock({
           )}
 
           {/* CTA */}
-          {ctaLabel && ctaUrl && (
-            <Item {...(enableAnimation ? { variants: fadeUp } : {})}>
-              <Link
-                href={ctaUrl}
-                target={ctaOpenInNewTab ? '_blank' : undefined}
-                rel={ctaOpenInNewTab ? 'noopener noreferrer' : undefined}
-                className="group/btn inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-500/[0.06] px-4 py-1.5 text-sm font-medium text-teal-300 transition-all duration-300 hover:border-teal-400/50 hover:bg-teal-500/[0.12] hover:shadow-[0_0_24px_-4px_rgba(20,184,166,0.25)] active:scale-[0.97] sm:px-5 sm:py-2"
-              >
-                {ctaLabel}
-                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/btn:translate-x-0.5" />
-              </Link>
-            </Item>
-          )}
+          {ctaLabel &&
+            (() => {
+              const href = resolveCtaHref({ ctaLinkType, ctaPage, ctaUrl, ctaAnchor, locale })
+              if (!href) return null
+              const anchor = isAnchorHref(href)
+              const openInNewTab = !anchor && ctaOpenInNewTab
+              const className =
+                'inline-flex items-center justify-center rounded-[15px] bg-[#00120F] px-[45px] py-[17px] text-[16px] font-normal leading-none tracking-normal text-white shadow-[0_0_25px_0_rgba(56,255,126,0.12),inset_0_0_0_1px_#005141,inset_0_4px_12px_0_rgba(5,176,143,0.3),inset_0_0_25px_0_rgba(5,176,143,0.3)] transition-all duration-300 hover:bg-[#025A4A] hover:shadow-[0_0_35px_0_rgba(56,255,126,0.25),inset_0_0_0_1px_#00785E,inset_0_4px_16px_0_rgba(5,176,143,0.5),inset_0_0_30px_0_rgba(5,176,143,0.4)] active:scale-[0.97]'
+              return (
+                <Item {...(enableAnimation ? { variants: fadeUp } : {})}>
+                  {anchor ? (
+                    <a
+                      href={href}
+                      className={className}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        scrollToAnchor(href)
+                      }}
+                    >
+                      {ctaLabel}
+                    </a>
+                  ) : (
+                    <Link
+                      href={href}
+                      target={openInNewTab ? '_blank' : undefined}
+                      rel={openInNewTab ? 'noopener noreferrer' : undefined}
+                      className={className}
+                    >
+                      {ctaLabel}
+                    </Link>
+                  )}
+                </Item>
+              )
+            })()}
         </div>
       </div>
     </Wrapper>

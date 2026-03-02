@@ -79,6 +79,30 @@ export const Pages: CollectionConfig = {
     update: ({ req: { user } }) => !!user,
     delete: ({ req: { user } }) => user?.role === 'admin',
   },
+  hooks: {
+    beforeValidate: [
+      ({ data, originalDoc, operation }) => {
+        // Fix missing id on update — admin panel sends id in URL, not body
+        if (operation === 'update' && !data?.id && originalDoc?.id) {
+          if (data) data.id = originalDoc.id
+        }
+
+        // Clean up conditional array fields in caseCardsBlock
+        if (data?.blocks) {
+          for (const block of data.blocks) {
+            if (block.blockType === 'caseCardsBlock') {
+              if (block.displayMode === 'reviews') {
+                block.cases = []
+              } else {
+                block.reviews = []
+              }
+            }
+          }
+        }
+        return data
+      },
+    ],
+  },
   versions: {
     drafts: {
       autosave: {
@@ -325,10 +349,43 @@ export const Pages: CollectionConfig = {
                           },
                         },
                         {
+                          name: 'linkType',
+                          type: 'radio',
+                          defaultValue: 'external',
+                          admin: {
+                            description: 'Choose link type',
+                            layout: 'horizontal',
+                          },
+                          options: [
+                            { label: 'Page', value: 'page' },
+                            { label: 'External URL', value: 'external' },
+                            { label: 'Anchor', value: 'anchor' },
+                          ],
+                        },
+                        {
+                          name: 'page',
+                          type: 'relationship',
+                          relationTo: 'pages',
+                          admin: {
+                            description: 'Select a page to link to',
+                            condition: (_data, siblingData) => siblingData?.linkType === 'page',
+                          },
+                        },
+                        {
                           name: 'url',
                           type: 'text',
                           admin: {
-                            description: 'Button link URL',
+                            description: 'External URL (e.g., https://example.com)',
+                            condition: (_data, siblingData) =>
+                              !siblingData?.linkType || siblingData?.linkType === 'external',
+                          },
+                        },
+                        {
+                          name: 'anchor',
+                          type: 'text',
+                          admin: {
+                            description: 'Anchor ID without # (e.g., "contact-section")',
+                            condition: (_data, siblingData) => siblingData?.linkType === 'anchor',
                           },
                         },
                         {
@@ -344,6 +401,9 @@ export const Pages: CollectionConfig = {
                           name: 'openInNewTab',
                           type: 'checkbox',
                           defaultValue: false,
+                          admin: {
+                            condition: (_data, siblingData) => siblingData?.linkType !== 'anchor',
+                          },
                         },
                       ],
                     },
@@ -363,10 +423,43 @@ export const Pages: CollectionConfig = {
                           },
                         },
                         {
+                          name: 'linkType',
+                          type: 'radio',
+                          defaultValue: 'external',
+                          admin: {
+                            description: 'Choose link type',
+                            layout: 'horizontal',
+                          },
+                          options: [
+                            { label: 'Page', value: 'page' },
+                            { label: 'External URL', value: 'external' },
+                            { label: 'Anchor', value: 'anchor' },
+                          ],
+                        },
+                        {
+                          name: 'page',
+                          type: 'relationship',
+                          relationTo: 'pages',
+                          admin: {
+                            description: 'Select a page to link to',
+                            condition: (_data, siblingData) => siblingData?.linkType === 'page',
+                          },
+                        },
+                        {
                           name: 'url',
                           type: 'text',
                           admin: {
-                            description: 'Button link URL',
+                            description: 'External URL (e.g., https://example.com)',
+                            condition: (_data, siblingData) =>
+                              !siblingData?.linkType || siblingData?.linkType === 'external',
+                          },
+                        },
+                        {
+                          name: 'anchor',
+                          type: 'text',
+                          admin: {
+                            description: 'Anchor ID without # (e.g., "contact-section")',
+                            condition: (_data, siblingData) => siblingData?.linkType === 'anchor',
                           },
                         },
                         {
@@ -382,6 +475,9 @@ export const Pages: CollectionConfig = {
                           name: 'openInNewTab',
                           type: 'checkbox',
                           defaultValue: false,
+                          admin: {
+                            condition: (_data, siblingData) => siblingData?.linkType !== 'anchor',
+                          },
                         },
                       ],
                     },
@@ -2273,10 +2369,43 @@ export const Pages: CollectionConfig = {
                           },
                         },
                         {
+                          name: 'linkType',
+                          type: 'radio',
+                          defaultValue: 'external',
+                          admin: {
+                            description: 'Choose link type',
+                            layout: 'horizontal',
+                          },
+                          options: [
+                            { label: 'Page', value: 'page' },
+                            { label: 'External URL', value: 'external' },
+                            { label: 'Anchor', value: 'anchor' },
+                          ],
+                        },
+                        {
+                          name: 'page',
+                          type: 'relationship',
+                          relationTo: 'pages',
+                          admin: {
+                            description: 'Select a page to link to',
+                            condition: (_data, siblingData) => siblingData?.linkType === 'page',
+                          },
+                        },
+                        {
                           name: 'url',
                           type: 'text',
                           admin: {
-                            description: 'Button link URL',
+                            description: 'External URL (e.g., https://example.com)',
+                            condition: (_data, siblingData) =>
+                              !siblingData?.linkType || siblingData?.linkType === 'external',
+                          },
+                        },
+                        {
+                          name: 'anchor',
+                          type: 'text',
+                          admin: {
+                            description: 'Anchor ID without # (e.g., "contact-section")',
+                            condition: (_data, siblingData) => siblingData?.linkType === 'anchor',
                           },
                         },
                         {
@@ -2292,6 +2421,9 @@ export const Pages: CollectionConfig = {
                           name: 'openInNewTab',
                           type: 'checkbox',
                           defaultValue: false,
+                          admin: {
+                            condition: (_data, siblingData) => siblingData?.linkType !== 'anchor',
+                          },
                         },
                       ],
                     },
@@ -2311,10 +2443,43 @@ export const Pages: CollectionConfig = {
                           },
                         },
                         {
+                          name: 'linkType',
+                          type: 'radio',
+                          defaultValue: 'external',
+                          admin: {
+                            description: 'Choose link type',
+                            layout: 'horizontal',
+                          },
+                          options: [
+                            { label: 'Page', value: 'page' },
+                            { label: 'External URL', value: 'external' },
+                            { label: 'Anchor', value: 'anchor' },
+                          ],
+                        },
+                        {
+                          name: 'page',
+                          type: 'relationship',
+                          relationTo: 'pages',
+                          admin: {
+                            description: 'Select a page to link to',
+                            condition: (_data, siblingData) => siblingData?.linkType === 'page',
+                          },
+                        },
+                        {
                           name: 'url',
                           type: 'text',
                           admin: {
-                            description: 'Button link URL',
+                            description: 'External URL (e.g., https://example.com)',
+                            condition: (_data, siblingData) =>
+                              !siblingData?.linkType || siblingData?.linkType === 'external',
+                          },
+                        },
+                        {
+                          name: 'anchor',
+                          type: 'text',
+                          admin: {
+                            description: 'Anchor ID without # (e.g., "contact-section")',
+                            condition: (_data, siblingData) => siblingData?.linkType === 'anchor',
                           },
                         },
                         {
@@ -2330,6 +2495,9 @@ export const Pages: CollectionConfig = {
                           name: 'openInNewTab',
                           type: 'checkbox',
                           defaultValue: false,
+                          admin: {
+                            condition: (_data, siblingData) => siblingData?.linkType !== 'anchor',
+                          },
                         },
                       ],
                     },
@@ -3392,16 +3560,52 @@ export const Pages: CollectionConfig = {
                       },
                     },
                     {
+                      name: 'ctaLinkType',
+                      type: 'radio',
+                      defaultValue: 'external',
+                      admin: {
+                        description: 'Choose link type',
+                        layout: 'horizontal',
+                      },
+                      options: [
+                        { label: 'Page', value: 'page' },
+                        { label: 'External URL', value: 'external' },
+                        { label: 'Anchor', value: 'anchor' },
+                      ],
+                    },
+                    {
+                      name: 'ctaPage',
+                      type: 'relationship',
+                      relationTo: 'pages',
+                      admin: {
+                        description: 'Select a page to link to',
+                        condition: (_data, siblingData) => siblingData?.ctaLinkType === 'page',
+                      },
+                    },
+                    {
                       name: 'ctaUrl',
                       type: 'text',
                       admin: {
-                        description: 'Button link URL',
+                        description: 'External URL (e.g., https://example.com)',
+                        condition: (_data, siblingData) =>
+                          !siblingData?.ctaLinkType || siblingData?.ctaLinkType === 'external',
+                      },
+                    },
+                    {
+                      name: 'ctaAnchor',
+                      type: 'text',
+                      admin: {
+                        description: 'Anchor ID without # (e.g., "contact-section")',
+                        condition: (_data, siblingData) => siblingData?.ctaLinkType === 'anchor',
                       },
                     },
                     {
                       name: 'ctaOpenInNewTab',
                       type: 'checkbox',
                       defaultValue: false,
+                      admin: {
+                        condition: (_data, siblingData) => siblingData?.ctaLinkType !== 'anchor',
+                      },
                     },
                     {
                       name: 'enableAnimation',
@@ -3499,11 +3703,17 @@ export const Pages: CollectionConfig = {
                     {
                       name: 'cases',
                       type: 'array',
-                      required: true,
-                      minRows: 1,
                       admin: {
                         condition: (_, siblingData) =>
                           !siblingData?.displayMode || siblingData?.displayMode === 'cases',
+                      },
+                      validate: (value, { siblingData }) => {
+                        const mode = (siblingData as Record<string, unknown>)?.displayMode
+                        if (!mode || mode === 'cases') {
+                          if (!value || (value as unknown[]).length === 0)
+                            return 'At least one case is required'
+                        }
+                        return true
                       },
                       fields: [
                         {
@@ -3548,9 +3758,16 @@ export const Pages: CollectionConfig = {
                     {
                       name: 'reviews',
                       type: 'array',
-                      minRows: 1,
                       admin: {
                         condition: (_, siblingData) => siblingData?.displayMode === 'reviews',
+                      },
+                      validate: (value, { siblingData }) => {
+                        const mode = (siblingData as Record<string, unknown>)?.displayMode
+                        if (mode === 'reviews') {
+                          if (!value || (value as unknown[]).length === 0)
+                            return 'At least one review is required'
+                        }
+                        return true
                       },
                       fields: [
                         {

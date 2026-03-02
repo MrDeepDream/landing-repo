@@ -4,23 +4,62 @@ import { motion } from 'motion/react'
 import Link from 'next/link'
 import Beams from './Beams'
 
+interface CTAData {
+  label?: string | null
+  linkType?: ('page' | 'external' | 'anchor') | null
+  page?: (string | { slug?: string | null }) | null
+  url?: string | null
+  anchor?: string | null
+  style?: 'solid' | 'outline' | null
+  openInNewTab?: boolean | null
+}
+
 export interface HeroBlockProps {
   headline: string
   subheadline?: string | null
-  primaryCTA?: {
-    label?: string | null
-    url?: string | null
-    style?: 'solid' | 'outline' | null
-    openInNewTab?: boolean | null
-  } | null
-  secondaryCTA?: {
-    label?: string | null
-    url?: string | null
-    style?: 'solid' | 'outline' | null
-    openInNewTab?: boolean | null
-  } | null
+  primaryCTA?: CTAData | null
+  secondaryCTA?: CTAData | null
   enableAnimation?: boolean | null
   isFirstBlock?: boolean
+  locale?: string
+}
+
+function resolveCtaHref(cta: CTAData, locale?: string): string | undefined {
+  const linkType = cta.linkType ?? 'external'
+  switch (linkType) {
+    case 'page': {
+      const page = cta.page
+      if (typeof page === 'object' && page?.slug) {
+        return `/${locale || 'uk'}/${page.slug}`
+      }
+      return undefined
+    }
+    case 'external': {
+      const url = cta.url || undefined
+      // Treat URLs starting with # as anchors
+      if (url?.startsWith('#')) return url
+      return url
+    }
+    case 'anchor':
+      return cta.anchor ? `#${cta.anchor}` : undefined
+    default:
+      return cta.url || undefined
+  }
+}
+
+function isAnchorHref(href: string): boolean {
+  return href.startsWith('#')
+}
+
+function scrollToAnchor(href: string) {
+  const id = href.replace('#', '')
+  const el = document.getElementById(id)
+  if (el) {
+    const top = el.getBoundingClientRect().top + window.scrollY - 100
+    window.scrollTo({ top, behavior: 'smooth' })
+    // Update URL hash without triggering navigation
+    window.history.pushState(null, '', href)
+  }
 }
 
 export function HeroBlock({
@@ -30,6 +69,7 @@ export function HeroBlock({
   secondaryCTA,
   enableAnimation = true,
   isFirstBlock = false,
+  locale,
 }: HeroBlockProps) {
   // Animation variants
   const containerVariants = enableAnimation
@@ -49,22 +89,42 @@ export function HeroBlock({
     : {}
 
   // Render CTA button
-  const renderCTA = (cta: NonNullable<HeroBlockProps['primaryCTA']>) => {
-    if (!cta.label || !cta.url) return null
+  const renderCTA = (cta: CTAData) => {
+    if (!cta.label) return null
+    const href = resolveCtaHref(cta, locale)
+    if (!href) return null
+
+    const anchor = isAnchorHref(href)
+    const openInNewTab = !anchor && cta.openInNewTab
 
     const baseClasses =
       'inline-flex items-center justify-center rounded-[15px] px-[45px] py-[17px] text-[16px] font-normal leading-none tracking-normal transition-all duration-200'
 
     const styleClasses =
       cta.style === 'outline'
-        ? 'bg-[#00120F] text-white shadow-[0_0_25px_0_rgba(56,255,126,0.12),inset_0_0_0_1px_#005141,inset_0_4px_12px_0_rgba(5,176,143,0.3),inset_0_0_25px_0_rgba(5,176,143,0.3)]'
-        : 'bg-[#025A4A] text-white shadow-[0_0_25px_0_rgba(56,255,126,0.12),inset_0_0_0_1px_#005141]'
+        ? 'bg-[#00120F] text-white shadow-[0_0_25px_0_rgba(56,255,126,0.12),inset_0_0_0_1px_#005141,inset_0_4px_12px_0_rgba(5,176,143,0.3),inset_0_0_25px_0_rgba(5,176,143,0.3)] hover:bg-[#025A4A] hover:shadow-[0_0_35px_0_rgba(56,255,126,0.25),inset_0_0_0_1px_#00785E,inset_0_4px_16px_0_rgba(5,176,143,0.5),inset_0_0_30px_0_rgba(5,176,143,0.4)] active:scale-[0.97]'
+        : 'bg-[#025A4A] text-white shadow-[0_0_25px_0_rgba(56,255,126,0.12),inset_0_0_0_1px_#005141] hover:bg-[#037A63] hover:shadow-[0_0_35px_0_rgba(56,255,126,0.25),inset_0_0_0_1px_#00785E] active:scale-[0.97]'
+
+    if (anchor) {
+      return (
+        <a
+          href={href}
+          className={`${baseClasses} ${styleClasses}`}
+          onClick={(e) => {
+            e.preventDefault()
+            scrollToAnchor(href)
+          }}
+        >
+          {cta.label}
+        </a>
+      )
+    }
 
     return (
       <Link
-        href={cta.url}
-        target={cta.openInNewTab ? '_blank' : '_self'}
-        rel={cta.openInNewTab ? 'noopener noreferrer' : undefined}
+        href={href}
+        target={openInNewTab ? '_blank' : undefined}
+        rel={openInNewTab ? 'noopener noreferrer' : undefined}
         className={`${baseClasses} ${styleClasses}`}
       >
         {cta.label}

@@ -151,6 +151,7 @@ export default async function HomePage(props: PageProps) {
                 secondaryCTA={block.secondaryCTA ?? undefined}
                 enableAnimation={block.enableAnimation !== false}
                 isFirstBlock={index === 0}
+                locale={localeString}
               />
             )
           case 'featuresBlock':
@@ -318,6 +319,7 @@ export default async function HomePage(props: PageProps) {
                 primaryCTA={block.primaryCTA ?? undefined}
                 secondaryCTA={block.secondaryCTA ?? undefined}
                 enableAnimation={block.enableAnimation !== false}
+                locale={localeString}
               />
             )
           case 'imageBlock': {
@@ -451,9 +453,13 @@ export default async function HomePage(props: PageProps) {
                 badges={block.badges}
                 description={block.description ?? undefined}
                 ctaLabel={block.ctaLabel ?? undefined}
+                ctaLinkType={block.ctaLinkType ?? undefined}
+                ctaPage={block.ctaPage ?? undefined}
                 ctaUrl={block.ctaUrl ?? undefined}
+                ctaAnchor={block.ctaAnchor ?? undefined}
                 ctaOpenInNewTab={block.ctaOpenInNewTab ?? undefined}
                 enableAnimation={block.enableAnimation !== false}
+                locale={localeString}
               />
             )
           case 'valueCardsBlock':

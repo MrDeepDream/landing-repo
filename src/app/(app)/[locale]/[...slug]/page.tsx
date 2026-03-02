@@ -317,6 +317,7 @@ async function BlockRenderer({
             secondaryCTA={block.secondaryCTA ?? undefined}
             enableAnimation={block.enableAnimation !== false}
             isFirstBlock={index === 0}
+            locale={locale}
           />
         )
 
@@ -484,6 +485,7 @@ async function BlockRenderer({
             primaryCTA={block.primaryCTA ?? undefined}
             secondaryCTA={block.secondaryCTA ?? undefined}
             enableAnimation={block.enableAnimation !== false}
+            locale={locale}
           />
         )
 
@@ -625,9 +627,13 @@ async function BlockRenderer({
             badges={block.badges}
             description={block.description ?? undefined}
             ctaLabel={block.ctaLabel ?? undefined}
+            ctaLinkType={block.ctaLinkType ?? undefined}
+            ctaPage={block.ctaPage ?? undefined}
             ctaUrl={block.ctaUrl ?? undefined}
+            ctaAnchor={block.ctaAnchor ?? undefined}
             ctaOpenInNewTab={block.ctaOpenInNewTab ?? undefined}
             enableAnimation={block.enableAnimation !== false}
+            locale={locale}
           />
         )
 

@@ -53,13 +53,19 @@ interface HeroBlockData {
   }>
   primaryCTA?: {
     label?: string
+    linkType?: 'page' | 'external' | 'anchor'
+    page?: string | { slug?: string }
     url?: string
+    anchor?: string
     style?: 'solid' | 'outline'
     openInNewTab?: boolean
   }
   secondaryCTA?: {
     label?: string
+    linkType?: 'page' | 'external' | 'anchor'
+    page?: string | { slug?: string }
     url?: string
+    anchor?: string
     style?: 'solid' | 'outline'
     openInNewTab?: boolean
   }
@@ -353,13 +359,19 @@ interface SectionHeaderBlockData {
   description?: string
   primaryCTA?: {
     label?: string
+    linkType?: 'page' | 'external' | 'anchor'
+    page?: string | { slug?: string }
     url?: string
+    anchor?: string
     style?: 'solid' | 'outline'
     openInNewTab?: boolean
   }
   secondaryCTA?: {
     label?: string
+    linkType?: 'page' | 'external' | 'anchor'
+    page?: string | { slug?: string }
     url?: string
+    anchor?: string
     style?: 'solid' | 'outline'
     openInNewTab?: boolean
   }
@@ -517,7 +529,10 @@ interface AboutBlockData {
   badges?: { emoji?: string; text: string; id?: string }[]
   description?: string
   ctaLabel?: string
+  ctaLinkType?: 'page' | 'external' | 'anchor'
+  ctaPage?: string | { slug?: string }
   ctaUrl?: string
+  ctaAnchor?: string
   ctaOpenInNewTab?: boolean
   enableAnimation?: boolean
   id?: string
@@ -635,6 +650,7 @@ export async function RenderBlocks({
                   secondaryCTA={block.secondaryCTA}
                   enableAnimation={block.enableAnimation}
                   isFirstBlock={index === 0}
+                  locale={locale}
                 />
               )
 
@@ -814,6 +830,7 @@ export async function RenderBlocks({
                   primaryCTA={block.primaryCTA}
                   secondaryCTA={block.secondaryCTA}
                   enableAnimation={block.enableAnimation}
+                  locale={locale}
                 />
               )
 
@@ -907,9 +924,13 @@ export async function RenderBlocks({
                   badges={block.badges}
                   description={block.description}
                   ctaLabel={block.ctaLabel}
+                  ctaLinkType={block.ctaLinkType}
+                  ctaPage={block.ctaPage}
                   ctaUrl={block.ctaUrl}
+                  ctaAnchor={block.ctaAnchor}
                   ctaOpenInNewTab={block.ctaOpenInNewTab}
                   enableAnimation={block.enableAnimation}
+                  locale={locale}
                 />
               )
 

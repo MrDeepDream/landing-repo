@@ -2,7 +2,6 @@
 
 import { motion, type Variants } from 'motion/react'
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
 import { GlassTag } from './GlassTag'
 
 interface ServiceCard {
@@ -65,12 +64,29 @@ function resolveCardHref(card: ServiceCard, locale?: string): string | undefined
       }
       return undefined
     }
-    case 'external':
-      return card.ctaUrl || undefined
+    case 'external': {
+      const url = card.ctaUrl || undefined
+      if (url?.startsWith('#')) return url
+      return url
+    }
     case 'anchor':
       return card.ctaAnchor ? `#${card.ctaAnchor}` : undefined
     default:
       return card.ctaUrl || undefined
+  }
+}
+
+function isAnchorHref(href: string): boolean {
+  return href.startsWith('#')
+}
+
+function scrollToAnchor(href: string) {
+  const id = href.replace('#', '')
+  const el = document.getElementById(id)
+  if (el) {
+    const top = el.getBoundingClientRect().top + window.scrollY - 100
+    window.scrollTo({ top, behavior: 'smooth' })
+    window.history.pushState(null, '', href)
   }
 }
 
@@ -118,7 +134,7 @@ export function ServiceCardsBlock({
               : {})}
             className="mb-8 sm:mb-10 md:mb-14"
           >
-            <h2 className="text-2xl font-bold uppercase tracking-[0.1em] text-white sm:text-3xl sm:tracking-[0.2em] md:text-4xl">
+            <h2 className="text-[40px] font-bold uppercase leading-[90%] -tracking-[0.04em] text-white">
               {title}
             </h2>
           </Header>
@@ -152,33 +168,37 @@ export function ServiceCardsBlock({
               <Card
                 key={card.id ?? index}
                 {...(enableAnimation ? { variants: cardVariants } : {})}
-                className={`${getCardWidth(index)} group relative flex flex-col rounded-xl border border-white/[0.06] bg-[#0f1613] p-5 transition-colors duration-300 hover:border-teal-500/25 sm:rounded-2xl sm:p-6 md:p-7 lg:p-8`}
+                className={`${getCardWidth(index)} group relative flex flex-col rounded-[10px] border border-[#1C3023] p-5 transition-colors duration-300 hover:border-teal-500/25 sm:p-6 md:p-7 lg:p-8`}
+                style={{
+                  background:
+                    'linear-gradient(180deg, #0D1A12 0%, #08110C 22%, #030B06 60%, #030B06 81%)',
+                }}
               >
                 {/* Hover glow */}
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-b from-teal-500/[0.04] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:rounded-2xl"
+                  className="pointer-events-none absolute inset-0 rounded-[10px] bg-gradient-to-b from-teal-500/[0.04] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                 />
 
                 {/* Number */}
-                <span className="relative mb-3 inline-block font-mono text-xs font-medium tracking-widest text-teal-400/70 sm:mb-5">
+                <span className="relative mb-3 inline-block text-xl font-medium leading-[120%] -tracking-[0.04em] text-[#025A4A] sm:mb-5">
                   {number}
                 </span>
 
                 {/* Title */}
-                <h3 className="relative mb-3 text-base font-semibold uppercase tracking-wide text-white/90 sm:mb-5 sm:text-lg">
+                <h3 className="relative mb-[54px] mt-8 text-xl font-medium uppercase leading-[110%] -tracking-[0.04em] text-white">
                   {card.title}
                 </h3>
 
                 {/* Bullet points */}
                 {card.bulletPoints && card.bulletPoints.length > 0 && (
-                  <ul className="relative mb-5 flex-1 space-y-2 sm:mb-8 sm:space-y-3">
+                  <ul className="relative mb-[54px] flex-1 space-y-2 sm:space-y-3">
                     {card.bulletPoints.map((point, i) => (
                       <li
                         key={point.id ?? i}
-                        className="flex items-start gap-2.5 text-sm leading-relaxed text-gray-400 sm:gap-3"
+                        className="flex items-start gap-2.5 text-base font-light leading-[120%] -tracking-[0.04em] text-white sm:gap-3"
                       >
-                        <span className="mt-[7px] h-1 w-1 flex-shrink-0 rounded-full bg-teal-500/80" />
+                        <span className="mt-[7px] h-1 w-1 flex-shrink-0 rounded-full bg-white" />
                         <span>{point.text}</span>
                       </li>
                     ))}
@@ -190,19 +210,33 @@ export function ServiceCardsBlock({
                   (() => {
                     const href = resolveCardHref(card, locale)
                     if (!href) return null
-                    const isAnchor = card.ctaLinkType === 'anchor'
-                    const openInNewTab = !isAnchor && card.ctaOpenInNewTab
+                    const anchor = isAnchorHref(href)
+                    const openInNewTab = !anchor && card.ctaOpenInNewTab
+                    const className =
+                      'inline-flex w-full items-center justify-center rounded-[15px] bg-[#00120F] py-[17px] text-[16px] font-normal leading-none tracking-normal text-white shadow-[0_0_25px_0_rgba(56,255,126,0.12),inset_0_0_0_1px_#005141,inset_0_4px_12px_0_rgba(5,176,143,0.3),inset_0_0_25px_0_rgba(5,176,143,0.3)] transition-all duration-300 hover:bg-[#025A4A] hover:shadow-[0_0_35px_0_rgba(56,255,126,0.25),inset_0_0_0_1px_#00785E,inset_0_4px_16px_0_rgba(5,176,143,0.5),inset_0_0_30px_0_rgba(5,176,143,0.4)] active:scale-[0.97]'
                     return (
                       <div className="relative mt-auto pt-1 sm:pt-2">
-                        <Link
-                          href={href}
-                          target={openInNewTab ? '_blank' : undefined}
-                          rel={openInNewTab ? 'noopener noreferrer' : undefined}
-                          className="group/btn inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-500/[0.06] px-4 py-1.5 text-sm font-medium text-teal-300 transition-all duration-300 hover:border-teal-400/50 hover:bg-teal-500/[0.12] hover:shadow-[0_0_24px_-4px_rgba(20,184,166,0.25)] active:scale-[0.97] sm:px-5 sm:py-2"
-                        >
-                          {card.ctaLabel}
-                          <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/btn:translate-x-0.5" />
-                        </Link>
+                        {anchor ? (
+                          <a
+                            href={href}
+                            className={className}
+                            onClick={(e) => {
+                              e.preventDefault()
+                              scrollToAnchor(href)
+                            }}
+                          >
+                            {card.ctaLabel}
+                          </a>
+                        ) : (
+                          <Link
+                            href={href}
+                            target={openInNewTab ? '_blank' : undefined}
+                            rel={openInNewTab ? 'noopener noreferrer' : undefined}
+                            className={className}
+                          >
+                            {card.ctaLabel}
+                          </Link>
+                        )}
                       </div>
                     )
                   })()}

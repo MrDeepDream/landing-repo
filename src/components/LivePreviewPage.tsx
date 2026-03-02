@@ -109,6 +109,7 @@ function BlockRenderer({ block, locale }: { block: PageBlock; locale?: string })
             primaryCTA={block.primaryCTA ?? undefined}
             secondaryCTA={block.secondaryCTA ?? undefined}
             enableAnimation={block.enableAnimation !== false}
+            locale={locale}
           />
         )
 
@@ -276,6 +277,7 @@ function BlockRenderer({ block, locale }: { block: PageBlock; locale?: string })
             primaryCTA={block.primaryCTA ?? undefined}
             secondaryCTA={block.secondaryCTA ?? undefined}
             enableAnimation={block.enableAnimation !== false}
+            locale={locale}
           />
         )
 
@@ -443,9 +445,13 @@ function BlockRenderer({ block, locale }: { block: PageBlock; locale?: string })
             badges={block.badges}
             description={block.description ?? undefined}
             ctaLabel={block.ctaLabel ?? undefined}
+            ctaLinkType={block.ctaLinkType ?? undefined}
+            ctaPage={block.ctaPage ?? undefined}
             ctaUrl={block.ctaUrl ?? undefined}
+            ctaAnchor={block.ctaAnchor ?? undefined}
             ctaOpenInNewTab={block.ctaOpenInNewTab ?? undefined}
             enableAnimation={block.enableAnimation ?? true}
+            locale={locale}
           />
         )
 

@@ -49,11 +49,24 @@
 }
 
 @layer base {
-  * {
+  *,
+  *::before,
+  *::after {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+  }
+  html,
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-e-ukraine), system-ui, sans-serif;
+  }
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
   }
 }
 

@@ -188,13 +188,19 @@ export interface HeroBlock {
   }[] | null
   primaryCTA?: {
     label?: string | null
+    linkType?: ('page' | 'external' | 'anchor') | null
+    page?: (string | null) | Page
     url?: string | null
+    anchor?: string | null
     style?: 'solid' | 'outline' | null
     openInNewTab?: boolean | null
   } | null
   secondaryCTA?: {
     label?: string | null
+    linkType?: ('page' | 'external' | 'anchor') | null
+    page?: (string | null) | Page
     url?: string | null
+    anchor?: string | null
     style?: 'solid' | 'outline' | null
     openInNewTab?: boolean | null
   } | null
@@ -520,13 +526,19 @@ export interface SectionHeaderBlock {
   }[] | null
   primaryCTA?: {
     label?: string | null
+    linkType?: ('page' | 'external' | 'anchor') | null
+    page?: (string | null) | Page
     url?: string | null
+    anchor?: string | null
     style?: 'solid' | 'outline' | null
     openInNewTab?: boolean | null
   } | null
   secondaryCTA?: {
     label?: string | null
+    linkType?: ('page' | 'external' | 'anchor') | null
+    page?: (string | null) | Page
     url?: string | null
+    anchor?: string | null
     style?: 'solid' | 'outline' | null
     openInNewTab?: boolean | null
   } | null
@@ -740,7 +752,10 @@ export interface AboutBlock {
   }[] | null
   description?: string | null
   ctaLabel?: string | null
+  ctaLinkType?: ('page' | 'external' | 'anchor') | null
+  ctaPage?: (string | null) | Page
   ctaUrl?: string | null
+  ctaAnchor?: string | null
   ctaOpenInNewTab?: boolean | null
   enableAnimation?: boolean | null
 }
