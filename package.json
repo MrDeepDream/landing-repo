@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.62.0",
+    "@payloadcms/email-resend": "^3.79.1",
     "@payloadcms/live-preview-react": "3.62.0",
     "@payloadcms/next": "3.62.0",
     "@payloadcms/richtext-slate": "3.62.0",
