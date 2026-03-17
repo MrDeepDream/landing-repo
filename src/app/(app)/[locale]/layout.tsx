@@ -1,5 +1,4 @@
 import React from 'react'
-import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
@@ -8,25 +7,6 @@ import { getSiteData, type SupportedLocale } from '@/lib/payload-data'
 interface LocaleLayoutProps {
   children: React.ReactNode
   params: Promise<{ locale: string }>
-}
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}): Promise<Metadata> {
-  const { locale } = await params
-  try {
-    const { siteSettings } = await getSiteData(locale as SupportedLocale)
-    if (siteSettings?.favicon?.url) {
-      return {
-        icons: { icon: siteSettings.favicon.url },
-      }
-    }
-  } catch {
-    // CMS not available
-  }
-  return {}
 }
 
 /**
