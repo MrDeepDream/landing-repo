@@ -75,7 +75,6 @@ interface SiteSettings {
     url: string
     alt?: string
   }
-  logoHeight?: number
   logoAltText?: string
   tagline?: string
   socialLinks?: SocialLink[]
@@ -229,7 +228,6 @@ export const getSiteData = cache(async (locale: SupportedLocale = 'uk', draft: b
                 alt: settings.logoAltText || undefined,
               }
             : undefined,
-        logoHeight: typeof settings.logoHeight === 'number' ? settings.logoHeight : undefined,
         logoAltText: settings.logoAltText || undefined,
         tagline: settings.tagline || undefined,
         socialLinks: settings.socialLinks || undefined,
